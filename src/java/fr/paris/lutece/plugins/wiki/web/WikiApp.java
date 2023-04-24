@@ -407,6 +407,9 @@ public class WikiApp extends MVCApplication
 
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
         String strParentPageName = request.getParameter( Constants.PARAMETER_PARENT_PAGE_NAME );
+        if(StringUtils.isEmpty(strParentPageName)){
+            strParentPageName = "none";
+        }
         String strPageTitle = strPageName;
         strPageName = WikiUtils.normalize( strPageName );
 
