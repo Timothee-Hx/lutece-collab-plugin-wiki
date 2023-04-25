@@ -59,6 +59,19 @@
             <version>2.4</version>
             <classifier>jdk15</classifier>
         </dependency>
+
+        <dependency>
+            <groupId>fr.paris.lutece.plugins</groupId>
+            <artifactId>plugin-mylutece</artifactId>
+            <version>4.0.5</version>
+            <type>lutece-plugin</type>
+        </dependency>
+        <dependency>
+            <groupId>fr.paris.lutece.plugins</groupId>
+            <artifactId>module-mylutece-database</artifactId>
+            <version>6.0.3</version>
+            <type>lutece-plugin</type>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -66,6 +79,7 @@
         <jiraProjectName>WIKI</jiraProjectName>
         <jiraComponentId>10361</jiraComponentId>
     </properties>
+
 
     <scm>
         <connection>scm:git:https://github.com/lutece-platform/lutece-collab-plugin-wiki.git</connection>

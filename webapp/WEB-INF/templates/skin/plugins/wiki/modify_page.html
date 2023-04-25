@@ -294,8 +294,6 @@
 
     <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.js"></script>
 
-    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-uml/cdn/toastui-editor-plugin-uml.min.js"></script>
-
     <script type="text/babel" class="code-js">
 
         let locale = document.getElementById("locale").defaultValue;
@@ -328,7 +326,7 @@
             el: document.querySelector('#viewer'),
             viewer: true,
             initialValue: '{{ notice.contents }}',
-            plugins: [[chart, chartOptions], [codeSyntaxHighlight, {highlighter: Prism}], tableMergedCell, uml]
+            plugins: [[chart, chartOptions], [codeSyntaxHighlight, {highlighter: Prism}], tableMergedCell]
         });
 
 
