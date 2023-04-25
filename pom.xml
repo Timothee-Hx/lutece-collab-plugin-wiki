@@ -35,31 +35,24 @@
             <version>[1.2.0,)</version>
             <type>lutece-plugin</type>
         </dependency>
-        <dependency>
+      <!--  <dependency>
             <groupId>org.htmlparser</groupId>
             <artifactId>htmlparser</artifactId>
             <version>1.6</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.outerj.daisy</groupId>
             <artifactId>daisydiff</artifactId>
             <version>1.2-NX1</version>
         </dependency>
-        <dependency>
-            <groupId>net.sourceforge.nekohtml</groupId>
-            <artifactId>nekohtml</artifactId>
-            <version>1.9.20</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.9.1</version>
-        </dependency>
+<!--
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>common</artifactId>
             <version>3.6.200-v20130402-1505</version>
         </dependency>
+        -->
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>

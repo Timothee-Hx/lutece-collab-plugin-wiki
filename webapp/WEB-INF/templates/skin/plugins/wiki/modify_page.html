@@ -7,15 +7,7 @@
         <link rel="stylesheet" href="js/plugins/wiki/tui_editor/toastui-editor.css" />
         <!-- Chart -->
         <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
-        <!-- Code Highlight -->
-        <link
-                rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css"
-        />
-        <link
-                rel="stylesheet"
-                href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.css"
-        />
+
         <!-- Color syntax -->
         <link
                 rel="stylesheet"
@@ -26,7 +18,7 @@
                 href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"
         />
         <!-- Merged Table -->
-        <link rel="stylesheet" href="https://uicdn.toast.com/editor-plugin-table-merged-cell/3.0.0/toastui-editor-plugin-table-merged-cell.min.css" />
+        <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.css" />
 
     </head>
     <div class="container panel panel-default">
@@ -81,7 +73,8 @@
 
         <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
             <#list languages_list as locale>
-            <li role="presentation" <#if locale_index = 0 >class="active" </#if>><a href="#tab-${locale}" data-toggle="tab" >${locale}</a></li>
+            <li role="presentation" <#if locale_index = 0 >class="active" </#if>>
+        <a href="#tab-${locale}" data-toggle="tab" >${locale}</a></li>
     </#list>
     </ul>
 
@@ -118,11 +111,11 @@
                 <h2>Editor</h2>
                 <div id="editor"></div>
             </div>
-            <input name="contents" id="newContent" class="visually-hidden"/>
-
+            <input type="text" id="locale" value="${locale}" />
             <!-- <textarea id="wiki-${locale}" class="form-control" name="content_${locale}" rows="20" ><#if lastVersion??>${lastVersion.getWikiContent( locale ).wikiContent?html}</#if></textarea>
             -->
         </div>
+        <input  id="wiki-${locale}" class="form-control" name="content_${locale}" type="hidden"/>
 
 
     </div>
@@ -190,7 +183,7 @@
                 </table>
             </div>
             <div class="col-sm-6">
-                <form id="ajax-form-image-upload" action="jsp/site/Portal.jsp" method="post" enctype="multipart/form-data" >
+                <div id="ajax-form-image-upload" action="jsp/site/Portal.jsp" method="post" enctype="multipart/form-data" >
                     <input type="hidden" name="page" value="wiki" />
                     <input type="hidden" name="page_name" value="${topic.pageName}" />
                     <input type="hidden" name="action" value="uploadImage" />
@@ -224,256 +217,263 @@
                             </div>
                         </div>
                         </fieldset>
-                </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
-<div class="modal fade" id="confirm-delete-page" tabindex="-1" role="dialog" aria-labelledby="DeletePageConfirmation" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>#i18n{wiki.message.confirmTitle}</h3>
-            </div>
-            <div class="modal-body">
-                #i18n{wiki.message.confirmDelete}
-            </div>
-            <div class="modal-footer">
-                <form id="form-page-delete" action="jsp/site/Portal.jsp" method="post" >
-                    <input type="hidden" name="page" value="wiki" />
-                    <input type="hidden" name="page_name" value="${topic.pageName}" />
-                    <input type="hidden" name="action" value="deletePage" />
-                    <button type="button" class="btn btn-default" data-dismiss="modal">#i18n{portal.util.labelCancel}</button>
-                    <button id="btn-page-delete" type="submit" class="btn btn-danger" >#i18n{portal.util.labelDelete}</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="confirm-delete-image" tabindex="-1" role="dialog" aria-labelledby="DeleteImageConfirmation" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>#i18n{wiki.message.confirmTitle}</h3>
-            </div>
-            <div class="modal-body">
-                #i18n{wiki.message.confirmRemoveImage}
-            </div>
-            <div class="modal-footer">
-                <form id="ajax-form-image-delete" action="jsp/site/Portal.jsp" method="post" >
-                    <input type="hidden" name="page" value="wiki" />
-                    <input type="hidden" name="page_name" value="${topic.pageName}" />
-                    <input type="hidden" name="action" value="removeImage" />
-                    <input id="id-image-to-remove" type="hidden" name="id_image" value="" />
-                    <button type="button" class="btn btn-default" data-dismiss="modal">#i18n{portal.util.labelCancel}</button>
-                    <button id="btn-image-delete" type="submit" class="btn btn-danger" >#i18n{portal.util.labelDelete}</button>
-                </form>
+    <div class="modal fade" id="confirm-delete-page" tabindex="-1" role="dialog" aria-labelledby="DeletePageConfirmation" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>#i18n{wiki.message.confirmTitle}</h3>
+                </div>
+                <div class="modal-body">
+                    #i18n{wiki.message.confirmDelete}
+                </div>
+                <div class="modal-footer">
+                    <form id="form-page-delete" action="jsp/site/Portal.jsp" method="post" >
+                        <input type="hidden" name="page" value="wiki" />
+                        <input type="hidden" name="page_name" value="${topic.pageName}" />
+                        <input type="hidden" name="action" value="deletePage" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">#i18n{portal.util.labelCancel}</button>
+                        <button id="btn-page-delete" type="submit" class="btn btn-danger" >#i18n{portal.util.labelDelete}</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <div class="modal fade" id="confirm-delete-image" tabindex="-1" role="dialog" aria-labelledby="DeleteImageConfirmation" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>#i18n{wiki.message.confirmTitle}</h3>
+                </div>
+                <div class="modal-body">
+                    #i18n{wiki.message.confirmRemoveImage}
+                </div>
+                <div class="modal-footer">
+                    <form id="ajax-form-image-delete" action="jsp/site/Portal.jsp" method="post" >
+                        <input type="hidden" name="page" value="wiki" />
+                        <input type="hidden" name="page_name" value="${topic.pageName}" />
+                        <input type="hidden" name="action" value="removeImage" />
+                        <input id="id-image-to-remove" type="hidden" name="id_image" value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">#i18n{portal.util.labelCancel}</button>
+                        <button id="btn-image-delete" type="submit" class="btn btn-danger" >#i18n{portal.util.labelDelete}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-<!-- Markipup integration -->
-<script type="text/javascript" src="js/plugins/wiki/markitup/jquery.markitup.js"></script>
-<script type="text/javascript" src="js/plugins/wiki/markitup/sets/wiki/set.js"></script>
-<script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
-<!-- Tui Editor integration -->
-<!-- Added to check demo page in Internet Explorer -->
-<script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/babel-standalone@6.26.0/babel.min.js"></script>
-<script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/tui_editor/data/md-plugins.js"></script>
-<!-- Editor -->
-<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.js"></script>
-<!-- Chart -->
-<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_chart/toastui-chart.js"></script>
+    <!-- Markipup integration -->
+    <script type="text/javascript" src="js/plugins/wiki/markitup/jquery.markitup.js"></script>
+    <script type="text/javascript" src="js/plugins/wiki/markitup/sets/wiki/set.js"></script>
+    <script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
+    <!-- Tui Editor integration -->
+    <!-- Added to check demo page in Internet Explorer -->
+    <script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/babel-standalone@6.26.0/babel.min.js"></script>
+    <script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/tui_editor/data/md-plugins.js"></script>
+    <!-- Editor -->
+    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.js"></script>
+    <!-- Chart -->
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_chart/toastui-chart.js"></script>
 
-<!-- Color Picker -->
-<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_color_picker/tui-color-picker.min.js"></script>
-<!-- Editor's Plugin -->
-<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/plugins/editor-plugin-chart/cdn/toastui-editor-plugin-chart.min.js"></script>
+    <!-- Color Picker -->
+    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_color_picker/tui-color-picker.min.js"></script>
+    <!-- Editor's Plugin -->
+    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/plugins/editor-plugin-chart/cdn/toastui-editor-plugin-chart.min.js"></script>
 
-<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
 
-<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
 
-<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.js"></script>
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.js"></script>
 
-<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-uml/cdn/toastui-editor-plugin-uml.min.js"></script>
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-uml/cdn/toastui-editor-plugin-uml.min.js"></script>
 
-<script type="text/babel" class="code-js">
+    <script type="text/babel" class="code-js">
 
-    const { Editor } = toastui;
-    const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
-    const wikiContent = document.getElementsByName('wikiContentValue')[0].defaultValue;
-    const chartOptions = {
-        minWidth: 100,
-        maxWidth: 600,
-        minHeight: 100,
-        maxHeight: 300
-    };
+        let locale = document.getElementById("locale").defaultValue;
+        const { Editor } = toastui;
+        const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
+        const wikiContent = document.getElementsByName('wikiContentValue')[0].defaultValue;
+        let newWikiContentId = "wiki-" + locale;
+        const chartOptions = {
+            minWidth: 100,
+            maxWidth: 600,
+            minHeight: 100,
+            maxHeight: 300
+        };
 
-    const editor = new Editor({
-        el: document.querySelector('#editor'),
-        previewStyle: 'vertical',
-        height: '500px',
-        initialValue: wikiContent,
-        plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
-        events: {
-            change: () => {
-                document.getElementById("newContent").innerHTML= editor.getMarkdown();
-                console.log(editor.getMarkdown());
-                console.log(textarea.inner)
+        const editor = new Editor({
+            el: document.querySelector('#editor'),
+
+            previewStyle: 'vertical',
+            height: '500px',
+            initialValue: wikiContent,
+            plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
+            events: {
+                change: () => {
+                    document.getElementById(newWikiContentId).innerHTML= editor.getMarkdown();
+                    console.log( document.getElementById(newWikiContentId).textContent);
+                }
             }
-        }
-    });
-
-    const newMarkdownContent = editor.getMarkdown();
-
-</script>
-<script language="javascript">
-
-    function replaceAll(find, replace, str)
-    {
-        return str.replace(new RegExp(find, 'g'), replace);
-    };
-
-    function validate()
-    {
-        <#list languages_list as locale>
-    escapeSpecialChars( 'wiki-${locale}' );
-    </#list>
-        return true;
-    };
-
-    function escapeSpecialChars( id )
-    {
-        var content = document.getElementById( id ).value;
-        content = replaceAll( '<' , '[lt;' , content );
-        content = replaceAll( '>' , '[gt;' , content );
-        content = replaceAll( '"' , '[quot;' , content );
-        content = replaceAll( '&nbsp;' , '[nbsp;' , content );
-        content = replaceAll( '&' , '[amp;' , content );
-        content = replaceAll( '#' , '[hashmark;' , content );
-        document.getElementById( id ).value = content;
-    }
-
-    function updateImages()
-    {
-        $.get( 'jsp/site/Portal.jsp', { page: "wiki", view: "listImages", topic_id: ${topic.idTopic} } , function( data ){
-            populateImages($( "#table-images" ) , data )
         });
-    };
-
-    function populateImages(select, data) {
-        select.html('');
-        var items = [];
-        $.each(data, function (id , image ) {
-            items.push( '<tr>' );
-            items.push( '<td><img src="image?resource_type=wiki_image&id=' + image.id + '" alt="' + image.name + '" height="40px"</td>' );
-            items.push( '<td>' + image.name + '</td>' );
-            items.push( '<td>' );
-            items.push( '{{' + image.id + '|' + image.name + '}}<br/> ' );
-            items.push( '{{' + image.id + '|' + image.name + '|<em>width</em>|<em>height</em>|<em>align</em> }}' );
-            items.push( '</td>' );
-            items.push( '<td>' );
-            items.push( '<a data-title="' + image.id + '" data-toggle="modal" data-target="#confirm-delete-image" href="#" class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}">' );
-            items.push( '<span class="glyphicon glyphicon-trash"></span>' );
-            items.push( '</a>' );
-            items.push( '</td>' );
-            items.push( '</tr>' );
-        });
-        select.append(items.join(''));
-    };
-
-</script>
-
-
-
-<script language="javascript">
-
-    $(document).ready(function() {
-
-        // Help block management
-        $("#btn-help").click(function() {
-            $("#help").toggle("slow");
-            this.blur();
-            if ($("#main-panel").hasClass("col-sm-7"))
-            {
-                $("#main-panel").removeClass("col-sm-7");
-                $("#main-panel").addClass("col-sm-12");
-            }
-            else
-            {
-                $("#main-panel").removeClass("col-sm-12");
-                $("#main-panel").addClass("col-sm-7");
-            }
+        const viewer = Editor.factory({
+            el: document.querySelector('#viewer'),
+            viewer: true,
+            initialValue: '{{ notice.contents }}',
+            plugins: [[chart, chartOptions], [codeSyntaxHighlight, {highlighter: Prism}], tableMergedCell, uml]
         });
 
 
-        // MarkitUp
-        /*    <#list languages_list as locale>
-            $('#wiki-${locale}').markItUp(myWikiSettings);
+    </script>
+    <script language="javascript">
+
+        function replaceAll(find, replace, str)
+        {
+            return str.replace(new RegExp(find, 'g'), replace);
+        };
+
+        function validate()
+        {
+            <#list languages_list as locale>
+        escapeSpecialChars( 'wiki-${locale}' );
         </#list>
-    */
+            return true;
+        };
 
-        // Image upload ajax form
-        var formUploadImage = $('#ajax-form-image-upload');
-        var loaderUploadImage = $('#loader-image-upload'); // loder.gif image
-        var buttonUploadImage = $('#btn-image-upload'); // upload button
+        function escapeSpecialChars( id )
+        {
+            var content = document.getElementById( id ).value;
+            content = replaceAll( '<' , '[lt;' , content );
+            content = replaceAll( '>' , '[gt;' , content );
+            content = replaceAll( '"' , '[quot;' , content );
+            content = replaceAll( '&nbsp;' , '[nbsp;' , content );
+            content = replaceAll( '&' , '[amp;' , content );
+            content = replaceAll( '#' , '[hashmark;' , content );
+            document.getElementById( id ).value = content;
+        }
 
-        buttonUploadImage.click(function(){
-            // implement with ajaxForm Plugin
-            formUploadImage.ajaxForm({
-                beforeSend: function(){
-                    loaderUploadImage.show();
-                    buttonUploadImage.attr('disabled', 'disabled');
-                },
-                success: function(e){
-                    loaderUploadImage.hide();
-                    formUploadImage.resetForm();
-                    buttonUploadImage.removeAttr('disabled');
-                    updateImages();
-                },
-                error: function(e){
-                    buttonUploadImage.removeAttr('disabled');
+        function updateImages()
+        {
+            $.get( 'jsp/site/Portal.jsp', { page: "wiki", view: "listImages", topic_id: ${topic.idTopic} } , function( data ){
+                populateImages($( "#table-images" ) , data )
+            });
+        };
+
+        function populateImages(select, data) {
+            select.html('');
+            var items = [];
+            $.each(data, function (id , image ) {
+                items.push( '<tr>' );
+                items.push( '<td><img src="image?resource_type=wiki_image&id=' + image.id + '" alt="' + image.name + '" height="40px"</td>' );
+                items.push( '<td>' + image.name + '</td>' );
+                items.push( '<td>' );
+                items.push( '{{' + image.id + '|' + image.name + '}}<br/> ' );
+                items.push( '{{' + image.id + '|' + image.name + '|<em>width</em>|<em>height</em>|<em>align</em> }}' );
+                items.push( '</td>' );
+                items.push( '<td>' );
+                items.push( '<a data-title="' + image.id + '" data-toggle="modal" data-target="#confirm-delete-image" href="#" class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}">' );
+                items.push( '<span class="glyphicon glyphicon-trash"></span>' );
+                items.push( '</a>' );
+                items.push( '</td>' );
+                items.push( '</tr>' );
+            });
+            select.append(items.join(''));
+        };
+
+    </script>
+
+
+
+    <script language="javascript">
+
+        $(document).ready(function() {
+
+            // Help block management
+            $("#btn-help").click(function() {
+                $("#help").toggle("slow");
+                this.blur();
+                if ($("#main-panel").hasClass("col-sm-7"))
+                {
+                    $("#main-panel").removeClass("col-sm-7");
+                    $("#main-panel").addClass("col-sm-12");
+                }
+                else
+                {
+                    $("#main-panel").removeClass("col-sm-12");
+                    $("#main-panel").addClass("col-sm-7");
                 }
             });
-        });
 
-        // Delete Image confirmation
-        $('#confirm-delete-image').on('show.bs.modal', function(e) {
-            $(this).find('#id-image-to-remove').attr('value', $(e.relatedTarget).data('title'));
-        });
 
-        // Delete image ajax form
-        var formDeleteImage = $('#ajax-form-image-delete');
-        var buttonDeleteImage = $('#btn-image-delete'); // delete button
-        var modalConfirmDeleteImage = $('#confirm-delete-image');
+            // MarkitUp
+            /*    <#list languages_list as locale>
+                $('#wiki-${locale}').markItUp(myWikiSettings);
+            </#list>
+        */
 
-        buttonDeleteImage.click(function(){
-            // implement with ajaxForm Plugin
-            formDeleteImage.ajaxForm({
-                beforeSend: function(){
-                    buttonDeleteImage.attr('disabled', 'disabled');
-                },
-                success: function(e){
-                    formDeleteImage.resetForm();
-                    buttonDeleteImage.removeAttr('disabled');
-                    modalConfirmDeleteImage.modal('hide');
-                    updateImages();
-                },
-                error: function(e){
-                    buttonDeleteImage.removeAttr('disabled');
-                    modalConfirmDeleteImage.modal('hide');
-                }
+            // Image upload ajax form
+            var formUploadImage = $('#ajax-form-image-upload');
+            var loaderUploadImage = $('#loader-image-upload'); // loder.gif image
+            var buttonUploadImage = $('#btn-image-upload'); // upload button
+
+            buttonUploadImage.click(function(){
+                // implement with ajaxForm Plugin
+                formUploadImage.ajaxForm({
+                    beforeSend: function(){
+                        loaderUploadImage.show();
+                        buttonUploadImage.attr('disabled', 'disabled');
+                    },
+                    success: function(e){
+                        loaderUploadImage.hide();
+                        formUploadImage.resetForm();
+                        buttonUploadImage.removeAttr('disabled');
+                        updateImages();
+                    },
+                    error: function(e){
+                        buttonUploadImage.removeAttr('disabled');
+                    }
+                });
             });
+
+            // Delete Image confirmation
+            $('#confirm-delete-image').on('show.bs.modal', function(e) {
+                $(this).find('#id-image-to-remove').attr('value', $(e.relatedTarget).data('title'));
+            });
+
+            // Delete image ajax form
+            var formDeleteImage = $('#ajax-form-image-delete');
+            var buttonDeleteImage = $('#btn-image-delete'); // delete button
+            var modalConfirmDeleteImage = $('#confirm-delete-image');
+
+            buttonDeleteImage.click(function(){
+                // implement with ajaxForm Plugin
+                formDeleteImage.ajaxForm({
+                    beforeSend: function(){
+                        buttonDeleteImage.attr('disabled', 'disabled');
+                    },
+                    success: function(e){
+                        formDeleteImage.resetForm();
+                        buttonDeleteImage.removeAttr('disabled');
+                        modalConfirmDeleteImage.modal('hide');
+                        updateImages();
+                    },
+                    error: function(e){
+                        buttonDeleteImage.removeAttr('disabled');
+                        modalConfirmDeleteImage.modal('hide');
+                    }
+                });
+            });
+
+            updateImages();
         });
 
-        updateImages();
-    });
-
-</script>
-</script>
+    </script>
+</div>
