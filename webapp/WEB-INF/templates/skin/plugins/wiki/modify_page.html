@@ -79,10 +79,9 @@
         <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
             <#list languages_list as locale>
             <li role="presentation" <#if locale_index = 0 >class="active" </#if>>
-        <a href="#tab-${locale}" data-toggle="tab" >${locale}</a></li>
+        <a href="#tab-${locale}" data-toggle="tab" onclick="setMyLocale()" >${locale}</a></li>
     </#list>
     </ul>
-
     <div class="tab-content">
         <#list languages_list as locale>
         <div id="tab-${locale}" class="tab-pane <#if locale_index = 0 >active</#if>"  role="tabpanel" >
@@ -298,14 +297,31 @@
     <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
 
     <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.js"></script>
-
+    <script type="text/javascript">
+        let mylocale = document.getElementById('locale').value;
+        function setMyLocale(){
+            alert(mylocale);
+        }
+    </script>
     <script type="text/babel" class="code-js">
 
-        let locale = document.getElementById("locale").defaultValue;
+        /*     for(let i = 0; i < document.getElementsByName('wikiContentValue').length; i++){
+                console.log(document.getElementsByName('wikiContentValue')[i].value)
+                console.log(document.getElementsByName('wikiContentValue'))
+            }
+
+        */
+
+
+
         const { Editor } = toastui;
         const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
         const wikiContent = document.getElementsByName('wikiContentValue')[0].defaultValue;
-        let newWikiContentId = "wiki-" + locale;
+
+        //  let locale = ["fr", "en"]
+        // let newWikiContentFr = "wiki-" + locale[0];
+        // let newWikiContentEn = "wiki-" + locale[1];
+
         const chartOptions = {
             minWidth: 100,
             maxWidth: 600,
@@ -323,7 +339,9 @@
             events: {
                 change: () => {
                     document.getElementById(newWikiContentId).innerHTML= editor.getMarkdown();
-                    console.log( document.getElementById(newWikiContentId).textContent);
+                    document.getElementsByName('wikiContentValue').innerHTML= "set_to_null";
+                    console.log("old content" + document.getElementsByName('wikiContentValue'));
+                    console.log("new content" + document.getElementById(newWikiContentId).textContent);
                 }
             }
         });
@@ -353,6 +371,7 @@
 
         function escapeSpecialChars( id )
         {
+
             var content = document.getElementById( id ).value;
             content = replaceAll( '<' , '[lt;' , content );
             content = replaceAll( '>' , '[gt;' , content );
@@ -480,3 +499,4 @@
 
     </script>
 </div>
+
