@@ -49,6 +49,8 @@ public final class Constants
     public static final String PARAMETER_PAGE_TITLE = "page_title";
     public static final String PARAMETER_ACTION = "action";
     public static final String PARAMETER_CONTENT = "content";
+    public static final String PARAMETER_LOCALE = "locale";
+
     public static final String PARAMETER_MODIFICATION_COMMENT = "modification_comment";
     public static final String PARAMETER_PREVIOUS_VERSION_ID = "previous_version_id";
     public static final String PARAMETER_TOPIC_ID = "topic_id";
@@ -68,6 +70,7 @@ public final class Constants
     public static final String MESSAGE_PAGE_NOT_EXISTS = "wiki.message.accessDenied.pageNotExists";
     public static final String MESSAGE_PAGE_ALREADY_EXISTS = "wiki.message.accessDenied.pageAlreadyExists";
     public static final String MESSAGE_USER_NOT_IN_ROLE = "wiki.message.accessDenied.userNotInRole";
+
 
     /** Private constructor */
     private Constants( )

@@ -83,12 +83,7 @@ import fr.paris.lutece.util.html.Paginator;
 import fr.paris.lutece.util.url.UrlItem;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import javax.servlet.http.HttpServletRequest;
@@ -97,7 +92,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
-import org.bouncycastle.i18n.LocaleString;
 
 /**
  * This class provides a simple implementation of an XPage
@@ -444,10 +438,27 @@ public class WikiApp extends MVCApplication
     @View( VIEW_MODIFY_PAGE )
     public XPage getModifyTopic( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
+        // get all the parameters from the request
+
+        Enumeration<String> parameterNames = request.getParameterNames();
+
+        while (parameterNames.hasMoreElements()) {
+
+            String paramName = parameterNames.nextElement();
+            System.out.println("value"+" " +paramName);
+
+            String[] paramValues = request.getParameterValues(paramName);
+            for (int i = 0; i < paramValues.length; i++) {
+                String paramValue = paramValues[i];
+
+                System.out.println("value"+" " + paramValue);
+                System.out.println("n");
+            }
+
+        }
         checkUser( request );
 
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
-
         Topic topic;
         Topic topicSession = (Topic) request.getSession( ).getAttribute( MARK_TOPIC );
         if ( topicSession != null && topicSession.getPageName( ).equals( strPageName ) )
@@ -478,6 +489,21 @@ public class WikiApp extends MVCApplication
             }
         }
 
+        HashMap<String, String> langageMap = WikiLocaleService.getLanguagesMap();
+        // get locale parameter from request
+
+        String strLocale = langageMap.get(0);
+        String keyLocale = "0";
+        if(request.getParameter( Constants.PARAMETER_LOCALE ) != null){
+            strLocale = request.getParameter( Constants.PARAMETER_LOCALE );
+            // find key of strLocale in langageMap
+            for (Map.Entry<String, String> entry : langageMap.entrySet()) {
+                if (entry.getValue().equals(strLocale)) {
+                    keyLocale = entry.getKey();
+                }
+            }
+        }
+        request.getParameter( Constants.PARAMETER_LOCALE );
         ReferenceList topicRefList = getTopicsReferenceListForUser( request, true );
         topicRefList.removeIf( x -> x.getCode( ).equals( topic.getPageName( ) ) );
 
@@ -487,11 +513,14 @@ public class WikiApp extends MVCApplication
         model.put( MARK_PAGE_ROLES_LIST, RoleService.getUserRoles( request ) );
         model.put( MARK_EDIT_ROLE, RoleService.hasEditRole( request, topic ) );
         model.put( MARK_ADMIN_ROLE, RoleService.hasAdminRole( request ) );
-        model.put( MARK_LANGUAGES_LIST, WikiLocaleService.getLanguages( ) );
+        model.put( MARK_LANGUAGES_LIST, langageMap);
+        model.put( "strLocale", strLocale);
+        model.put( "keyLocale", keyLocale);
         model.put( MARK_REFLIST_TOPIC, topicRefList );
 
-        ExtendableResourcePluginActionManager.fillModel( request, null, model, Integer.toString( topic.getIdTopic( ) ), Topic.RESOURCE_TYPE );
 
+
+        ExtendableResourcePluginActionManager.fillModel( request, null, model, Integer.toString( topic.getIdTopic( ) ), Topic.RESOURCE_TYPE );
         XPage page = getXPage( TEMPLATE_MODIFY_WIKI, request.getLocale( ), model );
         page.setTitle( getPageTitle( getTopicTitle( request, topic ) ) );
         page.setExtendedPathLabel( getPageExtendedPath( topic, request ) );
@@ -512,7 +541,6 @@ public class WikiApp extends MVCApplication
     public XPage doModifyTopic( HttpServletRequest request ) throws UserNotSignedException
     {
         LuteceUser user = checkUser( request );
-
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
         Topic topic = TopicHome.findByPrimaryKey( strPageName );
 

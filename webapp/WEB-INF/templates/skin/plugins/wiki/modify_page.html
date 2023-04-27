@@ -1,5 +1,6 @@
 <div class="row">
     <head lang="en">
+
         <meta charset="UTF-8" />
         <title>12. Editor with All Plugins</title>
         <link rel="stylesheet" href="js/plugins/wiki/tui_editor/data/tuidoc-example-style.css" />
@@ -27,6 +28,8 @@
 
     </head>
     <div class="container panel panel-default">
+
+
         <form method="post" id="form_wiki" action="jsp/site/Portal.jsp">
             <div class="row">
                 <input type="hidden" name="page" value="wiki" />
@@ -77,15 +80,27 @@
         <#assign locales_list = ["fr", "en"]>
 
         <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
-            <#list languages_list as locale>
-            <li role="presentation" <#if locale_index = 0 >class="active" </#if>>
-        <a href="#tab-${locale}" data-toggle="tab" onclick="setMyLocale()" >${locale}</a></li>
-    </#list>
+            <#list languages_list?keys as locale>
+            <a href="#tab" data-toggle="tab" onclick="setMyLocale()" >   ${locale} = ${languages_list[locale]}
+            </a>
+           </#list>
     </ul>
-    <div class="tab-content">
-        <#list languages_list as locale>
-        <div id="tab-${locale}" class="tab-pane <#if locale_index = 0 >active</#if>"  role="tabpanel" >
+
+    <script>
+        function setMyLocale(){
+            alert("avez vous sauvegardé? (temp)");
+        }
+    </script>
+        <!-- assign strLocale to locale -->
+        <#assign locale=strLocale />
+        <input type="text" name="locale" value="${locale}" />
+        <input type="text" name="locale_index" value="${keyLocale}" />
+
+
+        <div class="tab-content">
+        <div id="tab-${locale}" class="tab-pane active"  role="tabpanel" >
             <#if lastVersion?? && lastVersion.getWikiContent( locale )??>
+
             <div class="form-group">
                 <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
                 <input class="form-control" type="text" name="page_title_${locale}" value="${lastVersion.getWikiContent( locale ).pageTitle}" maxlength="100"/>
@@ -115,7 +130,7 @@
                 <h2>Editor</h2>
                 <div id="editor"></div>
             </div>
-            <input type="text" id="locale" value="${locale}" />
+
             <!-- <textarea id="wiki-${locale}" class="form-control" name="content_${locale}" rows="20" ><#if lastVersion??>${lastVersion.getWikiContent( locale ).wikiContent?html}</#if></textarea>
             -->
         </div>
@@ -123,7 +138,6 @@
 
 
     </div>
-</#list>
 </div>
 </div>
 <div id="help" class="col-sm-4 pull-right" style="display:none">
@@ -273,7 +287,6 @@
         </div>
     </div>
 
-
     <!-- Markipup integration -->
     <script type="text/javascript" src="js/plugins/wiki/markitup/jquery.markitup.js"></script>
     <script type="text/javascript" src="js/plugins/wiki/markitup/sets/wiki/set.js"></script>
@@ -311,7 +324,6 @@
             }
 
         */
-
 
 
         const { Editor } = toastui;
@@ -363,8 +375,9 @@
 
         function validate()
         {
-            <#list languages_list as locale>
-        escapeSpecialChars( 'wiki-${locale}' );
+        <#list languages_list?keys as locale>
+
+        escapeSpecialChars( 'wiki-${languages_list[locale]}' );
         </#list>
             return true;
         };
@@ -435,11 +448,7 @@
             });
 
 
-            // MarkitUp
-            /*    <#list languages_list as locale>
-                $('#wiki-${locale}').markItUp(myWikiSettings);
-            </#list>
-        */
+
 
             // Image upload ajax form
             var formUploadImage = $('#ajax-form-image-upload');

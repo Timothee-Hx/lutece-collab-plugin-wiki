@@ -82,6 +82,45 @@
     </div>
 </div>
 
+<!-- Markipup integration -->
+<script type="text/javascript" src="js/plugins/wiki/markitup/jquery.markitup.js"></script>
+<script type="text/javascript" src="js/plugins/wiki/markitup/sets/wiki/set.js"></script>
+<script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
+<!-- Tui Editor integration -->
+<!-- Added to check demo page in Internet Explorer -->
+<script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/babel-standalone@6.26.0/babel.min.js"></script>
+<script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/tui_editor/data/md-plugins.js"></script>
+<!-- Editor -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.js"></script>
+<!-- Chart -->
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_chart/toastui-chart.js"></script>
+
+<!-- Color Picker -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_color_picker/tui-color-picker.min.js"></script>
+<!-- Editor's Plugin -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/plugins/editor-plugin-chart/cdn/toastui-editor-plugin-chart.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.js"></script>
+
+<script type="text/babel" class="code-js">
+
+    const { Editor } = toastui;
+    const wikiContent = document.getElementsByName('wikiContentValue')[0].defaultValue;
+
+    const viewer = Editor.factory({
+        el: document.querySelector('#viewer'),
+        viewer: true,
+        initialValue: '{{ notice.contents }}',
+        plugins: [[chart, chartOptions], [codeSyntaxHighlight, {highlighter: Prism}], tableMergedCell]
+    });
+
+
+</script>
+
 <script type="text/javascript">
     jQuery(document).ready(function() {
         $("#btn-new-page").click(function() {
