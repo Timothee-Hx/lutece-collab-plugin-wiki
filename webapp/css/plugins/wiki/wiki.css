@@ -61,9 +61,11 @@ span.diff-html-conflict {
 }
 
 .wiki_Language_Button {
-    background-color: #ccc;
+    // blue
+
+    background-color: #00BFFF;
     border: 1px solid #ccc;
-    padding: 2px;
+    padding: 3px;
     margin: 2px;
     cursor: pointer;
 }
@@ -73,4 +75,24 @@ span.diff-html-conflict {
     padding: 2px;
     margin: 2px;
     cursor: pointer;
+}
+.alert {
+    padding: 20px;
+    background-color: #1f70de;
+    color: white;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.closebtn:hover {
+    color: black;
 }
