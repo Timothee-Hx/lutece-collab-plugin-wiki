@@ -85,7 +85,6 @@
         <#assign locale=strLocale />
         <input type="text" name="locale" value="${locale}" />
         <input type="text" name="keyLocale" value="${keyLocale}" />
-        <input type="text" name="url" value="${url}" />
         <script type="text/javascript">
             const localeJs = "${locale}";
             let locale_indexJs = parseInt("${keyLocale}");
@@ -157,7 +156,7 @@
 <!-- wiki content that goes in the editor-->
 <#list languages_list?keys as locale>
 
-<input  id="wiki-${languages_list[locale]}" class="form-control" name="content_${languages_list[locale]}" value="${lastVersion.getWikiContent( languages_list[locale] ).wikiContent?html}"  type="hidden">
+<input  id="wiki-${languages_list[locale]}" class="form-control" name="content_${languages_list[locale]}" type="hidden">
 
 </#list>
 
@@ -346,7 +345,8 @@
 
         const { Editor } = toastui;
         const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
-        const wikiContent = document.getElementById('wiki-'+localeJs).value;
+
+        let wikiContent = document.getElementById('wiki-'+localeJs).value;
 
         const chartOptions = {
             minWidth: 100,
@@ -364,9 +364,9 @@
             plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
             events: {
                 change: () => {
-                    console
+
                     document.getElementById('wiki-'+localeJs).value = editor.getMarkdown();
-                    console.log(document.getElementById('content: \n'+localeJs));
+                    console.log(document.getElementById('wiki-'+localeJs));
                 }
             }
         });
