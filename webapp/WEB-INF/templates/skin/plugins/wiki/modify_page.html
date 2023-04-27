@@ -81,18 +81,20 @@
         <#assign locale=strLocale />
         <input type="text" name="locale" value="${locale}" />
         <input type="text" name="locale_index" value="${keyLocale}" />
+        <input type="text" name="url" value="${url}" />
 
 
         <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
 
             <#list languages_list?keys as locale>
-            <a  href="#tab" data-toggle="tab"
+
+            <#assign urlWithLocale = url + "&locale=" + languages_list[locale] />
+            <a  href="${urlWithLocale}"
             <#if locale == keyLocale>
             class="wiki_Language_Button_Selected"
         <#else>
             class="wiki_Language_Button"
-        </#if>
-            onclick="setMyLocale()" >
+        </#if>>
                 ${languages_list[locale]}
             </a>
         </#list>

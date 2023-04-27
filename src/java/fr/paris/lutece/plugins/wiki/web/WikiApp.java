@@ -438,7 +438,9 @@ public class WikiApp extends MVCApplication
     @View( VIEW_MODIFY_PAGE )
     public XPage getModifyTopic( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
-        // get all the parameters from the request
+        // print all elements of the request
+
+        String resquestUrlWithNoLocal = request.getRequestURL()+"?"+request.getQueryString().substring(0, request.getRequestURL().length() - 8);
 
         Enumeration<String> parameterNames = request.getParameterNames();
 
@@ -494,7 +496,7 @@ public class WikiApp extends MVCApplication
 
         String strLocale = langageMap.get(0);
         String keyLocale = "0";
-        if(request.getParameter( Constants.PARAMETER_LOCALE ) != null){
+        if(!request.getParameter( Constants.PARAMETER_LOCALE ).isEmpty()){
             strLocale = request.getParameter( Constants.PARAMETER_LOCALE );
             // find key of strLocale in langageMap
             for (Map.Entry<String, String> entry : langageMap.entrySet()) {
@@ -503,7 +505,6 @@ public class WikiApp extends MVCApplication
                 }
             }
         }
-        request.getParameter( Constants.PARAMETER_LOCALE );
         ReferenceList topicRefList = getTopicsReferenceListForUser( request, true );
         topicRefList.removeIf( x -> x.getCode( ).equals( topic.getPageName( ) ) );
 
@@ -516,6 +517,7 @@ public class WikiApp extends MVCApplication
         model.put( MARK_LANGUAGES_LIST, langageMap);
         model.put( "strLocale", strLocale);
         model.put( "keyLocale", keyLocale);
+        model.put( "url", resquestUrlWithNoLocal);
         model.put( MARK_REFLIST_TOPIC, topicRefList );
 
 
