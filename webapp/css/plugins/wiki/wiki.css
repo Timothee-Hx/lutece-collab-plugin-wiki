@@ -59,3 +59,18 @@ span.diff-html-conflict {
 .wiki_underline {
     text-decoration: underline;
 }
+
+.wiki_Language_Button {
+    background-color: #ccc;
+    border: 1px solid #ccc;
+    padding: 2px;
+    margin: 2px;
+    cursor: pointer;
+}
+.wiki_Language_Button_Selected {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 2px;
+    margin: 2px;
+    cursor: pointer;
+}
