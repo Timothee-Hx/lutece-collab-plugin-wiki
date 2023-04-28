@@ -83,14 +83,13 @@
 
         <!--  Context variables -->
         <#assign locale=strLocale />
-        <input type="text" name="locale" value="${locale}" />
-        <input type="text" name="keyLocale" value="${keyLocale}" />
+        <input type="hidden" name="locale" value="${locale}" />
         <script type="text/javascript">
             const localeJs = "${locale}";
-            let locale_indexJs = parseInt("${keyLocale}");
         </script>
 
 
+        <!-- this is to go to another language -->
 
 
         <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
@@ -112,52 +111,34 @@
     </ul>
 
 
+    <!-- wiki page title -->
 
     <div class="tab-content">
         <div id="tab-${locale}" class="tab-pane active"  role="tabpanel" >
-
-
-            <#if lastVersion?? && lastVersion.getWikiContent( locale )??>
-
+            <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
             <div class="form-group">
-                <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
                 <#list languages_list?keys as locale>
                 <#if locale == keyLocale>
-                <input class="form-control" type="text" name="page_title_${locale}" value="${lastVersion.getWikiContent( languages_list[locale] ).pageTitle}" maxlength="100"/>
+                <input class="form-control" type="text" name="page_title_${languages_list[locale]}"
+                       value="<#if lastVersion?? && lastVersion.getWikiContent(languages_list[locale])??>${lastVersion.getWikiContent( languages_list[locale] ).pageTitle} </#if>" maxlength="100"/>
                 <#else>
-                <input class="form-control" type="hidden" name="page_title_${locale}" value="${lastVersion.getWikiContent( languages_list[locale] ).pageTitle}" maxlength="100"/>
+                <input class="form-control" type="hidden" name="page_title_${languages_list[locale]}"  maxlength="100"/>
             </#if>
         </#list>
-
     </div>
+
     <div class="form-group">
         <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
         <@select name="parent_page_name" default_value="${topic.parentPageName}" items=reflist_topic sort=true />
     </div>
-    <#else>
 
-    <div class="form-group">
-        <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
-        <#list languages_list?keys as locale>
-        <#if locale == keyLocale>
-        <input class="form-control" type="text" name="page_title_${languages_list[locale]}" value="" maxlength="100"/>
-        <#else>
-        <input class="form-control" type="hidden" name="page_title_${languages_list[locale]}" value="" maxlength="100"/>
-    </#if>
-</#list>
-</div>
-<div class="form-group">
-    <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
-    <@select name="parent_page_name" default_value="${topic.parentPageName}" items=reflist_topic sort=true />
-</div>
-</#if>
 
 
 <!-- wiki content that goes in the editor-->
 <#list languages_list?keys as locale>
-
-<input  id="wiki-${languages_list[locale]}" class="form-control" name="content_${languages_list[locale]}" type="hidden">
-
+<input  id="wiki-${languages_list[locale]}" class="form-control" name="content_${languages_list[locale]}"
+        value="<#if lastVersion??>${lastVersion.getWikiContent( languages_list[locale] ).wikiContent?html}<#else>hello</#if>"
+        type="hidden">
 </#list>
 
 
