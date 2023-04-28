@@ -89,9 +89,9 @@
         </script>
 
 
-        <!-- this is to go to another language -->
 
-
+        <!-- this is to go to another language with a link-->
+        <label for="select_language_list">Select a language with a link to a new page :</label>
         <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
             <#list languages_list?keys as locale>
             <#assign urlWithLocale = url + "&locale=" + languages_list[locale] />
@@ -109,6 +109,25 @@
         </#if>
     </#list>
     </ul>
+    <!-- this is to go to another language with a Select
+-->
+    <label for="select_language_list">Select a language with a select :</label>
+    <select id="select_language_list" class="form-control" onchange="changeLanguage(this.value)" >
+        <#list languages_list?keys as locale>
+        <#if locale == keyLocale>
+        <option value="${languages_list[locale]}" selected>${languages_list[locale]}</option>
+        <#else>
+        <option value="${languages_list[locale]}">${languages_list[locale]}</option>
+    </#if>
+</#list>
+</select>
+<script type="text/javascript">
+    function changeLanguage(locale) {
+        if (confirm("voulez vous sauvegarder vos modifications ?") == true) {
+            window.location.href = "${url}&locale=" + locale;
+        }
+    }
+</script>
 
 
     <!-- wiki page title -->
@@ -122,8 +141,9 @@
                 <input class="form-control" type="text" name="page_title_${languages_list[locale]}"
                        value="<#if lastVersion?? && lastVersion.getWikiContent(languages_list[locale])??>${lastVersion.getWikiContent( languages_list[locale] ).pageTitle} </#if>" maxlength="100"/>
                 <#else>
-                <input class="form-control" type="hidden" name="page_title_${languages_list[locale]}"  maxlength="100"/>
-            </#if>
+                <input class="form-control" type="hidden" name="page_title_${languages_list[locale]}"
+                       value="<#if lastVersion.getWikiContent(languages_list[locale])??>${lastVersion.getWikiContent( languages_list[locale] ).pageTitle}<#else>ezf</#if>" maxlength="100"/>
+                </#if>
         </#list>
     </div>
 
