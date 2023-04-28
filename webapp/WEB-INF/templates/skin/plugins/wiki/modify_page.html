@@ -142,7 +142,7 @@
                        value="<#if lastVersion?? && lastVersion.getWikiContent(languages_list[locale])??>${lastVersion.getWikiContent( languages_list[locale] ).pageTitle} </#if>" maxlength="100"/>
                 <#else>
                 <input class="form-control" type="hidden" name="page_title_${languages_list[locale]}"
-                       value="<#if lastVersion.getWikiContent(languages_list[locale])??>${lastVersion.getWikiContent( languages_list[locale] ).pageTitle}<#else>ezf</#if>" maxlength="100"/>
+                       value="<#if lastVersion?? && lastVersion.getWikiContent(languages_list[locale])??>${lastVersion.getWikiContent( languages_list[locale] ).pageTitle} </#if>" maxlength="100"/>
                 </#if>
         </#list>
     </div>
