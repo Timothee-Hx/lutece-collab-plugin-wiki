@@ -348,9 +348,6 @@
         const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
 
         let wikiContent = document.getElementById('wiki-' + localeJs).value;
-        if(wikiContent == null || wikiContent == undefined || wikiContent == ''){
-             wikiContent ="heello"
-        }
 
         const chartOptions = {
             minWidth: 100,
@@ -427,8 +424,8 @@
                 items.push( '<td><img src="image?resource_type=wiki_image&id=' + image.id + '" alt="' + image.name + '" height="40px"</td>' );
                 items.push( '<td>' + image.name + '</td>' );
                 items.push( '<td>' );
-                items.push( '{{' + image.id + '|' + image.name + '}}<br/> ' );
-                items.push( '{{' + image.id + '|' + image.name + '|<em>width</em>|<em>height</em>|<em>align</em> }}' );
+                items.push( '![' + image.name  + ']('+'image?resource_type=wiki_image&id='  + image.id + ')'+'<br/>' );
+                items.push( '*Lutece Logo caption*' );
                 items.push( '</td>' );
                 items.push( '<td>' );
                 items.push( '<a data-title="' + image.id + '" data-toggle="modal" data-target="#confirm-delete-image" href="#" class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}">' );

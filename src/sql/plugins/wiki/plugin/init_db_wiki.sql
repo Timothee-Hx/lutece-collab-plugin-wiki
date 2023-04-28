@@ -95,11 +95,20 @@ console.log(''bar'')
 | @cols=2:merged |
 | --- | --- |
 | table | table2 |');
-INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'fr','wiki : Accueil','En français   ![logo Lutuece](https://pbs.twimg.com/profile_banners/204508114/1559308703/1080x360)
+INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'fr','wiki : Accueil',
+'En français   ![logo Lutuece](https://pbs.twimg.com/profile_banners/204508114/1559308703/1080x360)
 
-# Awesome Editor!
+# Editeur de texte markdown
 
-It has been *released as opensource in 2018* and has ~~continually~~ evolved to **receive 10k GitHub ⭐️ Stars**.
+Peut être utilisé comme un éditeur de texte WYSIWYG ou comme un éditeur de texte brut.
+
+Le code source est disponible sur [GitHub](github.com/nhn/tui.editor).
+
+Il peut être utile de lire un guide sur la [syntaxe Markdown](https://guides.github.com/features/mastering-markdown/) ou
+[un guide plus complet](https://www.markdownguide.org/).
+
+## style an image with markdown
+[![logo Lutuece](https://pbs.twimg.com/profile_banners/204508114/1559308703/1080x360 "
 
 ## Create Instance
 
