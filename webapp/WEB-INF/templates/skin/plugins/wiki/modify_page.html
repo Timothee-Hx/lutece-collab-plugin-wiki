@@ -365,7 +365,9 @@
             plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
             events: {
                 change: () => {
-
+            // to get directly the html 
+                  //  var htmlPreview  = document.getElementsByClassName('toastui-editor-md-preview')[0].innerHTML;
+               //     document.getElementById('wiki-'+localeJs).value = htmlPreview;
                     document.getElementById('wiki-'+localeJs).value = editor.getMarkdown();
                     console.log(document.getElementById('wiki-'+localeJs));
                 }
