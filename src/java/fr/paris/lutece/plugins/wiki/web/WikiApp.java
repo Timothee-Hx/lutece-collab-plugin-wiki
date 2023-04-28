@@ -366,7 +366,9 @@ public class WikiApp extends MVCApplication
             return redirect( request, url.getUrl( ) );
         }
         fillUserData( version );
-        String strWikiPage = WikiService.instance( ).getWikiPage( strPageName, version, getPageUrl( request ), getLanguage( request ) );
+        // temporary : we don't want it to be converted in html but we want it to be cached
+       // String strWikiPage = WikiService.instance().getWikiMarkdownPage( strPageName, version, getPageUrl( request ), getLanguage( request ) );
+        String strWikiPage = version.getWikiContent( getLanguage( request ) ).getWikiContent( );
         Map<String, Object> model = getModel( );
         model.put( MARK_RESULT, strWikiPage );
         model.put( MARK_TOPIC, topic );
@@ -477,8 +479,8 @@ public class WikiApp extends MVCApplication
         String strLocale = langageMap.get("0");
         String keyLocale = "0";
         try {
-            if(!request.getParameter( Constants.PARAMETER_LOCALE ).equals(null)){
-                strLocale = request.getParameter( Constants.PARAMETER_LOCALE );
+            if(request.getParameter(PARAMETER_LANGUAGE) != null){
+                strLocale = request.getParameter( PARAMETER_LANGUAGE );
                 // find key of strLocale in langageMap
                 for (Map.Entry<String, String> entry : langageMap.entrySet()) {
                     System.out.println("");
@@ -621,11 +623,13 @@ public class WikiApp extends MVCApplication
 
         String strLanguage = getLanguage( request );
         String strContent = request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage );
-        String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
+        // we don't want it to be converted in html
+       // String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
+
         String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
 
         Map<String, Object> model = getModel( );
-        model.put( MARK_RESULT, strPageContent );
+        model.put( MARK_RESULT, strContent );
         model.put( MARK_TOPIC, topic );
         model.put( MARK_LATEST_VERSION, topicVersion );
         model.put( MARK_TOPIC_TITLE, strPageTitle );

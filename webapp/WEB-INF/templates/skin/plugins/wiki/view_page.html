@@ -1,4 +1,7 @@
 <div class="row">
+    <head lang="en">
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.css" />
+    </head>
     <div class="col-sm-12">
         <div class="container panel panel-default">
             <div class="text-right">
@@ -55,6 +58,7 @@
                 <form class="form-search" action="jsp/site/Portal.jsp" method="post">
                     <input type="hidden" name="page" value="wiki" />
                     <input type="hidden" name="view" value="search" />
+
                     #i18n{wiki.search_wiki.search} :
                     <div class="input-append">
                         <input class="search-query" id="input-search" type="text" name="query" />
@@ -67,7 +71,9 @@
 
             <h1 id="wiki-heading">${topic_title}</h1>
             <hr>
-            <div>
+    <input type="hidden" id="result" value="${result}"/>
+
+    <div id="viewer">
                ${result}
             </div>
             <#if isExtendInstalled?? && isExtendInstalled >
@@ -82,16 +88,14 @@
     </div>
 </div>
 
-<!-- Markipup integration -->
-<script type="text/javascript" src="js/plugins/wiki/markitup/jquery.markitup.js"></script>
-<script type="text/javascript" src="js/plugins/wiki/markitup/sets/wiki/set.js"></script>
 <script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
 <!-- Tui Editor integration -->
 <!-- Added to check demo page in Internet Explorer -->
-<script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/babel-standalone@6.26.0/babel.min.js"></script>
 <script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/tui_editor/data/md-plugins.js"></script>
 <!-- Editor -->
-<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.js"></script>
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-viewer.js"></script>
+
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.min.js"></script>
 <!-- Chart -->
 <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_chart/toastui-chart.js"></script>
 
@@ -106,18 +110,27 @@
 
 <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.js"></script>
 
-<script type="text/babel" class="code-js">
+<script type="text/javascript" class="code-js">
 
     const { Editor } = toastui;
-    const wikiContent = document.getElementsByName('wikiContentValue')[0].defaultValue;
+    const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
+
+    let wikiContent = document.getElementById('result').value;
+
+    const chartOptions = {
+        minWidth: 100,
+        maxWidth: 600,
+        minHeight: 100,
+        maxHeight: 300
+    };
+
 
     const viewer = Editor.factory({
         el: document.querySelector('#viewer'),
         viewer: true,
-        initialValue: '{{ notice.contents }}',
-        plugins: [[chart, chartOptions], [codeSyntaxHighlight, {highlighter: Prism}], tableMergedCell]
+        initialValue: wikiContent,
+        plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
     });
-
 
 </script>
 
