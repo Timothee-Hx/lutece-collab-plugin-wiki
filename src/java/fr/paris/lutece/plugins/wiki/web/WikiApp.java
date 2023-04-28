@@ -66,6 +66,7 @@ import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
@@ -438,26 +439,7 @@ public class WikiApp extends MVCApplication
     @View( VIEW_MODIFY_PAGE )
     public XPage getModifyTopic( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
-        // print all elements of the request
-
         String resquestUrlWithNoLocal = request.getRequestURL()+"?"+request.getQueryString().substring(0, request.getRequestURL().length() - 8);
-
-        Enumeration<String> parameterNames = request.getParameterNames();
-
-        while (parameterNames.hasMoreElements()) {
-
-            String paramName = parameterNames.nextElement();
-            System.out.println("value"+" " +paramName);
-
-            String[] paramValues = request.getParameterValues(paramName);
-            for (int i = 0; i < paramValues.length; i++) {
-                String paramValue = paramValues[i];
-
-                System.out.println("value"+" " + paramValue);
-                System.out.println("n");
-            }
-
-        }
         checkUser( request );
 
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
@@ -492,22 +474,26 @@ public class WikiApp extends MVCApplication
         }
 
         HashMap<String, String> langageMap = WikiLocaleService.getLanguagesMap();
-        // get locale parameter from request
-
-        String strLocale = langageMap.get(0);
+        String strLocale = langageMap.get("0");
         String keyLocale = "0";
-        if(!request.getParameter( Constants.PARAMETER_LOCALE ).isEmpty()){
-            strLocale = request.getParameter( Constants.PARAMETER_LOCALE );
-            // find key of strLocale in langageMap
-            for (Map.Entry<String, String> entry : langageMap.entrySet()) {
-                if (entry.getValue().equals(strLocale)) {
-                    keyLocale = entry.getKey();
+        try {
+            if(!request.getParameter( Constants.PARAMETER_LOCALE ).equals(null)){
+                strLocale = request.getParameter( Constants.PARAMETER_LOCALE );
+                // find key of strLocale in langageMap
+                for (Map.Entry<String, String> entry : langageMap.entrySet()) {
+                    System.out.println("");
+                    if (entry.getValue().equals(strLocale)) {
+                        keyLocale = entry.getKey();
+                    }
                 }
             }
+        } catch (Exception e) {
+            AppLogService.info("No locale in request");
         }
+
+
         ReferenceList topicRefList = getTopicsReferenceListForUser( request, true );
         topicRefList.removeIf( x -> x.getCode( ).equals( topic.getPageName( ) ) );
-
         Map<String, Object> model = getModel( );
         model.put( MARK_TOPIC, topic );
         model.put( MARK_LATEST_VERSION, topicVersion );
