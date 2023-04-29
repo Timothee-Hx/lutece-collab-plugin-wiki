@@ -72,6 +72,11 @@
             <version>6.0.3</version>
             <type>lutece-plugin</type>
         </dependency>
+           <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-all</artifactId>
+            <version>0.64.0</version>
+        </dependency>
     </dependencies>
 
     <properties>
