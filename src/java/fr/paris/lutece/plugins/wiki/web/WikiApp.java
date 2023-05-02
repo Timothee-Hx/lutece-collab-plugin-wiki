@@ -368,7 +368,7 @@ public class WikiApp extends MVCApplication
         fillUserData( version );
         // temporary : we don't want it to be converted in html but we want it to be cached
        // String strWikiPage = WikiService.instance().getWikiMarkdownPage( strPageName, version, getPageUrl( request ), getLanguage( request ) );
-        String strWikiPage = version.getWikiContent( getLanguage( request ) ).getWikiContent( );
+        String strWikiPage = renderWiki(version.getWikiContent( getLanguage( request ) ).getWikiContent( ));
         Map<String, Object> model = getModel( );
         model.put( MARK_RESULT, strWikiPage );
         model.put( MARK_TOPIC, topic );
@@ -471,7 +471,7 @@ public class WikiApp extends MVCApplication
             {
                 String strLanguage = getLanguage( request );
                 WikiContent content = topicVersion.getWikiContent( strLanguage );
-                content.setWikiContent( WikiService.renderEditor( topicVersion, strLanguage ) );
+                content.setWikiContent( renderWiki(topicVersion.getWikiContent( strLanguage ).getWikiContent()));
             }
         }
 
@@ -602,15 +602,17 @@ public class WikiApp extends MVCApplication
         topicVersion.setUserName( user.getName( ) );
         topicVersion.setEditComment( strComment );
         topicVersion.setIdTopicVersionPrevious( nPreviousVersionId );
-     /*   for ( String strLanguage : WikiLocaleService.getLanguages( ) )
+        for ( String strLanguage : WikiLocaleService.getLanguages( ) )
         {
             String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
-            String strContent = request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage );
+            String strContent = renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
             WikiContent content = new WikiContent( );
             content.setPageTitle( strPageTitle );
-            content.setWikiContent( LuteceWikiParser.renderWiki( strContent ) );
+            content.setWikiContent(strContent);
             topicVersion.addLocalizedWikiContent( strLanguage, content );
-        } */
+        }
+
+
 
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
         Topic topic = TopicHome.findByPrimaryKey( strPageName );
