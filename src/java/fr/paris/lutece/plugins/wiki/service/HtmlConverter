@@ -33,6 +33,9 @@ public class HtmlConverter {
         strRender = strRender.replaceAll( "\\[quot;", "\"" );
         strRender = strRender.replaceAll( "\\[amp;", "&" );
         strRender = strRender.replaceAll( "\\[hashmark;", "#" );
+        strRender = strRender.replaceAll("\\[codeQuote;", "`");
+
+
         return strRender;
     }
 }

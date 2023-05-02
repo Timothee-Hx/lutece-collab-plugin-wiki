@@ -602,7 +602,7 @@ public class WikiApp extends MVCApplication
         topicVersion.setUserName( user.getName( ) );
         topicVersion.setEditComment( strComment );
         topicVersion.setIdTopicVersionPrevious( nPreviousVersionId );
-        for ( String strLanguage : WikiLocaleService.getLanguages( ) )
+     /*   for ( String strLanguage : WikiLocaleService.getLanguages( ) )
         {
             String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
             String strContent = request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage );
@@ -610,7 +610,7 @@ public class WikiApp extends MVCApplication
             content.setPageTitle( strPageTitle );
             content.setWikiContent( LuteceWikiParser.renderWiki( strContent ) );
             topicVersion.addLocalizedWikiContent( strLanguage, content );
-        }
+        } */
 
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
         Topic topic = TopicHome.findByPrimaryKey( strPageName );
@@ -622,7 +622,8 @@ public class WikiApp extends MVCApplication
         request.getSession( ).setAttribute( MARK_LATEST_VERSION, topicVersion );
 
         String strLanguage = getLanguage( request );
-        String strContent = request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage );
+        String strContent = renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
+        System.out.println("__________________"+ strContent);
         // we don't want it to be converted in html
        // String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
 
@@ -1337,5 +1338,28 @@ public class WikiApp extends MVCApplication
     private String getTopicTitle( HttpServletRequest request, Topic topic )
     {
         return getTopicTitle( topic, getLanguage( request ) );
+    }
+
+    /**
+     * Render specific entities
+     *
+     * @param strSource
+     *            The source
+     * @return The source transformed
+     */
+    public static String renderWiki( String strSource )
+    {
+        String strRender = strSource;
+        strRender = strRender.replaceAll( "\\[lt;", "<" );
+        strRender = strRender.replaceAll( "\\[gt;", ">" );
+        strRender = strRender.replaceAll( "\\[nbsp;", "&nbsp;" );
+        strRender = strRender.replaceAll( "\\[quot;", "''" );
+        strRender = strRender.replaceAll( "\\[amp;", "&" );
+        strRender = strRender.replaceAll( "\\[hashmark;", "#" );
+        strRender = strRender.replaceAll("\\[codeQuote;", "`");
+        strRender = strRender.replaceAll("\\[simpleQuote;", "'");
+
+
+        return strRender;
     }
 }

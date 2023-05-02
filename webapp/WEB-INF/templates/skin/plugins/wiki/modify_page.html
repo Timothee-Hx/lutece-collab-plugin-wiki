@@ -407,6 +407,8 @@
             content = replaceAll( '&nbsp;' , '[nbsp;' , content );
             content = replaceAll( '&' , '[amp;' , content );
             content = replaceAll( '#' , '[hashmark;' , content );
+            content = replaceAll('`', '[codeQuote;', content)
+            content = replaceAll("'", '[simpleQuote;', content)
             document.getElementById( id ).value = content;
         }
 
