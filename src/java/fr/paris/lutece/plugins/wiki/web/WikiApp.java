@@ -41,11 +41,7 @@ import fr.paris.lutece.plugins.wiki.business.TopicHome;
 import fr.paris.lutece.plugins.wiki.business.TopicVersion;
 import fr.paris.lutece.plugins.wiki.business.TopicVersionHome;
 import fr.paris.lutece.plugins.wiki.business.WikiContent;
-import fr.paris.lutece.plugins.wiki.service.DiffService;
-import fr.paris.lutece.plugins.wiki.service.RoleService;
-import fr.paris.lutece.plugins.wiki.service.WikiLocaleService;
-import fr.paris.lutece.plugins.wiki.service.WikiService;
-import fr.paris.lutece.plugins.wiki.service.WikiUtils;
+import fr.paris.lutece.plugins.wiki.service.*;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
 import fr.paris.lutece.plugins.wiki.utils.auth.WikiAnonymousUser;
 import fr.paris.lutece.portal.business.page.Page;
@@ -625,7 +621,8 @@ public class WikiApp extends MVCApplication
 
         String strLanguage = getLanguage( request );
         String strContent = renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
-        System.out.println("__________________"+ strContent);
+        System.out.println("__________________"+ HtmlConverter.convertMarkdownToHtml(strContent));
+
         // we don't want it to be converted in html
        // String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
 

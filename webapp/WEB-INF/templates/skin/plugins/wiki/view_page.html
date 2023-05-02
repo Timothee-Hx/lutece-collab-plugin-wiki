@@ -1,6 +1,30 @@
 <div class="row">
     <head lang="en">
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.css" />
+        <link rel="stylesheet" href="js/plugins/wiki/tui_editor/data/tuidoc-example-style.css" />
+        <!-- Editor -->
+        <!-- Viewer -->
+        <link rel="stylesheet" href="js/plugins/wiki/tui_editor/cdn/toastui-editor-viewer.css" />
+
+        <!-- Chart -->
+        <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
+
+        <!-- Color syntax -->
+        <link
+                rel="stylesheet"
+                href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"
+        />
+        <link
+                rel="stylesheet"
+                href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"
+        />
+        <!-- Merged Table -->
+        <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.css" />
+        <!-- Code Highlight -->
+
+
+        <link
+                rel="stylesheet"
+                href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
     </head>
     <div class="col-sm-12">
         <div class="container panel panel-default">
@@ -73,9 +97,13 @@
             <hr>
     <input type="hidden" id="result" value="${result}"/>
 
-    <div id="viewer">
-               ${result}
-            </div>
+
+    <div class="code-html tui-doc-contents">
+
+
+        <div id="viewer"></div>
+    </div>
+</div>
             <#if isExtendInstalled?? && isExtendInstalled >
                 <div class="pull-right">
                     @Extender[${topic.idTopic},WIKI,opengraph]@
@@ -108,7 +136,7 @@
 
 <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
 
-<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.js"></script>
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
 
 <script type="text/javascript" class="code-js">
 
@@ -132,19 +160,4 @@
         plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
     });
 
-</script>
-
-<script type="text/javascript">
-    jQuery(document).ready(function() {
-        $("#btn-new-page").click(function() {
-            $("#div-search").hide();
-            $("#div-new-page").show("slow");
-            $("#input-new-page").focus();
-        });
-        $("#btn-search").click(function() {
-            $("#div-new-page").hide();
-            $("#div-search").show("slow");
-            $("#input-search").focus();
-        });
-    });
 </script>

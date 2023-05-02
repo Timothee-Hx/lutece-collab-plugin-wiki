@@ -30,11 +30,11 @@ public class HtmlConverter {
         strRender = strRender.replaceAll( "\\[lt;", "<" );
         strRender = strRender.replaceAll( "\\[gt;", ">" );
         strRender = strRender.replaceAll( "\\[nbsp;", "&nbsp;" );
-        strRender = strRender.replaceAll( "\\[quot;", "\"" );
+        strRender = strRender.replaceAll( "\\[quot;", "''" );
         strRender = strRender.replaceAll( "\\[amp;", "&" );
         strRender = strRender.replaceAll( "\\[hashmark;", "#" );
         strRender = strRender.replaceAll("\\[codeQuote;", "`");
-
+        strRender = strRender.replaceAll("\\[simpleQuote;", "'");
 
         return strRender;
     }
