@@ -28,18 +28,158 @@ VALUES (1,'LUTECE logo','image/png',0x89504E470D0A1A0A0000000D494844520000010300
 --
 -- Dumping data for table `wiki_topic_version_content`
 --
-INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'en','wiki : Home','In English       ![logo Lutuece](https://pbs.twimg.com/profile_banners/204508114/1559308703/1080x360)
+INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'en','wiki : Home',
+                                                                                                    'En français
+                                                                                       [hashmark; Awesome Editor!
 
-# Awesome Editor!
+                                                                                       It has been *released as opensource in 2018* and has ~~continually~~ evolved to **receive 10k GitHub ⭐️ Stars**.
+
+                                                                                       ![image](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)
+
+                                                                                       [codeQuote;[codeQuote;[codeQuote;js
+                                                                                       const editor = new Editor(options);
+                                                                                       [codeQuote;[codeQuote;[codeQuote;
+
+                                                                                       [gt; See the table below for default options
+                                                                                       [gt; [gt; More API information can be found in the document
+
+                                                                                       | name | type | description |
+                                                                                       | ---- | ---- | ----------- |
+                                                                                       | el | [codeQuote;HTMLElement[codeQuote; | container element |
+
+                                                                                       [hashmark;[hashmark; Create Instance
+
+                                                                                       You can create an instance with the following code and use [codeQuote;getHtml()[codeQuote; and [codeQuote;getMarkdown()[codeQuote; of the [Editor](https://github.com/nhn/tui.editor).
+
+                                                                                       [hashmark;[hashmark; Features
+
+                                                                                       * CommonMark + GFM Specifications
+                                                                                           * Live Preview
+                                                                                           * Scroll Sync
+                                                                                           * Auto Indent
+                                                                                           * Syntax Highlight
+                                                                                               1. Markdown
+                                                                                               2. Preview
+
+                                                                                       [hashmark;[hashmark; Support Wrappers
+
+                                                                                       [gt; * Wrappers
+                                                                                       [gt;     1. [x] React
+                                                                                       [gt;     2. [x] Vue
+                                                                                       [gt;     3. [ ] Ember
+
+                                                                                       $$chart
+                                                                                       ,category1,category2
+                                                                                       Jan,21,23
+                                                                                       Feb,31,17
+
+                                                                                       type: column
+                                                                                       title: Monthly Revenue
+                                                                                       x.title: Amount
+                                                                                       y.title: Month
+                                                                                       y.min: 1
+                                                                                       y.max: 40
+                                                                                       y.suffix: $
+                                                                                       $$
+
+                                                                                       [codeQuote;[codeQuote;[codeQuote;js
+                                                                                       console.log([simpleQuote;foo[simpleQuote;)
+                                                                                       [codeQuote;[codeQuote;[codeQuote;
+
+                                                                                       [codeQuote;[codeQuote;[codeQuote;javascript
+                                                                                       console.log([simpleQuote;bar[simpleQuote;)
+                                                                                       [codeQuote;[codeQuote;[codeQuote;
+
+                                                                                       [codeQuote;[codeQuote;[codeQuote;html
+                                                                                       [lt;div id=[simpleQuote;[simpleQuote;editor[simpleQuote;[simpleQuote;[gt;[lt;span[gt;baz[lt;/span[gt;[lt;/div[gt;
+                                                                                       [codeQuote;[codeQuote;[codeQuote;
+
+                                                                                       [codeQuote;[codeQuote;[codeQuote;wrong
+                                                                                       [1 2 3]
+                                                                                       [codeQuote;[codeQuote;[codeQuote;
+
+                                                                                       [codeQuote;[codeQuote;[codeQuote;clojure
+                                                                                       [1 2 3]
+                                                                                       [codeQuote;[codeQuote;[codeQuote;
+
+                                                                                       | @cols=2:merged |
+                                                                                       | ------ | ------ |
+                                                                                       | table | table2 |'
+                                                                                                   );
+INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'fr','wiki : Accueil',
+'En français
+[hashmark; Awesome Editor!
 
 It has been *released as opensource in 2018* and has ~~continually~~ evolved to **receive 10k GitHub ⭐️ Stars**.
 
-## Create Instance');
-INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'fr','wiki : Accueil',
-'En français   ![logo Lutuece](https://pbs.twimg.com/profile_banners/204508114/1559308703/1080x360)
+![image](https://uicdn.toast.com/toastui/img/tui-editor-bi.png)
 
-# Editeur de texte markdown
+[codeQuote;[codeQuote;[codeQuote;js
+const editor = new Editor(options);
+[codeQuote;[codeQuote;[codeQuote;
 
-Peut être utilisé comme un éditeur de texte WYSIWYG ou comme un éditeur de texte brut.
+[gt; See the table below for default options
+[gt; [gt; More API information can be found in the document
 
-Le code source est disponible sur [GitHub](github.com/nhn/tui.editor).');
+| name | type | description |
+| ---- | ---- | ----------- |
+| el | [codeQuote;HTMLElement[codeQuote; | container element |
+
+[hashmark;[hashmark; Create Instance
+
+You can create an instance with the following code and use [codeQuote;getHtml()[codeQuote; and [codeQuote;getMarkdown()[codeQuote; of the [Editor](https://github.com/nhn/tui.editor).
+
+[hashmark;[hashmark; Features
+
+* CommonMark + GFM Specifications
+    * Live Preview
+    * Scroll Sync
+    * Auto Indent
+    * Syntax Highlight
+        1. Markdown
+        2. Preview
+
+[hashmark;[hashmark; Support Wrappers
+
+[gt; * Wrappers
+[gt;     1. [x] React
+[gt;     2. [x] Vue
+[gt;     3. [ ] Ember
+
+$$chart
+,category1,category2
+Jan,21,23
+Feb,31,17
+
+type: column
+title: Monthly Revenue
+x.title: Amount
+y.title: Month
+y.min: 1
+y.max: 40
+y.suffix: $
+$$
+
+[codeQuote;[codeQuote;[codeQuote;js
+console.log([simpleQuote;foo[simpleQuote;)
+[codeQuote;[codeQuote;[codeQuote;
+
+[codeQuote;[codeQuote;[codeQuote;javascript
+console.log([simpleQuote;bar[simpleQuote;)
+[codeQuote;[codeQuote;[codeQuote;
+
+[codeQuote;[codeQuote;[codeQuote;html
+[lt;div id=[simpleQuote;[simpleQuote;editor[simpleQuote;[simpleQuote;[gt;[lt;span[gt;baz[lt;/span[gt;[lt;/div[gt;
+[codeQuote;[codeQuote;[codeQuote;
+
+[codeQuote;[codeQuote;[codeQuote;wrong
+[1 2 3]
+[codeQuote;[codeQuote;[codeQuote;
+
+[codeQuote;[codeQuote;[codeQuote;clojure
+[1 2 3]
+[codeQuote;[codeQuote;[codeQuote;
+
+| @cols=2:merged |
+| ------ | ------ |
+| table | table2 |');
