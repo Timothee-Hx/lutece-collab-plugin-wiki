@@ -46,6 +46,7 @@ import fr.paris.lutece.plugins.wiki.service.RoleService;
 import fr.paris.lutece.plugins.wiki.service.WikiLocaleService;
 import fr.paris.lutece.plugins.wiki.service.WikiService;
 import fr.paris.lutece.plugins.wiki.service.WikiUtils;
+import fr.paris.lutece.plugins.wiki.service.parser.HtmlToMarkdown;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
 import fr.paris.lutece.plugins.wiki.utils.auth.WikiAnonymousUser;
 import fr.paris.lutece.portal.business.page.Page;
@@ -372,6 +373,7 @@ public class WikiApp extends MVCApplication
         }
         fillUserData( version );
         String strWikiPage = WikiService.instance( ).getWikiPage( strPageName, version, getPageUrl( request ), getLanguage( request ) );
+        HtmlToMarkdown.convertToMarkdown( strWikiPage );
         Map<String, Object> model = getModel( );
         model.put( MARK_RESULT, strWikiPage );
         model.put( MARK_TOPIC, topic );

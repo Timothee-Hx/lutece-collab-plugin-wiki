@@ -112,7 +112,7 @@ public class WikiParser
         return new WikiParser( wikiText ).toString( );
     }
 
-    protected void parse( String wikiText )
+    public void parse( String wikiText )
     {
         wikiText = preprocessWikiText( wikiText );
 
