@@ -65,6 +65,7 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
@@ -453,8 +454,8 @@ public class WikiApp extends MVCApplication
     @View( VIEW_MODIFY_PAGE )
     public XPage getModifyTopic( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
+        String resquestUrlWithNoLocal = request.getRequestURL()+"?"+request.getQueryString().substring(0, request.getRequestURL().length() - 8);
         LuteceUser user = WikiAnonymousUser.checkUser( request);
-        String baseUrl = request.getRequestURL().toString();
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
         Integer nVersion = getVersionTopicVersionId( request );
 
@@ -518,11 +519,28 @@ public class WikiApp extends MVCApplication
             WikiContent content = topicVersion.getWikiContent( strLanguage );
             content.setWikiContent( WikiService.renderEditor( topicVersion, strLanguage ) );
         }
+        HashMap<String, String> langageMap = WikiLocaleService.getLanguagesMap();
+        String strLocale = langageMap.get("0");
+        String keyLocale = "0";
+        try {
+            if(request.getParameter(PARAMETER_LANGUAGE) != null){
+                strLocale = request.getParameter( PARAMETER_LANGUAGE );
+                // find key of strLocale in langageMap
+                for (Map.Entry<String, String> entry : langageMap.entrySet()) {
+                    System.out.println("");
+                    if (entry.getValue().equals(strLocale)) {
+                        keyLocale = entry.getKey();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            AppLogService.info("No locale in request");
+        }
+
         Map<String, Object> model = getModel();
 
             ReferenceList topicRefList = getTopicsReferenceListForUser(request, true);
             topicRefList.removeIf(x -> x.getCode().equals(topic.getPageName()));
-            model.put("baseUrl", baseUrl);
             model.put(MARK_TOPIC, topic);
             model.put(MARK_VERSION, topicVersion);
             model.put(MARK_PAGE_ROLES_LIST, RoleService.getUserRoles(request));
@@ -530,6 +548,10 @@ public class WikiApp extends MVCApplication
             model.put(MARK_ADMIN_ROLE, RoleService.hasAdminRole(request));
             model.put(MARK_LANGUAGES_LIST, WikiLocaleService.getLanguages());
             model.put(MARK_REFLIST_TOPIC, topicRefList);
+            model.put( MARK_LANGUAGES_LIST, langageMap);
+            model.put( "strLocale", strLocale);
+            model.put( "keyLocale", keyLocale);
+            model.put( "url", resquestUrlWithNoLocal);
 
             ExtendableResourcePluginActionManager.fillModel(request, null, model, Integer.toString(topic.getIdTopic()), Topic.RESOURCE_TYPE);
 
@@ -735,7 +757,7 @@ public class WikiApp extends MVCApplication
     @View( VIEW_PREVIEW )
     public XPage getPreviewTopic( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
-        LuteceUser user = WikiAnonymousUser.checkUser( request);
+        LuteceUser user = WikiAnonymousUser.checkUser( request );
 
         String strPreviousVersionId = request.getParameter( Constants.PARAMETER_PREVIOUS_VERSION_ID );
         String strTopicId = request.getParameter( Constants.PARAMETER_TOPIC_ID );
@@ -754,12 +776,14 @@ public class WikiApp extends MVCApplication
         for ( String strLanguage : WikiLocaleService.getLanguages( ) )
         {
             String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
-            String strContent = request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage );
+            String strContent = renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
             WikiContent content = new WikiContent( );
             content.setPageTitle( strPageTitle );
-            content.setWikiContent( LuteceWikiParser.renderWiki( strContent ) );
+            content.setWikiContent(strContent);
             topicVersion.addLocalizedWikiContent( strLanguage, content );
         }
+
+
 
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
         Topic topic = TopicHome.findByPrimaryKey( strPageName );
@@ -771,12 +795,15 @@ public class WikiApp extends MVCApplication
         request.getSession( ).setAttribute( MARK_LATEST_VERSION, topicVersion );
 
         String strLanguage = getLanguage( request );
-        String strContent = request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage );
-        String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
+        String strContent = renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
+
+        // we don't want it to be converted in html
+        // String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
+
         String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
 
         Map<String, Object> model = getModel( );
-        model.put( MARK_RESULT, strPageContent );
+        model.put( MARK_RESULT, strContent );
         model.put( MARK_TOPIC, topic );
         model.put( MARK_LATEST_VERSION, topicVersion );
         model.put( MARK_TOPIC_TITLE, strPageTitle );
@@ -1471,5 +1498,28 @@ public class WikiApp extends MVCApplication
         }
 
         return versionId;
+    }
+
+    /**
+     * Render specific entities
+     *
+     * @param strSource
+     *            The source
+     * @return The source transformed
+     */
+    public static String renderWiki( String strSource )
+    {
+        String strRender = strSource;
+        strRender = strRender.replaceAll( "\\[lt;", "<" );
+        strRender = strRender.replaceAll( "\\[gt;", ">" );
+        strRender = strRender.replaceAll( "\\[nbsp;", "&nbsp;" );
+        strRender = strRender.replaceAll( "\\[quot;", "''" );
+        strRender = strRender.replaceAll( "\\[amp;", "&" );
+        strRender = strRender.replaceAll( "\\[hashmark;", "#" );
+        strRender = strRender.replaceAll("\\[codeQuote;", "`");
+        strRender = strRender.replaceAll("\\[simpleQuote;", "'");
+
+
+        return strRender;
     }
 }

@@ -1,3 +1,30 @@
+<head lang="en">
+
+    <meta charset="UTF-8" />
+    <title>12. Editor with All Plugins</title>
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/data/tuidoc-example-style.css" />
+    <!-- Editor -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/toastui-editor.css" />
+    <!-- Chart -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
+
+    <!-- Color syntax -->
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"
+    />
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"
+    />
+    <!-- Merged Table -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.css" />
+
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
+
+</head>
 <div class="row">
     <div class="container panel panel-default">
         <form method="post" id="form_wiki" action="jsp/site/Portal.jsp">
@@ -63,14 +90,10 @@
             <div  id="autoSaveFailed" style="display: none; margin-left: 10px">#i18n{wiki.modify_page.autoSaveFailed}</div>
         </div>
     </div>
-
-
-
-
-
+</div>
 </div>
 
-</div>
+
 <div class="row">
     <div id="main-panel" class="col-sm-12">
         <div class="alert alert-error" id="div-confirm-delete" style="display:none">
@@ -86,64 +109,116 @@
         </div>
 
         <h1>#i18n{wiki.menu.edit} <small> [${topic.pageName}] </small></h1>
-        <#assign locales_list = ["fr", "en"]>
 
+
+        <!--  Context variables -->
+        <#assign locale=strLocale />
+        <input type="hidden" name="locale" value="${locale}" />
+        <script type="text/javascript">
+            const localeJs = "${locale}";
+        </script>
+
+
+
+        <!-- this is to go to another language with a link-->
+        <label for="select_language_list">Select a language with a link to a new page :</label>
         <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
-            <#list languages_list as locale>
-            <li role="presentation" <#if locale_index = 0 >class="active" </#if>><a href="#tab-${locale}" data-toggle="tab" >${locale}</a></li>
+            <#list languages_list?keys as locale>
+            <#assign urlWithLocale = url + "&locale=" + languages_list[locale] />
+            <#if locale == keyLocale>
+            <button  disabled  class="wiki_Language_Button_Selected">
+                ${languages_list[locale]}
+            </button>
+            <#else>
+            <button type="button" class="wiki_Language_Button" >
+                <a href="${urlWithLocale}"
+                   target="_blank" rel="noopener noreferrer">
+                    ${languages_list[locale]}
+                </a>
+            </button>
+        </#if>
     </#list>
     </ul>
-
-    <div class="tab-content">
-        <#list languages_list as locale>
-        <div id="tab-${locale}" class="tab-pane <#if locale_index = 0 >active</#if>"  role="tabpanel" >
-            <#if version?? && version.getWikiContent( locale )??>
-            <div class="form-group">
-                <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
-                <input class="form-control" id="page_title_${locale}" type="text" name="page_title_${locale}" value="${version.getWikiContent( locale ).pageTitle}" maxlength="100"  onkeydown="autoSave()"/>
-            </div>
-            <div class="form-group">
-                <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
-                <#assign topicList=reflist_topic >
-                <select id="parent_page_name" name="parent_page_name" class="form-control" onchange="autoSave()">
-                    <#list topicList as parentPage>
-                    <#if topic.parentPageName == parentPage.name>
-                    <option value="${parentPage.name}" selected>${parentPage.name}</option>
-                    <#else>
-                    <option value="${parentPage.name}">${parentPage.name}</option>
-                </#if>
-            </#list>
-            </select>
-        </div>
-        <div class="form-group">
-            <textarea id="wiki_content_${locale}" class="form-control" name="content_${locale}" rows="20" onkeydown="autoSave()">><#if version??>${version.getWikiContent( locale ).wikiContent?html}</#if></textarea>
-        </div>
+    <!-- this is to go to another language with a Select
+-->
+    <label for="select_language_list">Select a language with a select :</label>
+    <select id="select_language_list" class="form-control" onchange="changeLanguage(this.value)" >
+        <#list languages_list?keys as locale>
+        <#if locale == keyLocale>
+        <option value="${languages_list[locale]}" selected>${languages_list[locale]}</option>
         <#else>
-        <div class="form-group">
-            <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
-            <input class="form-control"  id="page_title_${locale}"  type="text" name="page_title_${locale}" value="" maxlength="100"/>
-        </div>
-        <div class="form-group">
-            <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
-            <#assign topicList=reflist_topic >
-            <select id="parent_page_name" name="parent_page_name" class="form-control" >
-                <#list topicList as parentPage>
-                <#if topic.parentPageName == parentPage.name>
-                <option value="${parentPage.name}" selected>${parentPage.name}</option>
-                <#else>
-                <option value="${parentPage.name}">${parentPage.name}</option>
-            </#if>
-        </#list>
-        </select>
-    </div>
-    <div class="form-group">
-        <textarea id="wiki_content_${locale}" class="form-control" name="content_${locale}" rows="20" ></textarea>
-    </div>
-</#if>
-</div>
+        <option value="${languages_list[locale]}">${languages_list[locale]}</option>
+    </#if>
 </#list>
+</select>
+<script type="text/javascript">
+    function changeLanguage(locale) {
+        if (confirm("voulez vous sauvegarder vos modifications ?") == true) {
+            window.location.href = "${url}&locale=" + locale;
+        }
+    }
+</script>
+
+
+<!-- wiki page title -->
+
+<div class="tab-content">
+    <div id="tab-${locale}" class="tab-pane active"  role="tabpanel" >
+        <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
+        <div class="form-group">
+            <#list languages_list?keys as locale>
+            <#if locale == keyLocale>
+            <input class="form-control" id="page_title_${languages_list[locale]}" type="text" name="page_title_${languages_list[locale]}" value="${version.getWikiContent( languages_list[locale] ).pageTitle}" maxlength="100"  onkeydown="autoSave()"/>
+            <#else>
+            <input class="form-control" id="page_title_${languages_list[locale]}" type="hidden" name="page_title_${languages_list[locale]}"
+                   value="<#if version?? && version.getWikiContent(languages_list[locale])??>${version.getWikiContent( languages_list[locale] ).pageTitle} </#if>" maxlength="100"/>
+        </#if>
+    </#list>
+</div>
+
+<div class="form-group">
+    <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
+    <#assign topicList=reflist_topic >
+    <select id="parent_page_name" name="parent_page_name" class="form-control" onchange="autoSave()">
+        <#list topicList as parentPage>
+        <#if topic.parentPageName == parentPage.name>
+        <option value="${parentPage.name}" selected>${parentPage.name}</option>
+        <#else>
+        <option value="${parentPage.name}">${parentPage.name}</option>
+    </#if>
+</#list>
+</select>
+</div>
+
+
+
+<!-- wiki content that goes in the editor-->
+<#list languages_list?keys as locale>
+<input id="wiki_content_${languages_list[locale]}" class="form-control" name="content_${languages_list[locale]}" rows="20"
+       value="<#if version??>${version.getWikiContent( languages_list[locale] ).wikiContent?html}<#else>hello</#if>"
+       type="hidden"/>
+</#list>
+
+<!-- here is the editor -->
+<div class="form-group">
+    <div class="code-html tui-doc-contents">
+        <h2>Editor</h2>
+        <div id="editor"></div>
+    </div>
+</div>
+
+<!-- here is the editor -->
+<div class="form-group" style="display: none">
+    <div class="code-html tui-doc-contents">
+        <div id="viewer" ></div>
+    </div>
+</div>
+
+
 </div>
 </div>
+</div>
+
 <div id="help" class="col-sm-4 pull-right" style="display:none">
     <br/>
     <!--<img src="images/local/skin/creole_cheat_sheet.png" title="Manual Wiki" alt="Manuel"/> -->
@@ -294,11 +369,69 @@
 </div>
 
 
-<!-- Markipup integration -->
-<script type="text/javascript" src="js/plugins/wiki/markitup/jquery.markitup.js"></script>
-<script type="text/javascript" src="js/plugins/wiki/markitup/sets/wiki/set.js"></script>
-<script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
 
+<script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
+<!-- Tui Editor integration -->
+<!-- Added to check demo page in Internet Explorer -->
+<script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/tui_editor/data/md-plugins.js"></script>
+<!-- Editor -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.min.js"></script>
+<!-- Chart -->
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_chart/toastui-chart.js"></script>
+
+<!-- Color Picker -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_color_picker/tui-color-picker.min.js"></script>
+<!-- Editor's Plugin -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/plugins/editor-plugin-chart/cdn/toastui-editor-plugin-chart.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
+
+<script type="text/javascript" class="code-js">
+
+    const { Editor } = toastui;
+    const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
+
+    let wikiContent = document.getElementById('wiki_content_' + localeJs).value;
+
+    const chartOptions = {
+        minWidth: 100,
+        maxWidth: 600,
+        minHeight: 100,
+        maxHeight: 300
+    };
+
+    const editor = new Editor({
+        el: document.querySelector('#editor'),
+
+        previewStyle: 'vertical',
+        height: '500px',
+        initialValue: wikiContent,
+        plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
+        events: {
+            change: () => {
+                document.getElementById('wiki_content_'+localeJs).value = editor.getMarkdown();
+                autoSave();
+            },
+        }
+    });
+    const viewer = Editor.factory({
+        el: document.querySelector('#viewer'),
+        viewer: true,
+        initialValue:wikiContent,
+        plugins: [[chart, chartOptions], [codeSyntaxHighlight, {highlighter: Prism}], tableMergedCell]
+    });
+
+</script>
+<script>
+    let languages_list = []
+        <#list languages_list?keys as locale>
+    languages_list.push('${languages_list[locale]}' );
+    </#list>
+</script>
 <script language="javascript">
 
     function replaceAll(find, replace, str)
@@ -308,8 +441,8 @@
 
     function validate()
     {
-        <#list languages_list as locale>
-    escapeSpecialChars( 'wiki_content_${locale}' );
+        <#list languages_list?keys as locale>
+    escapeSpecialChars( 'wiki_content_${languages_list[locale]}' );
     </#list>
         return true;
     };
@@ -323,6 +456,8 @@
         content = replaceAll( '&nbsp;' , '[nbsp;' , content );
         content = replaceAll( '&' , '[amp;' , content );
         content = replaceAll( '#' , '[hashmark;' , content );
+        content = replaceAll('`', '[codeQuote;', content)
+        content = replaceAll("'", '[simpleQuote;', content)
         document.getElementById( id ).value = content;
     }
 
@@ -379,10 +514,6 @@
         });
 
 
-        // MarkitUp
-        <#list languages_list as locale>
-        $('#wiki_content_${locale}').markItUp(myWikiSettings);
-    </#list>
 
 
         // Image upload ajax form
@@ -476,6 +607,8 @@
         content = replaceAll( '&nbsp;' , '[nbsp;' , content );
         content = replaceAll( '&' , '[amp;' , content );
         content = replaceAll( '#' , '[hashmark;' , content );
+        content = replaceAll('`', '[codeQuote;', content)
+        content = replaceAll("'", '[simpleQuote;', content)
         return content
     }
     function displayAutoSave(result){
@@ -513,13 +646,14 @@
             let topicTitleArr = [];
             let topicContentArr = [];
             let parentPage = document.getElementById("parent_page_name").value;
-            const languages_list = ["fr","en"]
+
             for (let i = 0; i < languages_list.length; i++) {
                 let locale = languages_list[i];
                 let wikiContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content_" + locale).value);
                 topicContentArr.push(wikiContent);
-                let title = escapeSpecialCharsFromContent(document.getElementById("page_title_" + locale).value);
-                topicTitleArr.push(title);
+                let title = document.getElementById("page_title_" + locale).value;
+                let titleChar = escapeSpecialCharsFromContent(title);
+                topicTitleArr.push(titleChar);
             }
             saveContent(version, parentPage, topic_id, topicTitleArr, topicContentArr)
         }

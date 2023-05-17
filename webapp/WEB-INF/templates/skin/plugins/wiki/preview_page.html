@@ -1,22 +1,98 @@
-<div class="row">
-    <div class="col-sm-12">
-        <div class="container panel panel-default">
-            <div class="panel-body">
-                <div class="btn-group btn-group-xs pull-right">
-                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
-                        <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
-                    </a>
-                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=modifyPage&page_name=${topic.pageName}" title="#i18n{wiki.button.backToEdit}">
-                        <span class="glyphicon glyphicon-edit"></span> #i18n{wiki.button.backToEdit}
-                    </a>
-                </div>
-            </div>
+<head lang="en">
 
-            <h1>${topic_title}</h1>
-            <hr>
-            <div>
-                ${result}
-            </div>
-        </div>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/data/tuidoc-example-style.css" />
+    <!-- Editor -->
+    <!-- Viewer -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/cdn/toastui-editor-viewer.css" />
+
+    <!-- Chart -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
+
+    <!-- Color syntax -->
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"
+    />
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"
+    />
+    <!-- Merged Table -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.css" />
+    <!-- Code Highlight -->
+
+
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
+</head>
+
+<div class="row">
+    <input type="hidden" id="result" value="${result}" />
+    <div class="col-sm-12">
+
+        <div id="viewer" class="tui-editor-contents"></div>
     </div>
+    <button onclick="copyHtmlToClipboard()">Copy to clipboard</button>
+
+    <script>
+        function copyHtmlToClipboard() {
+            var innerHtml = document.getElementById('viewer').innerHTML;
+            // put var into the clipboard
+            var tempElem = document.createElement('textarea');
+            tempElem.value = innerHtml;
+            document.body.appendChild(tempElem);
+            tempElem.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempElem);
+            alert('Copied to clipboard');
+        }
+    </script>
+
+    <script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
+    <!-- Tui Editor integration -->
+    <!-- Added to check demo page in Internet Explorer -->
+    <script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/tui_editor/data/md-plugins.js"></script>
+    <!-- Editor -->
+    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-viewer.js"></script>
+
+    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.min.js"></script>
+    <!-- Chart -->
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_chart/toastui-chart.js"></script>
+
+    <!-- Color Picker -->
+    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_color_picker/tui-color-picker.min.js"></script>
+    <!-- Editor's Plugin -->
+    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/plugins/editor-plugin-chart/cdn/toastui-editor-plugin-chart.min.js"></script>
+
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
+
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
+
+    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
+
+    <script type="text/javascript" class="code-js">
+
+        const { Editor } = toastui;
+        const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
+
+        let wikiContent = document.getElementById('result').value;
+
+        const chartOptions = {
+            minWidth: 100,
+            maxWidth: 600,
+            minHeight: 100,
+            maxHeight: 300
+        };
+
+
+        const viewer = Editor.factory({
+            el: document.querySelector('#viewer'),
+            viewer: true,
+            initialValue: wikiContent,
+            plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
+        });
+
+    </script>
 </div>

@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.wiki.service;
 
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -101,4 +102,20 @@ public final class WikiLocaleService
         }
         return (String) _listLanguages.get( 0 );
     }
+    /**
+     * returns locales in a map
+     *
+     * @return locales in a map
+     */
+    public static HashMap<String, String> getLanguagesMap( )
+    {
+        HashMap<String, String> map = new HashMap<String, String>();
+        List<String> list = getLanguages();
+        for (int i = 0; i < list.size(); i++) {
+            String strKey = String.valueOf(i);
+            map.put(strKey, list.get(i));
+        }
+        return map;
+    }
+
 }
