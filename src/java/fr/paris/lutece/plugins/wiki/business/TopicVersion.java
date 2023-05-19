@@ -119,6 +119,7 @@ public class TopicVersion
         return _mapWikiContent;
     }
 
+
     /**
      * Sets the Wiki Content
      * 

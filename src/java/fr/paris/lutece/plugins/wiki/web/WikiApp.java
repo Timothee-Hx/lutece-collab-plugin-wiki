@@ -515,10 +515,25 @@ public class WikiApp extends MVCApplication
                 mapParameters.put( Constants.PARAMETER_PAGE_NAME, strPageName );
                 return redirect(request, VIEW_MODIFY_PUBLISHED, mapParameters);
             }
-            String strLanguage = getLanguage( request );
-            WikiContent content = topicVersion.getWikiContent( strLanguage );
-            content.setWikiContent( WikiService.renderEditor( topicVersion, strLanguage ) );
+
+            for (int i = 0; i < WikiLocaleService.getLanguages().size(); i++) {
+                WikiContent localContent = topicVersion.getWikiContent( WikiLocaleService.getLanguages().get(i) );
+                if(localContent.getPageTitle() != null) {
+                    String wikiLocalTitle = renderWiki(localContent.getPageTitle());
+                    localContent.setPageTitle(wikiLocalTitle);
+                }
+                if(localContent.getWikiContent() != null) {
+                    String wikiLocalContent = renderWiki(localContent.getWikiContent());
+                    localContent.setContentWithoutLabellingMarkdownLanguage(wikiLocalContent);
+                }
+                if(localContent.getHtmlWikiContent() != null) {
+                    String contentHtml = renderWiki(localContent.getHtmlWikiContent());
+                    localContent.setHtmlWikiContent(contentHtml);
+                }
+                topicVersion.addLocalizedWikiContent(WikiLocaleService.getLanguages().get(i), localContent);
+            }
         }
+
         HashMap<String, String> langageMap = WikiLocaleService.getLanguagesMap();
         String strLocale = langageMap.get("0");
         String keyLocale = "0";
@@ -527,7 +542,6 @@ public class WikiApp extends MVCApplication
                 strLocale = request.getParameter( PARAMETER_LANGUAGE );
                 // find key of strLocale in langageMap
                 for (Map.Entry<String, String> entry : langageMap.entrySet()) {
-                    System.out.println("");
                     if (entry.getValue().equals(strLocale)) {
                         keyLocale = entry.getKey();
                     }
@@ -646,7 +660,7 @@ public class WikiApp extends MVCApplication
                 String strContent = request.getParameter(Constants.PARAMETER_CONTENT + "_" + strLanguage);
                 WikiContent content = new WikiContent();
                 content.setPageTitle(strPageTitle);
-                content.setWikiContent(strContent);
+                content.setContentLabellingMarkdownLanguage(strContent);
                 topicVersion.addLocalizedWikiContent(strLanguage, content);
             }
             // if publish is true, cancel publication of previous version

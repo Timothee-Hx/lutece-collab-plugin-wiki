@@ -97,7 +97,7 @@ public class WikiDynamicInputs {
                 String strContent = newContent.topicContentArr.get(i);
                 WikiContent content = new WikiContent();
                 content.setPageTitle(strPageTitle);
-                content.setWikiContent(strContent);
+                content.setContentLabellingMarkdownLanguage(strContent);
                 topicVersion.addLocalizedWikiContent(WikiLocaleService.getLanguages().get(i), content);
             }
             TopicVersionHome.updateTopicVersion(topicVersion);

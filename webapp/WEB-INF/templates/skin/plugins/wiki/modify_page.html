@@ -168,7 +168,7 @@
         <div class="form-group">
             <#list languages_list?keys as locale>
             <#if locale == keyLocale>
-            <input class="form-control" id="page_title_${languages_list[locale]}" type="text" name="page_title_${languages_list[locale]}" value="${version.getWikiContent( languages_list[locale] ).pageTitle}" maxlength="100"  onkeydown="autoSave()"/>
+            <input class="form-control" id="page_title_${languages_list[locale]}" type="text" name="page_title_${languages_list[locale]}" value="<#if version?? && version.getWikiContent(languages_list[locale])??>${version.getWikiContent( languages_list[locale] ).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
             <#else>
             <input class="form-control" id="page_title_${languages_list[locale]}" type="hidden" name="page_title_${languages_list[locale]}"
                    value="<#if version?? && version.getWikiContent(languages_list[locale])??>${version.getWikiContent( languages_list[locale] ).pageTitle} </#if>" maxlength="100"/>

@@ -53,8 +53,8 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
     private static final String SQL_QUERY_SELECT_LAST_BY_TOPIC_ID = "SELECT id_topic_version, edit_comment, id_topic, lutece_user_id, date_edition, id_topic_version_previous, is_published FROM wiki_topic_version WHERE id_topic = ?  ORDER BY  date_edition DESC LIMIT 1";
     private static final String SQL_QUERY_SELECT_BY_TOPIC_ID = "SELECT id_topic_version, edit_comment, id_topic, lutece_user_id, date_edition, id_topic_version_previous, is_published FROM wiki_topic_version WHERE id_topic = ?  ORDER BY  date_edition DESC ";
     private static final String SQL_QUERY_DELETE_BY_TOPIC_ID = "DELETE FROM wiki_topic_version WHERE id_topic = ? ";
-    private static final String SQL_QUERY_SELECT_CONTENT = "SELECT locale, page_title, wiki_content FROM wiki_topic_version_content WHERE id_topic_version = ?";
-    private static final String SQL_QUERY_INSERT_CONTENT = "INSERT INTO wiki_topic_version_content ( id_topic_version, locale, page_title, wiki_content ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_SELECT_CONTENT = "SELECT locale, page_title, wiki_content, html_wiki_content FROM wiki_topic_version_content WHERE id_topic_version = ?";
+    private static final String SQL_QUERY_INSERT_CONTENT = "INSERT INTO wiki_topic_version_content ( id_topic_version, locale, page_title, wiki_content, html_wiki_content ) VALUES ( ?, ?, ?, ?, ?) ";
     private static final String SQL_QUERY_DELETE_CONTENT = "DELETE FROM wiki_topic_version_content WHERE id_topic_version = ? ";
     private static final String SQL_QUERY_DELETE_CONTENT_BY_TOPIC_ID = "DELETE a.* FROM wiki_topic_version_content a, wiki_topic_version b WHERE a.id_topic_version = b.id_topic_version AND b.id_topic = ? ";
     private static final String SQL_QUERY_SELECT_PUBLISHED_BY_TOPIC_ID= "SELECT id_topic_version, edit_comment, id_topic, lutece_user_id, date_edition, id_topic_version_previous, is_published FROM wiki_topic_version WHERE id_topic = ? AND is_published = 1 ORDER BY  date_edition DESC ";
@@ -107,6 +107,7 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
                 daoUtil.setString(2, strLocale);
                 daoUtil.setString(3, content.getPageTitle());
                 daoUtil.setString(4, content.getWikiContent());
+                daoUtil.setString(5, content.getHtmlWikiContent());
                 daoUtil.executeUpdate();
             }
         }
@@ -159,6 +160,7 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
                 String strLanguage = daoUtil.getString(1);
                 content.setPageTitle(daoUtil.getString(2));
                 content.setWikiContent(daoUtil.getString(3));
+                content.setHtmlWikiContent(daoUtil.getString(4));
                 topicVersion.addLocalizedWikiContent(strLanguage, content);
             }
         }
@@ -309,6 +311,7 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
                 daoUtil.setString(2, strLanguage);
                 daoUtil.setString(3, content.getPageTitle());
                 daoUtil.setString(4, content.getWikiContent());
+                daoUtil.setString(5, content.getHtmlWikiContent());
                 daoUtil.executeUpdate();
             }
         }

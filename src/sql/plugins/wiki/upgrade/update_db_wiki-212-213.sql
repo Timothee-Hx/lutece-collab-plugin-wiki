@@ -16,3 +16,4 @@ ALTER TABLE wiki_topic DROP COLUMN page_title;
 ALTER TABLE wiki_topic ADD modify_page_last_open_by VARCHAR(100);
 ALTER TABLE wiki_topic ADD modify_page_last_open_at TIMESTAMP;
 ALTER TABLE wiki_topic_version ADD background_color VARCHAR(50);
+alter table wiki_topic_version_content modify html_wiki_content long varchar null;
