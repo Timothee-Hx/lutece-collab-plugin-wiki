@@ -18,6 +18,8 @@ public class ContentDeserializer {
 
     public  String language;
 
+    public String wikiHtmlContent;
+
     /**
      * Returns the content of the file
      *
@@ -47,6 +49,10 @@ public class ContentDeserializer {
 
     public String getLanguage() {
         return language;
+    }
+
+    public String getWikiHtmlContent() {
+        return wikiHtmlContent;
     }
 
 

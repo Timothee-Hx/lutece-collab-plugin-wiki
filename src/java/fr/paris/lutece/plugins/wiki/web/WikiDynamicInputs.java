@@ -94,6 +94,7 @@ public class WikiDynamicInputs {
                 content.setPageTitle( newContent.getTopicTitle());
                 content.setWikiContent( newContent.getTopicContent());
                 content.setContentLabellingMarkdownLanguage( newContent.getTopicContent());
+                content.setHtmlWikiContent(newContent.getWikiHtmlContent());
                 topicVersion.addLocalizedWikiContent(newContent.getLanguage(), content);
 
 

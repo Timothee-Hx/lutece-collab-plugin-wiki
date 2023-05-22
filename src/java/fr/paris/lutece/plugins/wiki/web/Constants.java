@@ -7,7 +7,7 @@
  * are met:
  *
  *  1. Redistributions of source code must retain the above copyright notice
- *     and the following disclaimer.
+ *     and the following discœimer.
  *
  *  2. Redistributions in binary form must reproduce the above copyright notice
  *     and the following disclaimer in the documentation and/or other materials
@@ -50,6 +50,8 @@ public final class Constants
     public static final String PARAMETER_ACTION = "action";
     public static final String PARAMETER_CONTENT = "content";
     public static final String PARAMETER_MODIFICATION_COMMENT = "modification_comment";
+    public static final String PARAMETER_HTML_CONTENT = "wiki_html_content";
+    public static final String PARAMETER_LOCAL = "locale";
     public static final String PARAMETER_PREVIOUS_VERSION_ID = "previous_version_id";
     public static final String PARAMETER_TOPIC_VERSION_ID = "id_topic_version";
 

@@ -168,36 +168,37 @@
         <div class="form-group">
             <input class="form-control" id="page_title_${locale}" type="text" name="page_title_${locale}" value="<#if version?? && version.getWikiContent(locale)??>${version.getWikiContent( locale).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
 
-</div>
+        </div>
 
-<div class="form-group">
-    <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
-    <#assign topicList=reflist_topic >
-    <select id="parent_page_name" name="parent_page_name" class="form-control" onchange="autoSave()">
-        <#list topicList as parentPage>
-        <#if topic.parentPageName == parentPage.name>
-        <option value="${parentPage.name}" selected>${parentPage.name}</option>
-        <#else>
-        <option value="${parentPage.name}">${parentPage.name}</option>
-    </#if>
-</#list>
-</select>
-</div>
-
-
-
-<!-- wiki content that goes in the editor-->
-<input id="wiki_content_${locale}" class="form-control" name="content_${locale}" rows="20"
-       value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
-       type="hidden"/>
-
-<!-- here is the editor -->
-<div class="form-group">
-    <div class="code-html tui-doc-contents">
-        <h2>Editor</h2>
-        <div id="editor"></div>
+        <div class="form-group">
+            <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
+            <#assign topicList=reflist_topic >
+            <select id="parent_page_name" name="parent_page_name" class="form-control" onchange="autoSave()">
+                <#list topicList as parentPage>
+                <#if topic.parentPageName == parentPage.name>
+                <option value="${parentPage.name}" selected>${parentPage.name}</option>
+                <#else>
+                <option value="${parentPage.name}">${parentPage.name}</option>
+            </#if>
+        </#list>
+        </select>
     </div>
-</div>
+
+
+
+    <!-- wiki content that goes in the editor-->
+    <input id="wiki_content_${locale}" class="form-control" name="content_${locale}" rows="20"
+           value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
+           type="hidden"/>
+
+    <!-- here is the editor -->
+    <div class="form-group">
+        <div class="code-html tui-doc-contents">
+            <h2>Editor</h2>
+            <div id="editor"></div>
+        </div>
+    </div>
+    <input id="wiki_html_content" class="form-control" name="wiki_html_content" type="hidden"/>
 
 
 </div>
@@ -403,15 +404,6 @@
             },
         }
     });
- /*   const viewer = Editor.factory({
-        el: document.querySelector('#viewer'),
-        viewer: true,
-        initialValue:wikiContent,
-        plugins: [[chart, chartOptions], [codeSyntaxHighlight, {highlighter: Prism}], tableMergedCell]
-    });
-
-  */
-
 </script>
 
 <script language="javascript">
@@ -423,7 +415,10 @@
 
     function validate()
     {
-    escapeSpecialChars( 'wiki_content_${locale}' );
+        let htmlContent = editor.getHTML()
+        htmlContent = escapeSpecialCharsFromContent(htmlContent);
+        document.getElementById('wiki_html_content').value = htmlContent;
+        escapeSpecialChars( 'wiki_content_${locale}' );
         return true;
     };
 
@@ -606,7 +601,7 @@
         }, 3000);
     }
     // auto save
-    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent) {
+    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
         let response = await fetch('http://localhost:8080/lutece/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
             headers: {
@@ -614,7 +609,7 @@
                 'Content-Type': 'application/json',
                 credentials: "same-origin"
             },
-            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs})
+            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
         });
         let result = await response;
         displayAutoSave(result);
@@ -623,12 +618,14 @@
         const version = document.getElementById("topic_version").value;
         const topic_id = document.getElementById("topic_id").value;
         if(version !== undefined && version !== null && version !== ""){
-               let parentPage = document.getElementById("parent_page_name").value;
-                let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content_" + localeJs).value);
-                let title = document.getElementById("page_title_" + localeJs).value;
-                let topicTitle = escapeSpecialCharsFromContent(title);
+            let parentPage = document.getElementById("parent_page_name").value;
+            let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content_" + localeJs).value);
+            let title = document.getElementById("page_title_" + localeJs).value;
+            let topicTitle = escapeSpecialCharsFromContent(title);
+            let wikiHtmlContent = editor.getHTML()
 
-            saveContent(version, parentPage, topic_id, topicTitle, topicContent)
+            wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
+            saveContent(version, parentPage, topic_id, topicTitle, topicContent,wikiHtmlContent)
         }
     }
     // if auto save mode is activated and auto is done

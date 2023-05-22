@@ -493,8 +493,8 @@ public class WikiApp extends MVCApplication
         String strLocale = WikiLocaleService.getDefaultLanguage();
         String keyLocale = "0";
         try {
-            if(request.getParameter(PARAMETER_LANGUAGE) != null){
-                strLocale = request.getParameter( PARAMETER_LANGUAGE );
+            if(request.getParameter(Constants.PARAMETER_LOCAL) != null){
+                strLocale = request.getParameter( Constants.PARAMETER_LOCAL );
                 // find key of strLocale in langageMap
                 for (Map.Entry<String, String> entry : langageMap.entrySet()) {
                     if (entry.getValue().equals(strLocale)) {
@@ -505,6 +505,7 @@ public class WikiApp extends MVCApplication
         } catch (Exception e) {
             AppLogService.info("No locale in request");
         }
+        System.out.println("strLocale : " + strLocale);
         TopicVersion topicVersion;
         if(nVersion != null)
         {
@@ -646,9 +647,11 @@ public class WikiApp extends MVCApplication
 
                 String strPageTitle = request.getParameter(Constants.PARAMETER_PAGE_TITLE + "_" + strLocale);
                 String strContent = request.getParameter(Constants.PARAMETER_CONTENT + "_" + strLocale);
+                String htmlContent = request.getParameter(Constants.PARAMETER_HTML_CONTENT);
                 WikiContent content = new WikiContent();
                 content.setPageTitle(strPageTitle);
                 content.setContentLabellingMarkdownLanguage(strContent);
+                content.setHtmlWikiContent(htmlContent);
                 topicVersion.addLocalizedWikiContent(strLocale, content);
 
             // if publish is true, cancel publication of previous version
