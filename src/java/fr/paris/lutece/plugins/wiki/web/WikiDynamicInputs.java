@@ -79,8 +79,7 @@ public class WikiDynamicInputs {
 
             int nTopicId = topic.getIdTopic();
 
-            TopicVersion topicVersion = new TopicVersion();
-            TopicVersion previousVersion = TopicVersionHome.findByPrimaryKey(topicVersionId);
+            TopicVersion topicVersion = TopicVersionHome.findByPrimaryKey(topicVersionId);
             topicVersion.setIdTopic(nTopicId);
             topicVersion.setIdTopicVersion(topicVersionId);
             topicVersion.setUserName(user.getName());
@@ -88,18 +87,16 @@ public class WikiDynamicInputs {
                 topicVersion.setEditComment("AutoSave");
             }
             topicVersion.setEditComment(topicVersion.getEditComment());
-            topicVersion.setIdTopicVersionPrevious(previousVersion.getIdTopicVersionPrevious());
             topicVersion.setIsPublished(false);
             topicVersion.setLuteceUserId(user.getFirstName()+"-"+user.getName());
-            // set the content for each language
-            for (int i = 0; i < WikiLocaleService.getLanguages().size(); i++) {
-                String strPageTitle = newContent.topicTitleArr.get(i);
-                String strContent = newContent.topicContentArr.get(i);
+            // set the new content for one language
                 WikiContent content = new WikiContent();
-                content.setPageTitle(strPageTitle);
-                content.setContentLabellingMarkdownLanguage(strContent);
-                topicVersion.addLocalizedWikiContent(WikiLocaleService.getLanguages().get(i), content);
-            }
+                content.setPageTitle( newContent.getTopicTitle());
+                content.setWikiContent( newContent.getTopicContent());
+                content.setContentLabellingMarkdownLanguage( newContent.getTopicContent());
+                topicVersion.addLocalizedWikiContent(newContent.getLanguage(), content);
+
+
             TopicVersionHome.updateTopicVersion(topicVersion);
             topic.setViewRole(topic.getViewRole());
             topic.setEditRole(topic.getEditRole());

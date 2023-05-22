@@ -35,9 +35,9 @@
                 <input id="publish_version" type="hidden" name="publish_version" value="false" />
                 <input id="create_version" type="hidden" name="create_version" value="false">
                 <#if version??>
-                <input id="topic_version" type="hidden" name="previous_version_id" value="${version.idTopicVersion}" />
+                <input id="topic_version" type="hidden" name="id_topic_version" value="${version.idTopicVersion}" />
                 <#else>
-                <input type="hidden" name="previous_version_id" value="0" />
+                <input type="hidden" name="id_topic_version" value="0" />
             </#if>
             <div class="col-sm-12">
                 <div class="btn-group btn-group-xs pull-right">
@@ -113,7 +113,7 @@
 
         <!--  Context variables -->
         <#assign locale=strLocale />
-        <input type="hidden" name="locale" value="${locale}" />
+        <input type="hidden" name="language" value="${locale}" />
         <script type="text/javascript">
             const localeJs = "${locale}";
         </script>
@@ -166,14 +166,8 @@
     <div id="tab-${locale}" class="tab-pane active"  role="tabpanel" >
         <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
         <div class="form-group">
-            <#list languages_list?keys as locale>
-            <#if locale == keyLocale>
-            <input class="form-control" id="page_title_${languages_list[locale]}" type="text" name="page_title_${languages_list[locale]}" value="<#if version?? && version.getWikiContent(languages_list[locale])??>${version.getWikiContent( languages_list[locale] ).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
-            <#else>
-            <input class="form-control" id="page_title_${languages_list[locale]}" type="hidden" name="page_title_${languages_list[locale]}"
-                   value="<#if version?? && version.getWikiContent(languages_list[locale])??>${version.getWikiContent( languages_list[locale] ).pageTitle} </#if>" maxlength="100"/>
-        </#if>
-    </#list>
+            <input class="form-control" id="page_title_${locale}" type="text" name="page_title_${locale}" value="<#if version?? && version.getWikiContent(locale)??>${version.getWikiContent( locale).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
+
 </div>
 
 <div class="form-group">
@@ -193,24 +187,15 @@
 
 
 <!-- wiki content that goes in the editor-->
-<#list languages_list?keys as locale>
-<input id="wiki_content_${languages_list[locale]}" class="form-control" name="content_${languages_list[locale]}" rows="20"
-       value="<#if version??>${version.getWikiContent( languages_list[locale] ).wikiContent?html}<#else>hello</#if>"
+<input id="wiki_content_${locale}" class="form-control" name="content_${locale}" rows="20"
+       value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
        type="hidden"/>
-</#list>
 
 <!-- here is the editor -->
 <div class="form-group">
     <div class="code-html tui-doc-contents">
         <h2>Editor</h2>
         <div id="editor"></div>
-    </div>
-</div>
-
-<!-- here is the editor -->
-<div class="form-group" style="display: none">
-    <div class="code-html tui-doc-contents">
-        <div id="viewer" ></div>
     </div>
 </div>
 
@@ -418,20 +403,17 @@
             },
         }
     });
-    const viewer = Editor.factory({
+ /*   const viewer = Editor.factory({
         el: document.querySelector('#viewer'),
         viewer: true,
         initialValue:wikiContent,
         plugins: [[chart, chartOptions], [codeSyntaxHighlight, {highlighter: Prism}], tableMergedCell]
     });
 
+  */
+
 </script>
-<script>
-    let languages_list = []
-        <#list languages_list?keys as locale>
-    languages_list.push('${languages_list[locale]}' );
-    </#list>
-</script>
+
 <script language="javascript">
 
     function replaceAll(find, replace, str)
@@ -441,9 +423,7 @@
 
     function validate()
     {
-        <#list languages_list?keys as locale>
-    escapeSpecialChars( 'wiki_content_${languages_list[locale]}' );
-    </#list>
+    escapeSpecialChars( 'wiki_content_${locale}' );
         return true;
     };
 
@@ -626,7 +606,7 @@
         }, 3000);
     }
     // auto save
-    async function saveContent(version, parentPage, topic_id, topicTitleArr, topicContentArr) {
+    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent) {
         let response = await fetch('http://localhost:8080/lutece/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
             headers: {
@@ -634,7 +614,7 @@
                 'Content-Type': 'application/json',
                 credentials: "same-origin"
             },
-            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitleArr: topicTitleArr, topicContentArr: topicContentArr})
+            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs})
         });
         let result = await response;
         displayAutoSave(result);
@@ -643,19 +623,12 @@
         const version = document.getElementById("topic_version").value;
         const topic_id = document.getElementById("topic_id").value;
         if(version !== undefined && version !== null && version !== ""){
-            let topicTitleArr = [];
-            let topicContentArr = [];
-            let parentPage = document.getElementById("parent_page_name").value;
+               let parentPage = document.getElementById("parent_page_name").value;
+                let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content_" + localeJs).value);
+                let title = document.getElementById("page_title_" + localeJs).value;
+                let topicTitle = escapeSpecialCharsFromContent(title);
 
-            for (let i = 0; i < languages_list.length; i++) {
-                let locale = languages_list[i];
-                let wikiContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content_" + locale).value);
-                topicContentArr.push(wikiContent);
-                let title = document.getElementById("page_title_" + locale).value;
-                let titleChar = escapeSpecialCharsFromContent(title);
-                topicTitleArr.push(titleChar);
-            }
-            saveContent(version, parentPage, topic_id, topicTitleArr, topicContentArr)
+            saveContent(version, parentPage, topic_id, topicTitle, topicContent)
         }
     }
     // if auto save mode is activated and auto is done

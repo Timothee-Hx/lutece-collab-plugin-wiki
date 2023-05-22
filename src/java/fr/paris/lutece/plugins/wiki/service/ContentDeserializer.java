@@ -12,9 +12,11 @@ public class ContentDeserializer {
     public Integer topicVersion ;
     public String parentPageName;
     public int topicId;
-    public List<String> topicTitleArr;
+    public String topicTitle;
 
-    public List<String> topicContentArr;
+    public String topicContent;
+
+    public  String language;
 
     /**
      * Returns the content of the file
@@ -31,8 +33,20 @@ public class ContentDeserializer {
         return topicId;
     }
 
+    public String getTopicTitle() {
+        return topicTitle;
+    }
+
+    public String getTopicContent() {
+        return topicContent;
+    }
+
     public String getParentPageName() {
         return parentPageName;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 
 

@@ -234,7 +234,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Gets list page of all wiki pages
-     * 
+     *
      * @param request
      *            The HTTP request
      * @return The page
@@ -265,7 +265,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Gets maps page of the wiki
-     * 
+     *
      * @param request
      *            The HTTP request
      * @return The page
@@ -378,7 +378,7 @@ public class WikiApp extends MVCApplication
             strWikiPage = I18nService.getLocalizedString( MESSAGE_NO_PUBLISHED_VERSION, getLocale( request ) );
         } else {
             fillUserData(version);
-             strWikiPage = WikiService.instance().getWikiPage(strPageName, version, getPageUrl(request), getLanguage(request));
+            strWikiPage = WikiService.instance().getWikiPage(strPageName, version, getPageUrl(request), getLanguage(request));
         }
         Map<String, Object> model = getModel( );
         model.put( MARK_RESULT, strWikiPage );
@@ -489,6 +489,22 @@ public class WikiApp extends MVCApplication
                 TopicHome.updateLastOpenModifyPage(topic.getIdTopic(), user);
             }
         }
+        HashMap<String, String> langageMap = WikiLocaleService.getLanguagesMap();
+        String strLocale = WikiLocaleService.getDefaultLanguage();
+        String keyLocale = "0";
+        try {
+            if(request.getParameter(PARAMETER_LANGUAGE) != null){
+                strLocale = request.getParameter( PARAMETER_LANGUAGE );
+                // find key of strLocale in langageMap
+                for (Map.Entry<String, String> entry : langageMap.entrySet()) {
+                    if (entry.getValue().equals(strLocale)) {
+                        keyLocale = entry.getKey();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            AppLogService.info("No locale in request");
+        }
         TopicVersion topicVersion;
         if(nVersion != null)
         {
@@ -515,44 +531,16 @@ public class WikiApp extends MVCApplication
                 mapParameters.put( Constants.PARAMETER_PAGE_NAME, strPageName );
                 return redirect(request, VIEW_MODIFY_PUBLISHED, mapParameters);
             }
+            // set content without xml
+            WikiContent content = topicVersion.getWikiContent(strLocale);
 
-            for (int i = 0; i < WikiLocaleService.getLanguages().size(); i++) {
-                WikiContent localContent = topicVersion.getWikiContent( WikiLocaleService.getLanguages().get(i) );
-                if(localContent.getPageTitle() != null) {
-                    String wikiLocalTitle = renderWiki(localContent.getPageTitle());
-                    localContent.setPageTitle(wikiLocalTitle);
-                }
-                if(localContent.getWikiContent() != null) {
-                    String wikiLocalContent = renderWiki(localContent.getWikiContent());
-                    localContent.setContentWithoutLabellingMarkdownLanguage(wikiLocalContent);
-                }
-                if(localContent.getHtmlWikiContent() != null) {
-                    String contentHtml = renderWiki(localContent.getHtmlWikiContent());
-                    localContent.setHtmlWikiContent(contentHtml);
-                }
-                topicVersion.addLocalizedWikiContent(WikiLocaleService.getLanguages().get(i), localContent);
+            if(content!=null){
+                content.setWikiContent(WikiService.renderWiki(content.getWikiContent()));
+                content.setPageTitle(WikiService.renderWiki(content.getPageTitle()));
+                topicVersion.addLocalizedWikiContent(strLocale, content);
             }
         }
-
-        HashMap<String, String> langageMap = WikiLocaleService.getLanguagesMap();
-        String strLocale = langageMap.get("0");
-        String keyLocale = "0";
-        try {
-            if(request.getParameter(PARAMETER_LANGUAGE) != null){
-                strLocale = request.getParameter( PARAMETER_LANGUAGE );
-                // find key of strLocale in langageMap
-                for (Map.Entry<String, String> entry : langageMap.entrySet()) {
-                    if (entry.getValue().equals(strLocale)) {
-                        keyLocale = entry.getKey();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            AppLogService.info("No locale in request");
-        }
-
         Map<String, Object> model = getModel();
-
             ReferenceList topicRefList = getTopicsReferenceListForUser(request, true);
             topicRefList.removeIf(x -> x.getCode().equals(topic.getPageName()));
             model.put(MARK_TOPIC, topic);
@@ -637,7 +625,8 @@ public class WikiApp extends MVCApplication
         Topic topic = TopicHome.findByPrimaryKey( strPageName );
 
         if ( RoleService.hasEditRole( request, topic ) ) {
-            String strPreviousVersionId = request.getParameter(Constants.PARAMETER_PREVIOUS_VERSION_ID);
+            String strLocale = request.getParameter(PARAMETER_LANGUAGE) ;
+            String strPreviousVersionId = request.getParameter(Constants.PARAMETER_TOPIC_VERSION_ID);
             String strTopicId = request.getParameter(Constants.PARAMETER_TOPIC_ID);
             String strComment = request.getParameter(Constants.PARAMETER_MODIFICATION_COMMENT);
             String strViewRole = request.getParameter(Constants.PARAMETER_VIEW_ROLE);
@@ -645,24 +634,23 @@ public class WikiApp extends MVCApplication
             String strParentPageName = request.getParameter(Constants.PARAMETER_PARENT_PAGE_NAME);
             Boolean publish = Boolean.parseBoolean(request.getParameter(Constants.PARAMETER_PUBLISH));
             Boolean newVersion = Boolean.parseBoolean(request.getParameter(Constants.PARAMETER_CREATE_NEW_VERSION));
-            int nPreviousVersionId = Integer.parseInt(strPreviousVersionId);
+            int nVersionId = Integer.parseInt(strPreviousVersionId);
             int nTopicId = Integer.parseInt(strTopicId);
+            TopicVersion topicVersion = TopicVersionHome.findByPrimaryKey(nVersionId);
 
-            TopicVersion topicVersion = new TopicVersion();
             topicVersion.setIdTopic(nTopicId);
             topicVersion.setUserName(user.getName());
             topicVersion.setEditComment(strComment);
-            topicVersion.setIdTopicVersionPrevious(nPreviousVersionId);
+            topicVersion.setIdTopicVersionPrevious(nVersionId);
             topicVersion.setIsPublished(publish);
-            // set the content for each language
-            for (String strLanguage : WikiLocaleService.getLanguages()) {
-                String strPageTitle = request.getParameter(Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage);
-                String strContent = request.getParameter(Constants.PARAMETER_CONTENT + "_" + strLanguage);
+
+                String strPageTitle = request.getParameter(Constants.PARAMETER_PAGE_TITLE + "_" + strLocale);
+                String strContent = request.getParameter(Constants.PARAMETER_CONTENT + "_" + strLocale);
                 WikiContent content = new WikiContent();
                 content.setPageTitle(strPageTitle);
                 content.setContentLabellingMarkdownLanguage(strContent);
-                topicVersion.addLocalizedWikiContent(strLanguage, content);
-            }
+                topicVersion.addLocalizedWikiContent(strLocale, content);
+
             // if publish is true, cancel publication of previous version
             if(publish.equals(true)) {
                 String messageCanceledBy = I18nService.getLocalizedString( MESSAGE_CANCELED_BY, getLocale( request ) );
@@ -773,7 +761,7 @@ public class WikiApp extends MVCApplication
     {
         LuteceUser user = WikiAnonymousUser.checkUser( request );
 
-        String strPreviousVersionId = request.getParameter( Constants.PARAMETER_PREVIOUS_VERSION_ID );
+        String strPreviousVersionId = request.getParameter( Constants.PARAMETER_TOPIC_VERSION_ID );
         String strTopicId = request.getParameter( Constants.PARAMETER_TOPIC_ID );
         String strComment = request.getParameter( Constants.PARAMETER_MODIFICATION_COMMENT );
         String strViewRole = request.getParameter( Constants.PARAMETER_VIEW_ROLE );
@@ -790,7 +778,7 @@ public class WikiApp extends MVCApplication
         for ( String strLanguage : WikiLocaleService.getLanguages( ) )
         {
             String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
-            String strContent = renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
+            String strContent = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
             WikiContent content = new WikiContent( );
             content.setPageTitle( strPageTitle );
             content.setWikiContent(strContent);
@@ -809,7 +797,7 @@ public class WikiApp extends MVCApplication
         request.getSession( ).setAttribute( MARK_LATEST_VERSION, topicVersion );
 
         String strLanguage = getLanguage( request );
-        String strContent = renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
+        String strContent = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
 
         // we don't want it to be converted in html
         // String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
@@ -933,7 +921,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Uploads an image
-     * 
+     *
      * @param request
      *            The HTTP request
      * @return The XPage
@@ -1092,7 +1080,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Returns the image list as JSON
-     * 
+     *
      * @param request
      *            The HTTP request
      * @return A JSON flow
@@ -1219,7 +1207,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Returns a reference list of pages for user
-     * 
+     *
      * @param request
      *            The HTTP request
      * @param bFirstItem
@@ -1340,7 +1328,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Checks if name is already in an item of the reference list
-     * 
+     *
      * @param list
      *            The reference list
      * @param name
@@ -1362,7 +1350,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Fills all versions with users infos
-     * 
+     *
      * @param listVersions
      *            The version
      */
@@ -1376,7 +1364,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Fills the version with users infos
-     * 
+     *
      * @param version
      *            The version
      */
@@ -1401,7 +1389,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Gets the current page URL from the request
-     * 
+     *
      * @param request
      *            The request
      * @return The URL
@@ -1413,7 +1401,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Returns if the plugin Extend is available
-     * 
+     *
      * @return true if extend is installed and activated otherwise false
      */
     private boolean isExtend( )
@@ -1424,7 +1412,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Stores the current selected language in the user's session
-     * 
+     *
      * @param request
      *            The request
      * @param strLanguage
@@ -1441,7 +1429,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Retrieves the current selected language from the user's session
-     * 
+     *
      * @param request
      *            The request
      * @return The Language
@@ -1455,6 +1443,10 @@ public class WikiApp extends MVCApplication
             // consider the language parameter in the URL if exists
             strLanguage = request.getParameter( PARAMETER_LANGUAGE );
             setLanguage( request, strLanguage );
+        } else {
+            // otherwise, consider the language stored in the user's session
+            strLanguage = LocaleService.getUserSelectedLocale( request ).getLanguage( );
+            setLanguage( request, strLanguage);
         }
 
         return LocaleService.getContextUserLocale( request ).getLanguage( );
@@ -1462,7 +1454,7 @@ public class WikiApp extends MVCApplication
 
     /**
      * Returns a topic title
-     * 
+     *
      * @param topic
      *            The topic
      * @param strLanguage
@@ -1472,7 +1464,7 @@ public class WikiApp extends MVCApplication
     private String getTopicTitle( Topic topic, String strLanguage )
     {
         TopicVersion version = TopicVersionHome.findLastVersion( topic.getIdTopic( ) );
-        if ( version != null && StringUtils.isNotEmpty( version.getWikiContent( strLanguage ).getPageTitle( ) ) )
+      /*  if ( version != null && StringUtils.isNotEmpty( version.getWikiContent( strLanguage ).getPageTitle( ) ) )
         {
             return version.getWikiContent( strLanguage ).getPageTitle( );
         }
@@ -1480,11 +1472,13 @@ public class WikiApp extends MVCApplication
         {
             return topic.getPageName( );
         }
-    }
 
+       */
+        return topic.getPageName( );
+    }
     /**
      * Returns a topic title
-     * 
+     *
      * @param request
      *            The HTTP request
      * @param topic
@@ -1514,26 +1508,5 @@ public class WikiApp extends MVCApplication
         return versionId;
     }
 
-    /**
-     * Render specific entities
-     *
-     * @param strSource
-     *            The source
-     * @return The source transformed
-     */
-    public static String renderWiki( String strSource )
-    {
-        String strRender = strSource;
-        strRender = strRender.replaceAll( "\\[lt;", "<" );
-        strRender = strRender.replaceAll( "\\[gt;", ">" );
-        strRender = strRender.replaceAll( "\\[nbsp;", "&nbsp;" );
-        strRender = strRender.replaceAll( "\\[quot;", "''" );
-        strRender = strRender.replaceAll( "\\[amp;", "&" );
-        strRender = strRender.replaceAll( "\\[hashmark;", "#" );
-        strRender = strRender.replaceAll("\\[codeQuote;", "`");
-        strRender = strRender.replaceAll("\\[simpleQuote;", "'");
 
-
-        return strRender;
-    }
 }

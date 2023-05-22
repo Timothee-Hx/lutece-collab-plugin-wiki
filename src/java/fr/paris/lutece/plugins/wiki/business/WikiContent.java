@@ -120,15 +120,9 @@ public class WikiContent
      */
     public void setContentLabellingMarkdownLanguage(String strWikiContent ){
         {
-            _strWikiContent = "[@MarkdownLanguage@"+strWikiContent;
+            _strWikiContent = "[@MarkdownLanguage;"+strWikiContent;
         }
     }
 
-    /**
-     * Sets the WikiContent without labelling MarkdownLanguage
-     */
-    public void setContentWithoutLabellingMarkdownLanguage( String strWikiContent) {
-        _strWikiContent = strWikiContent.replaceAll("\\[@MarkdownLanguage@", "");
-    }
 
 }

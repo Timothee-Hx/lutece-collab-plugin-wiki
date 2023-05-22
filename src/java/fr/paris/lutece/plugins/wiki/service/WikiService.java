@@ -151,17 +151,27 @@ public final class WikiService extends AbstractCacheableService
     }
 
     /**
-     * Render the wiki content for the editor (convert special characters)
-     * 
-     * @param version
-     *            The version
-     * @param strLanguage
-     *            The Language
-     * @return The content
+     * Render specific entities
+     *
+     * @param strSource
+     *            The source
+     * @return The source transformed
      */
-    public static String renderEditor( TopicVersion version, String strLanguage )
+    public static String renderWiki( String strSource )
     {
-        return LuteceWikiParser.renderWiki( version.getWikiContent( strLanguage ).getWikiContent( ) );
+        String strRender = strSource;
+        strRender = strRender.replaceAll("\\[@MarkdownLanguage;", "");
+        strRender = strRender.replaceAll( "\\[lt;", "<" );
+        strRender = strRender.replaceAll( "\\[gt;", ">" );
+        strRender = strRender.replaceAll( "\\[nbsp;", "&nbsp;" );
+        strRender = strRender.replaceAll( "\\[quot;", "''" );
+        strRender = strRender.replaceAll( "\\[amp;", "&" );
+        strRender = strRender.replaceAll( "\\[hashmark;", "#" );
+        strRender = strRender.replaceAll("\\[codeQuote;", "`");
+        strRender = strRender.replaceAll("\\[simpleQuote;", "'");
+
+
+        return strRender;
     }
 
     /**
