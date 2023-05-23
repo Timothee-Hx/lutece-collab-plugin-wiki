@@ -393,7 +393,6 @@ public class WikiApp extends MVCApplication
         XPage page = getXPage( TEMPLATE_VIEW_WIKI, getLocale( request ), model );
         page.setTitle( getPageTitle( getTopicTitle( request, topic ) ) );
         page.setExtendedPathLabel( getPageExtendedPath( topic, request ) );
-
         return page;
     }
 
@@ -505,7 +504,6 @@ public class WikiApp extends MVCApplication
         } catch (Exception e) {
             AppLogService.info("No locale in request");
         }
-        System.out.println("strLocale : " + strLocale);
         TopicVersion topicVersion;
         if(nVersion != null)
         {
@@ -627,16 +625,14 @@ public class WikiApp extends MVCApplication
 
         if ( RoleService.hasEditRole( request, topic ) ) {
             String strLocale = request.getParameter(PARAMETER_LANGUAGE) ;
-            String strPreviousVersionId = request.getParameter(Constants.PARAMETER_TOPIC_VERSION_ID);
-            String strTopicId = request.getParameter(Constants.PARAMETER_TOPIC_ID);
+            int nVersionId =  Integer.parseInt(request.getParameter(Constants.PARAMETER_TOPIC_VERSION_ID));
+            int nTopicId = Integer.parseInt(request.getParameter(Constants.PARAMETER_TOPIC_ID));
             String strComment = request.getParameter(Constants.PARAMETER_MODIFICATION_COMMENT);
             String strViewRole = request.getParameter(Constants.PARAMETER_VIEW_ROLE);
             String strEditRole = request.getParameter(Constants.PARAMETER_EDIT_ROLE);
             String strParentPageName = request.getParameter(Constants.PARAMETER_PARENT_PAGE_NAME);
             Boolean publish = Boolean.parseBoolean(request.getParameter(Constants.PARAMETER_PUBLISH));
             Boolean newVersion = Boolean.parseBoolean(request.getParameter(Constants.PARAMETER_CREATE_NEW_VERSION));
-            int nVersionId = Integer.parseInt(strPreviousVersionId);
-            int nTopicId = Integer.parseInt(strTopicId);
             TopicVersion topicVersion = TopicVersionHome.findByPrimaryKey(nVersionId);
 
             topicVersion.setIdTopic(nTopicId);
@@ -653,12 +649,11 @@ public class WikiApp extends MVCApplication
                 content.setContentLabellingMarkdownLanguage(strContent);
                 content.setHtmlWikiContent(htmlContent);
                 topicVersion.addLocalizedWikiContent(strLocale, content);
-
             // if publish is true, cancel publication of previous version
             if(publish.equals(true)) {
                 String messageCanceledBy = I18nService.getLocalizedString( MESSAGE_CANCELED_BY, getLocale( request ) );
                 String comment = messageCanceledBy +" "+ user.getName();
-                TopicVersionHome.cancelPublication(Integer.parseInt(strTopicId), comment);
+                TopicVersionHome.cancelPublication(nTopicId, comment);
             }
             // if newVersion is false and publish is false, overwrite this version
             if(!newVersion && publish.equals(false)){
@@ -676,12 +671,9 @@ public class WikiApp extends MVCApplication
                 topic.setParentPageName(strParentPageName);
                 TopicHome.update(topic);
             }
-
         }
-
         Map<String, String> mapParameters = new ConcurrentHashMap<>();
         mapParameters.put(Constants.PARAMETER_PAGE_NAME, strPageName);
-
         return redirect(request, VIEW_PAGE, mapParameters);
     }
 
@@ -781,10 +773,10 @@ public class WikiApp extends MVCApplication
         for ( String strLanguage : WikiLocaleService.getLanguages( ) )
         {
             String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
-            String strContent = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
+            String strContentHtml = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
             WikiContent content = new WikiContent( );
             content.setPageTitle( strPageTitle );
-            content.setWikiContent(strContent);
+            content.setHtmlWikiContent(strContentHtml);
             topicVersion.addLocalizedWikiContent( strLanguage, content );
         }
 
