@@ -33,10 +33,8 @@
  */
 package fr.paris.lutece.plugins.wiki.business;
 
-import fr.paris.lutece.plugins.wiki.service.WikiLocaleService;
-
-import java.util.ArrayList;
-import java.util.List;
+import fr.paris.lutece.plugins.wiki.service.parser.WikiCreoleToMarkdown;
+import fr.paris.lutece.plugins.wiki.web.Constants;
 
 /**
  * WikiContent
@@ -76,7 +74,7 @@ public class WikiContent
      */
     public String getWikiContent( )
     {
-        return _strWikiContent;
+         return _strWikiContent;
     }
 
     /**
@@ -120,7 +118,7 @@ public class WikiContent
      */
     public void setContentLabellingMarkdownLanguage(String strWikiContent ){
         {
-            _strWikiContent = "[@MarkdownLanguage;"+strWikiContent;
+            _strWikiContent = Constants.MARKDOWN_TAG+strWikiContent;
         }
     }
 

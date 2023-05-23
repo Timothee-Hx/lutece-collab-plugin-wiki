@@ -47,6 +47,7 @@ import fr.paris.lutece.plugins.wiki.service.WikiLocaleService;
 import fr.paris.lutece.plugins.wiki.service.WikiService;
 import fr.paris.lutece.plugins.wiki.service.WikiUtils;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
+import fr.paris.lutece.plugins.wiki.service.parser.WikiCreoleToMarkdown;
 import fr.paris.lutece.plugins.wiki.utils.auth.WikiAnonymousUser;
 import fr.paris.lutece.portal.business.page.Page;
 import fr.paris.lutece.portal.service.content.XPageAppService;
@@ -534,7 +535,15 @@ public class WikiApp extends MVCApplication
             WikiContent content = topicVersion.getWikiContent(strLocale);
 
             if(content!=null){
-                content.setWikiContent(WikiService.renderWiki(content.getWikiContent()));
+               String markupContent =  content.getWikiContent();
+                if ( !markupContent.startsWith(Constants.MARKDOWN_TAG))
+                {
+                    String url =  request.getRequestURL().toString();
+                    String newMarkdown =  WikiCreoleToMarkdown.wikiCreoleToMd( markupContent, strPageName, url,  strLocale  );
+                    content.setWikiContent(newMarkdown);
+                } else {
+                    content.setWikiContent(WikiService.renderWiki(markupContent));
+                }
                 content.setPageTitle(WikiService.renderWiki(content.getPageTitle()));
                 topicVersion.addLocalizedWikiContent(strLocale, content);
             }
@@ -779,8 +788,6 @@ public class WikiApp extends MVCApplication
             content.setHtmlWikiContent(strContentHtml);
             topicVersion.addLocalizedWikiContent( strLanguage, content );
         }
-
-
 
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
         Topic topic = TopicHome.findByPrimaryKey( strPageName );
