@@ -28,27 +28,30 @@
             href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
 </head>
 
+
 <div class="row">
-    <input type="hidden" id="result" value="${result}" />
     <div class="col-sm-12">
+        <div class="container panel panel-default">
+            <div class="panel-body">
+                <div class="btn-group btn-group-xs pull-right">
+                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
+                        <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
+                    </a>
+                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=modifyPage&page_name=${topic.pageName}" title="#i18n{wiki.button.backToEdit}">
+                        <span class="glyphicon glyphicon-edit"></span> #i18n{wiki.button.backToEdit}
+                    </a>
+                </div>
+            </div>
 
-        <div id="viewer" class="tui-editor-contents"></div>
+            <h1>${topic_title}</h1>
+            <hr>
+            <div  class="tui-editor-contents">
+                ${result}
+            </div>
+        </div>
     </div>
-    <button onclick="copyHtmlToClipboard()">Copy to clipboard</button>
+</div>
 
-    <script>
-        function copyHtmlToClipboard() {
-            var innerHtml = document.getElementById('viewer').innerHTML;
-            // put var into the clipboard
-            var tempElem = document.createElement('textarea');
-            tempElem.value = innerHtml;
-            document.body.appendChild(tempElem);
-            tempElem.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempElem);
-            alert('Copied to clipboard');
-        }
-    </script>
 
     <script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
     <!-- Tui Editor integration -->
@@ -95,4 +98,3 @@
         });
 
     </script>
-</div>
