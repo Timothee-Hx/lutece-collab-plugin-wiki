@@ -120,6 +120,7 @@ public class LuteceWikiParser extends WikiParser
     public static String renderWiki( String strSource )
     {
         String strRender = strSource;
+        strRender = strRender.replaceAll("\\[@MarkdownLanguage;", "");
         strRender = strRender.replaceAll( "\\[lt;", "<" );
         strRender = strRender.replaceAll( "\\[gt;", ">" );
         strRender = strRender.replaceAll( "\\[nbsp;", "&nbsp;" );
@@ -141,6 +142,7 @@ public class LuteceWikiParser extends WikiParser
     public static String renderSource( String strSource )
     {
         String strRender = strSource;
+        strRender = strRender.replaceAll("\\[@MarkdownLanguage;", "");
         strRender = strRender.replaceAll( "\\[lt;", "<" );
         strRender = strRender.replaceAll( "\\[gt;", ">" );
         strRender = strRender.replaceAll( "\\[nbsp;", "&nbsp;" );

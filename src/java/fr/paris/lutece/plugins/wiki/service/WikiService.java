@@ -103,9 +103,18 @@ public final class WikiService extends AbstractCacheableService
         {
             if ( strPageContent == null )
             {
-                 strPageContent = WikiService.renderWiki(version.getWikiContent( strLanguage ).getHtmlWikiContent( ));
-               // strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
-                putInCache( sbKey.toString( ), strPageContent );
+                // html from here is also used in viewDiff
+                try   {
+                    strPageContent = WikiService.renderWiki(version.getWikiContent(strLanguage).getHtmlWikiContent());
+                    // strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
+                    putInCache(sbKey.toString(), strPageContent);
+                }
+                catch(NullPointerException e)   {
+                    String strContent = WikiService.renderWiki(version.getWikiContent(strLanguage).getWikiContent());
+                    strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
+                    putInCache(sbKey.toString(), strPageContent);
+                }
+
             }
         }
         return strPageContent;
