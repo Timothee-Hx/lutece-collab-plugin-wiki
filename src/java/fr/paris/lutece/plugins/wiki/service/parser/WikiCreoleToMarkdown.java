@@ -7,8 +7,10 @@ public class WikiCreoleToMarkdown {
 
         String htmlContent = new LuteceWikiParser(  strWikiText,  strPageName,  strPageUrl,  strLanguage  ).toString( );
 
-        System.out.println("htmlContent////////////////////////////" + htmlContent);
+        System.out.println("htmlContent____________________________\n" + htmlContent);
         String markdown = FlexmarkHtmlConverter.builder().build().convert(htmlContent);
+        System.out.println("markdown____________________________\n" + markdown);
+
         return markdown;
     }
 }

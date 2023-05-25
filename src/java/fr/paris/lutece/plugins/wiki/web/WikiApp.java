@@ -799,7 +799,7 @@ public class WikiApp extends MVCApplication
         request.getSession( ).setAttribute( MARK_LATEST_VERSION, topicVersion );
 
         String strLanguage = getLanguage( request );
-        String strContent = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_CONTENT + "_" + strLanguage ));
+        String strContentHtml = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
 
         // we don't want it to be converted in html
         // String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
@@ -807,7 +807,7 @@ public class WikiApp extends MVCApplication
         String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
 
         Map<String, Object> model = getModel( );
-        model.put( MARK_RESULT, strContent );
+        model.put( MARK_RESULT, strContentHtml );
         model.put( MARK_TOPIC, topic );
         model.put( MARK_LATEST_VERSION, topicVersion );
         model.put( MARK_TOPIC_TITLE, strPageTitle );

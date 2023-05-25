@@ -187,9 +187,9 @@
 
 
     <!-- wiki content that goes in the editor-->
-    <input id="wiki_content_${locale}" class="form-control" name="content_${locale}" rows="20"
+    <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
            value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
-           type="hidden"/>
+       data type="hidden"/>
 
     <!-- here is the editor -->
     <div class="form-group">
@@ -375,13 +375,27 @@
 <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
 
 <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
+<!--<script type="module">
+    const targetNode = document.querySelector("#wiki_content");
+    const observerOptions = {
+        childList: true,
+        attributes: true,
 
+        // Omit (or set to false) to observe only changes to the parent node
+        subtree: true,
+    };
+
+    const observer = new MutationObserver(autoSave);
+    observer.observe(targetNode, observerOptions);
+</script>
+-->
 <script type="text/javascript" class="code-js">
 
     const { Editor } = toastui;
     const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
 
-    let wikiContent = document.getElementById('wiki_content_' + localeJs).value;
+    let wikiContent = document.getElementById('wiki_content').value;
 
     const chartOptions = {
         minWidth: 100,
@@ -392,14 +406,35 @@
 
     const editor = new Editor({
         el: document.querySelector('#editor'),
+        customHTMLRenderer: {
+            latex(node) {
+                const generator = new latexjs.HtmlGenerator({ hyphenate: false });
+                const { body } = latexjs.parse(node.literal, { generator }).htmlDocument();
 
+                return [
+                    { type: 'openTag', tagName: 'div', outerNewLine: true },
+                    { type: 'html', content: body.innerHTML },
+                    { type: 'closeTag', tagName: 'div', outerNewLine: true }
+                ];
+            },
+            htmlBlock: {
+                iframe(node) {
+                    return [
+                        { type: 'openTag', tagName: 'iframe', outerNewLine: true, attributes: node.attrs },
+                        { type: 'html', content: node.childrenHTML },
+                        { type: 'closeTag', tagName: 'iframe', outerNewLine: true },
+                    ];
+                },
+
+            }
+        },
         previewStyle: 'vertical',
         height: '500px',
         initialValue: wikiContent,
         plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
         events: {
             change: () => {
-                document.getElementById('wiki_content_'+localeJs).value = editor.getMarkdown();
+                document.getElementById('wiki_content').value = editor.getMarkdown();
                 autoSave();
             },
         }
@@ -418,7 +453,7 @@
         let htmlContent = editor.getHTML()
         htmlContent = escapeSpecialCharsFromContent(htmlContent);
         document.getElementById('wiki_html_content').value = htmlContent;
-        escapeSpecialChars( 'wiki_content_${locale}' );
+        escapeSpecialChars( 'wiki_content' );
         return true;
     };
 
@@ -619,7 +654,7 @@
         const topic_id = document.getElementById("topic_id").value;
         if(version !== undefined && version !== null && version !== ""){
             let parentPage = document.getElementById("parent_page_name").value;
-            let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content_" + localeJs).value);
+            let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
             let title = document.getElementById("page_title_" + localeJs).value;
             let topicTitle = escapeSpecialCharsFromContent(title);
             let wikiHtmlContent = editor.getHTML()
