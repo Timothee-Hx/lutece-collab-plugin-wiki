@@ -23,8 +23,14 @@
     <link
             rel="stylesheet"
             href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
+<#assign baseUrl = url />
+<script>
+    const baseUrl = "${baseUrl}";
+</script>
+
 <div class="row">
     <div class="container panel panel-default">
         <form method="post" id="form_wiki" action="jsp/site/Portal.jsp">
@@ -157,8 +163,8 @@
             window.location.href = "${url}&locale=" + locale;
         }
     }
-</script>
 
+</script>
 
 <!-- wiki page title -->
 
@@ -189,7 +195,7 @@
     <!-- wiki content that goes in the editor-->
     <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
            value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
-       data type="hidden"/>
+           data type="hidden"/>
 
     <!-- here is the editor -->
     <div class="form-group">
@@ -376,21 +382,17 @@
 
 <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
-<!--<script type="module">
-    const targetNode = document.querySelector("#wiki_content");
-    const observerOptions = {
-        childList: true,
-        attributes: true,
+<script src="js/plugins/wiki/font_awesome/font_awesome_icons_list.js"></script>
+<script>
+    import {font_awesome_icons_list} from "../../../../../js/plugins/wiki/font_awesome/font_awesome_icons_list.js";
 
-        // Omit (or set to false) to observe only changes to the parent node
-        subtree: true,
-    };
-
-    const observer = new MutationObserver(autoSave);
-    observer.observe(targetNode, observerOptions);
+    setInterval(function () {
+        console.log(font_awesome_icons_list);
+    }, 1000);
 </script>
--->
+
 <script type="text/javascript" class="code-js">
+
 
     const { Editor } = toastui;
     const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
@@ -410,11 +412,18 @@
             latex(node) {
                 const generator = new latexjs.HtmlGenerator({ hyphenate: false });
                 const { body } = latexjs.parse(node.literal, { generator }).htmlDocument();
-
+                document.head.appendChild(generator.stylesAndScripts(""))
                 return [
                     { type: 'openTag', tagName: 'div', outerNewLine: true },
                     { type: 'html', content: body.innerHTML },
                     { type: 'closeTag', tagName: 'div', outerNewLine: true }
+                ];
+            },
+            i(node) {
+                return [
+                    { type: 'openTag', tagName: 'span', outerNewLine: false, className: node.className },
+                    { type: 'html', content: node.literal },
+                    { type: 'closeTag', tagName: 'span', outerNewLine: false },
                 ];
             },
             htmlBlock: {
@@ -425,8 +434,7 @@
                         { type: 'closeTag', tagName: 'iframe', outerNewLine: true },
                     ];
                 },
-
-            }
+            },
         },
         previewStyle: 'vertical',
         height: '500px',
@@ -436,8 +444,31 @@
             change: () => {
                 document.getElementById('wiki_content').value = editor.getMarkdown();
                 autoSave();
+                const html = editor.getHTML();
             },
-        }
+        },
+    });
+
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 0 }, {
+        id: 'myButton',
+        name: 'myButton',
+        tooltip: 'FA Icons',
+        text: 'FA',
+        className: 'fa fa-search',
+        style: { backgroundImage: 'none' },
+
+        // display a list of icons
+        // when the button is clicked
+    });
+
+    let myButton = document.getElementsByClassName("fa fa-search")[0];
+    myButton.addEventListener('click', function() {
+        const fa_icons = "'"+ "fa fa-search" + "'";
+        const icon = "$$i\n"+ "<i class=" + fa_icons + "></i>"+ "\n$$";
+        console.log(icon)
+        editor.insertText(icon);
+
+
     });
 </script>
 
@@ -456,6 +487,18 @@
         escapeSpecialChars( 'wiki_content' );
         return true;
     };
+
+    function escapeTuiElementsFromHtml(htmlContent){
+        // parse html content if it contains tui <div elements class="toastui-editor-custom-block-view"/>
+        //delete it
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(htmlContent, 'text/html');
+        let elements = doc.getElementsByClassName("toastui-editor-custom-block-view");
+        for (let i = 0; i < elements.length; i++) {
+            console.log(elements[i]);
+            elements[i].parentNode.removeChild(elements[i]);
+        }
+    }
 
     function escapeSpecialChars( id )
     {
@@ -637,7 +680,7 @@
     }
     // auto save
     async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
-        let response = await fetch('http://localhost:8080/lutece/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
+        let response = await fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -658,7 +701,6 @@
             let title = document.getElementById("page_title_" + localeJs).value;
             let topicTitle = escapeSpecialCharsFromContent(title);
             let wikiHtmlContent = editor.getHTML()
-
             wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
             saveContent(version, parentPage, topic_id, topicTitle, topicContent,wikiHtmlContent)
         }
@@ -681,7 +723,7 @@
     // register last user on modify page
     function saveLastUserOnModifyPage(){
         const topic_id = document.getElementById("topic_id").value;
-        fetch('http://localhost:8080/lutece/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
+        fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
