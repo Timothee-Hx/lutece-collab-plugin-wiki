@@ -417,6 +417,15 @@
                     { type: 'closeTag', tagName: 'div', outerNewLine: false },
                 ];
             },
+            htmlBlock: {
+                iframe(node) {
+                    return [
+                        { type: 'openTag', tagName: 'iframe', outerNewLine: true, attributes: node.attrs },
+                        { type: 'html', content: node.childrenHTML },
+                        { type: 'closeTag', tagName: 'iframe', outerNewLine: true },
+                    ];
+                },
+            },
         },
         previewStyle: 'vertical',
         height: '500px',
@@ -4766,7 +4775,7 @@
 
 
                         for(let icon of icons) {
-                           let iconClass = icon.name;
+                           let iconClass = "solid" + icon.name; // to checker
                             document.write("<option value="+iconClass+">"+icon.name+"</option>");
                         }
 
