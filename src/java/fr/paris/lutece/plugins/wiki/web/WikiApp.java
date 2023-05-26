@@ -41,11 +41,7 @@ import fr.paris.lutece.plugins.wiki.business.TopicHome;
 import fr.paris.lutece.plugins.wiki.business.TopicVersion;
 import fr.paris.lutece.plugins.wiki.business.TopicVersionHome;
 import fr.paris.lutece.plugins.wiki.business.WikiContent;
-import fr.paris.lutece.plugins.wiki.service.DiffService;
-import fr.paris.lutece.plugins.wiki.service.RoleService;
-import fr.paris.lutece.plugins.wiki.service.WikiLocaleService;
-import fr.paris.lutece.plugins.wiki.service.WikiService;
-import fr.paris.lutece.plugins.wiki.service.WikiUtils;
+import fr.paris.lutece.plugins.wiki.service.*;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
 import fr.paris.lutece.plugins.wiki.service.parser.WikiCreoleToMarkdown;
 import fr.paris.lutece.plugins.wiki.utils.auth.WikiAnonymousUser;
@@ -381,6 +377,7 @@ public class WikiApp extends MVCApplication
             fillUserData(version);
             strWikiPage = WikiService.instance().getWikiPage(strPageName, version, getPageUrl(request), getLanguage(request));
         }
+        System.out.println("strWikiPage = " + strWikiPage);
         Map<String, Object> model = getModel( );
         model.put( MARK_RESULT, strWikiPage );
         model.put( MARK_TOPIC, topic );
