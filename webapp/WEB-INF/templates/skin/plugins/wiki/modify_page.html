@@ -189,20 +189,33 @@
         </#list>
         </select>
     </div>
-<div class="form-group">
-    <@selectIconFont id='selectIcon' class='' name='resource-icon' showListLabel=true showListIcon=true searchShow=true searchFocus=false searchHighlight=true type='yaml' prefix='fa-' iconsUrl='css/admin/font-awesome-icons.yml' resources=true defaultValue='' />
-</div>
-<p>ici</p>
-    <span id="icon"></span>
-
-<script type="text/javascript">
-    document.getElementById("selectIcon").addEventListener("change", function() {
-        console.log(this.value);
-        document.getElementById("icon").className = "fa " + this.value;
-        document.getElementById("icon").style.fontSize = "30px";
-        document.getElementById("icon").innerHTML = "<p>hello</p>";
-    });
-</script>
+    <!------------ modal to select a FA icon ----------------->
+    <div id="select-fa-icons" class="toastui-editor-popup" style="display: none;" >
+        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+            <i class="fa fa-times"></i>
+        </button>
+        <div class="toastui-editor-popup-header">
+            <div class="toastui-editor-popup-header-title">Select FA Icons</div>
+        </div>
+        <div class="toastui-editor-popup-body">
+            <div class="toastui-editor-popup-content-body">
+                <@selectIconFont id='selectIcon' class='' name='resource-icon' showListLabel=true showListIcon=true searchShow=true searchFocus=false searchHighlight=true type='yaml' prefix='fa-' iconsUrl='css/admin/font-awesome-icons.yml' resources=true defaultValue='' />
+            </div>
+        </div>
+        <div id="iconIsSelected"  style="display: none">
+            <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+                <div class="toastui-editor-popup-content-body">
+                    Seleted Icon : <span id="selectedIcon"> </span>
+                </div>
+            </div>
+            <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
+                <button class="btn btn-primary" type="button" onclick="insertIcon()">Insert</button>
+                <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!------------ end modal to select a FA icon ----------------->
     <!-- wiki content that goes in the editor-->
     <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
            value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
@@ -393,10 +406,7 @@
 
 <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
-
 <script type="text/javascript" class="code-js">
-
-
     const { Editor } = toastui;
     const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
 
@@ -447,33 +457,51 @@
             change: () => {
                 document.getElementById('wiki_content').value = editor.getMarkdown();
                 autoSave();
-                const html = editor.getHTML();
             },
         },
     });
 
     editor.insertToolbarItem({ groupIndex: 0, itemIndex: 0 }, {
-        id: 'myButton',
-        name: 'myButton',
+        name: 'addIconButton',
         tooltip: 'FA Icons',
         text: 'FA',
         className: 'fa fa-search',
         style: { backgroundImage: 'none' },
-
-        // display a list of icons
-        // when the button is clicked
     });
 
-    let myButton = document.getElementsByClassName("fa fa-search")[0];
-    myButton.addEventListener('click', function() {
-        const fa_icons = "'"+ "fa fa-search" + "'";
-        const icon = "$$i\n"+ "<i class=" + fa_icons + "></i>"+ "\n$$";
-        console.log(icon)
-        editor.insertText(icon);
+    let addIconButton = document.getElementsByClassName("fa fa-search")[0];
+    addIconButton.addEventListener('click', function() {
+           document.getElementsByClassName("toastui-editor-popup")[0].style.display = "block";
+          document.getElementsByClassName("ss-option").forEach(function(option) {
+                if (option.innerText.indexOf("[brands]") > -1) {
+                     option.style.display = "none";
+                }
+           });
+            document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
+                document.getElementsByClassName("ss-option").forEach(function(option) {
+                    if (option.innerText.indexOf("[brands]") > -1) {
+                        option.style.display = "none";
+                    }
+                });
+            });
 
+       });
 
-    });
+        document.getElementById("selectIcon").addEventListener("change", function() {
+            let icon = document.getElementById("selectIcon").value;
+            document.getElementById("iconIsSelected").style.display = "block";
+            document.getElementById("selectedIcon").innerHTML = '<i class="fa fa-' + icon + '"></i>';
+        });
+        function insertIcon() {
+            let icon =  document.getElementById("selectedIcon").children[0].outerHTML;
+            editor.insertText("$$i\n"+icon+ "\n$$");
+            document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+        }
+    function closeToastUiModal() {
+        document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+    }
 </script>
+
 
 <script language="javascript">
 
