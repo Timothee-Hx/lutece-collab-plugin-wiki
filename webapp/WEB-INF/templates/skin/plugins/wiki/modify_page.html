@@ -193,7 +193,7 @@
     <div id="select-fa-icons" class="toastui-editor-popup" style="display: none;" >
         <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
         <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
-            <i class="fa fa-times"></i>
+            <span class="fa fa-times"></span>
         </button>
         <div class="toastui-editor-popup-header">
             <div class="toastui-editor-popup-header-title">Select FA Icons</div>
@@ -205,6 +205,14 @@
         </div>
         <div id="iconIsSelected"  style="display: none">
             <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+                <label for="iconSize">Icon Size :</label>
+                <select id="iconSize" class="form-control" onchange="changeIconSize()">
+                    <option value="fa-1x">fa-1x</option>
+                    <option value="fa-2x">fa-2x</option>
+                    <option value="fa-3x">fa-3x</option>
+                    <option value="fa-4x">fa-4x</option>
+                    <option value="fa-5x">fa-5x</option>
+                </select>
                 <div class="toastui-editor-popup-content-body">
                     Seleted Icon : <span id="selectedIcon"> </span>
                 </div>
@@ -216,7 +224,35 @@
         </div>
     </div>
     <!------------ end modal to select a FA icon ----------------->
-    <!-- wiki content that goes in the editor-->
+    <!------------ modal to select an alert box ----------------->
+    <div id="select-alert" class="toastui-editor-popup" style="display: none;" >
+        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+            <span class="fa fa-times"></span>
+        </button>
+        <div class="toastui-editor-popup-header">
+            <div class="toastui-editor-popup-header-title">Select Alert an Box</div>
+            <select id="alertBoxType" class="form-control" onchange="changeAlertBoxType(this.value)" >
+                <option value="info">Info</option>
+                <option value="warning">Warning</option>
+                <option value="danger">Danger</option>
+                <option value="success">Success</option>
+            </select>
+        </div>
+        <div id="alertIsSelected"  style="display: none">
+            <div id="selectedAlertClass"><span id="selectedAlertType"></span> This is an warning alert</div></p>
+            <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+                <label for="alertBoxContent">Content :</label>
+                <textarea id="alertBoxContent" class="form-control" name="alertBoxContent" rows="5" ></textarea>
+            </div>
+            <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
+                <button class="btn btn-primary" type="button" onclick="insertAlert(this.value)">Insert</button>
+                <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+                <!-- wiki content that goes in the editor-->
     <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
            value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
            data type="hidden"/>
@@ -432,7 +468,7 @@
                     { type: 'closeTag', tagName: 'div', outerNewLine: true }
                 ];
             },
-            i(node) {
+            span(node) {
                 return [
                     { type: 'openTag', tagName: 'div', outerNewLine: false, className: node.className },
                     { type: 'html', content: node.literal },
@@ -468,37 +504,71 @@
         className: 'fa fa-search',
         style: { backgroundImage: 'none' },
     });
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 0 }, {
+        name: 'Alert',
+        tooltip: 'Alert Boxes',
+        text: 'alert',
+        className: 'alert alert-danger',
+        style: { backgroundImage: 'none' },
+    });
+    const addAlertButton = document.getElementsByClassName("alert alert-danger")[0];
+    addAlertButton.addEventListener('click', function() {
+        document.getElementsByClassName("toastui-editor-popup")[1].style.display = "block";
+    });
 
-    let addIconButton = document.getElementsByClassName("fa fa-search")[0];
+    const addIconButton = document.getElementsByClassName("fa fa-search")[0];
     addIconButton.addEventListener('click', function() {
-           document.getElementsByClassName("toastui-editor-popup")[0].style.display = "block";
-          document.getElementsByClassName("ss-option").forEach(function(option) {
-                if (option.innerText.indexOf("[brands]") > -1) {
-                     option.style.display = "none";
-                }
-           });
-            document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
-                document.getElementsByClassName("ss-option").forEach(function(option) {
-                    if (option.innerText.indexOf("[brands]") > -1) {
-                        option.style.display = "none";
-                    }
-                });
-            });
-
-       });
-
-        document.getElementById("selectIcon").addEventListener("change", function() {
-            let icon = document.getElementById("selectIcon").value;
-            document.getElementById("iconIsSelected").style.display = "block";
-            document.getElementById("selectedIcon").innerHTML = '<i class="fa fa-' + icon + '"></i>';
+        document.getElementsByClassName("toastui-editor-popup")[0].style.display = "block";
+        document.getElementsByClassName("ss-option").forEach(function(option) {
+            if (option.innerText.indexOf("[brands]") > -1) {
+                option.style.display = "none";
+            }
         });
-        function insertIcon() {
-            let icon =  document.getElementById("selectedIcon").children[0].outerHTML;
-            editor.insertText("$$i\n"+icon+ "\n$$");
-            document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
-        }
-    function closeToastUiModal() {
+        document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
+            document.getElementsByClassName("ss-option").forEach(function(option) {
+                if (option.innerText.indexOf("[brands]") > -1) {
+                    option.style.display = "none";
+                }
+            });
+        });
+
+    });
+
+    document.getElementById("selectIcon").addEventListener("change", function() {
+        const icon = document.getElementById("selectIcon").value;
+        document.getElementById("iconIsSelected").style.display = "block";
+        document.getElementById("selectedIcon").innerHTML = '<span class="fa fa-' + icon + '"></span><br/>';
+    });
+    function changeIconSize() {
+        const icon = document.getElementById("selectIcon").value;
+        const iconSize = document.getElementById("iconSize").value;
+        document.getElementById("selectedIcon").style.display = "none";
+        document.getElementById("selectedIcon").innerHTML = '<span class="fa fa-' + icon +" " + iconSize + '"></span><br/>';
+        document.getElementById("selectedIcon").style.display = "block";
+    }
+    function insertIcon() {
+        const icon =  document.getElementById("selectedIcon").children[0].outerHTML;
+        editor.insertText("$$span\n"+icon+ "\n$$");
         document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+    }
+    function closeToastUiModal() {
+        const popupNumber = document.getElementsByClassName("toastui-editor-popup").length
+        for (let i = 0; i < popupNumber; i++) {
+            document.getElementsByClassName("toastui-editor-popup")[i].style.display = "none";
+        }
+    }
+    document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
+    function changeAlertBoxType(alertValue) {
+        document.getElementById("selectedAlertClass").className = "alert alert-"+alertValue;
+        document.getElementById("selectedAlertType").className = "glyphicon glyphicon-"+alertValue+"-sign";
+        document.getElementById("alertIsSelected").style.display = "block";
+    }
+    function insertAlert(contentValue){
+        const alertClass =  document.getElementById("selectedAlertClass").className;
+        const alertIcon = document.getElementById("selectedAlertType").className;
+        const alertHtml = '<div class="'+alertClass+'"><span id="'+alertIcon+'"></span>'+ contentValue +'</div></p>\n';
+        editor.insertText("$$span\n"+alertHtml+ "\n$$");
+        closeToastUiModal();
     }
 </script>
 
@@ -775,6 +845,5 @@
         }
     }
 </script>
-
 
 
