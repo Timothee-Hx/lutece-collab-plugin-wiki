@@ -1,0 +1,780 @@
+<head lang="en">
+
+    <meta charset="UTF-8" />
+    <title>12. Editor with All Plugins</title>
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/data/tuidoc-example-style.css" />
+    <!-- Editor -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/toastui-editor.css" />
+    <!-- Chart -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
+
+    <!-- Color syntax -->
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"
+    />
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"
+    />
+    <!-- Merged Table -->
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.css" />
+
+    <link
+            rel="stylesheet"
+            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+</head>
+<#assign baseUrl = url />
+<script>
+    const baseUrl = "${baseUrl}";
+</script>
+
+<div class="row">
+    <div class="container panel panel-default">
+        <form method="post" id="form_wiki" action="jsp/site/Portal.jsp">
+            <div class="row">
+                <input type="hidden" id="page" name="page" value="wiki" />
+                <input type="hidden" name="page_name" value="${topic.pageName}" />
+                <input type="hidden" id="topic_id" name="topic_id" value="${topic.idTopic}" />
+                <input id="publish_version" type="hidden" name="publish_version" value="false" />
+                <input id="create_version" type="hidden" name="create_version" value="false">
+                <#if version??>
+                <input id="topic_version" type="hidden" name="id_topic_version" value="${version.idTopicVersion}" />
+                <#else>
+                <input type="hidden" name="id_topic_version" value="0" />
+            </#if>
+            <div class="col-sm-12">
+                <div class="btn-group btn-group-xs pull-right">
+                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
+                        <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
+                    </a>
+                    <button name="view_preview" class="btn btn-default" type="submit" title="#i18n{wiki.menu.preview}" onclick="validate()">
+                        <span class="glyphicon glyphicon-eye-open"></span> #i18n{wiki.menu.preview}
+                    </button>
+                    <#if has_admin_role >
+                    <a data-toggle="modal" data-target="#confirm-delete-page"  class="btn btn-danger" class="btn btn-danger" title="#i18n{portal.util.labelDelete}">
+                        <span class="glyphicon glyphicon-trash"></span> #i18n{portal.util.labelDelete}
+                    </a>
+                </#if>
+                <button id="btn-help" class="btn btn-default" type="button" title="#i18n{wiki.menu.help}">
+                    <span class="glyphicon glyphicon-question-sign"></span> #i18n{wiki.menu.help}
+                </button>
+            </div>
+    </div>
+    <div style="display: flex; justify-content: end;  flex-direction: row;">
+
+
+        <div style="margin-right: 10px">
+            <#if version??>
+            <label id="autoSaveLabel">#i18n{wiki.modify_page.autoSaveActivated}</label>
+            <#else>
+            <label id="autoSaveLabel">#i18n{wiki.modify_page.autoSaveDesactivated}</label>
+        </#if>
+    </div>
+    <div>
+        <#if version??>
+        <label class="switch">
+            <input id="autoSaveMode" type="checkbox" checked onchange="toogleAutosave()">
+            <span class="slider round"></span>
+        </label>
+        <#else>
+        <label class="switch">
+            <input id="autoSaveMode" type="checkbox" disabled onchange="alert('In order to save automatically the content, you must manually save a first version');">
+            <span class="slider round"></span>
+        </label>
+    </#if>
+</div>
+</div>
+<div style="display: flex; justify-content: end;  flex-direction: row;">
+
+    <div id="autoSave" style="display:none; margin-right: 10px" >
+        <div style=" display: flex; align-items: center">
+            <span  style="margin-left: 10px"> <div class="spinner"></div></span>
+            <div  id="autoSaveSucess" style="display: none; margin-left: 10px">#i18n{wiki.modify_page.autoSaveSucess}</div>
+            <div  id="autoSaveFailed" style="display: none; margin-left: 10px">#i18n{wiki.modify_page.autoSaveFailed}</div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="row">
+    <div id="main-panel" class="col-sm-12">
+        <div class="alert alert-error" id="div-confirm-delete" style="display:none">
+            #i18n{wiki.message.confirmDelete}
+            <div class="pull-right">
+                <button name="action_deletePage" class="btn btn-danger btn-xs" type="submit" >
+                    #i18n{portal.util.labelOk}
+                </button>
+                <button id="btn-delete-cancel" class="btn btn-xs" type="button" >
+                    #i18n{portal.util.labelCancel}
+                </button>
+            </div>
+        </div>
+
+        <h1>#i18n{wiki.menu.edit} <small> [${topic.pageName}] </small></h1>
+
+
+        <!--  Context variables -->
+        <#assign locale=strLocale />
+        <input type="hidden" name="language" value="${locale}" />
+        <script type="text/javascript">
+            const localeJs = "${locale}";
+        </script>
+
+
+        <!-- this is to go to another language with a link-->
+        <label for="select_language_list">Select a language with a link to a new page :</label>
+        <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
+            <#list languages_list?keys as locale>
+            <#assign urlWithLocale = url + "&locale=" + languages_list[locale] />
+            <#if locale == keyLocale>
+            <button  disabled  class="wiki_Language_Button_Selected">
+                ${languages_list[locale]}
+            </button>
+            <#else>
+            <button type="button" class="wiki_Language_Button" >
+                <a href="${urlWithLocale}"
+                   target="_blank" rel="noopener noreferrer">
+                    ${languages_list[locale]}
+                </a>
+            </button>
+        </#if>
+    </#list>
+    </ul>
+    <!-- this is to go to another language with a Select
+-->
+    <label for="select_language_list">Select a language with a select :</label>
+    <select id="select_language_list" class="form-control" onchange="changeLanguage(this.value)" >
+        <#list languages_list?keys as locale>
+        <#if locale == keyLocale>
+        <option value="${languages_list[locale]}" selected>${languages_list[locale]}</option>
+        <#else>
+        <option value="${languages_list[locale]}">${languages_list[locale]}</option>
+    </#if>
+</#list>
+</select>
+<script type="text/javascript">
+    function changeLanguage(locale) {
+        if (confirm("voulez vous sauvegarder vos modifications ?") == true) {
+            window.location.href = "${url}&locale=" + locale;
+        }
+    }
+
+</script>
+
+
+<!-- wiki page title -->
+
+<div class="tab-content">
+    <div id="tab-${locale}" class="tab-pane active"  role="tabpanel" >
+        <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
+        <div class="form-group">
+            <input class="form-control" id="page_title_${locale}" type="text" name="page_title_${locale}" value="<#if version?? && version.getWikiContent(locale)??>${version.getWikiContent( locale).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
+
+        </div>
+
+        <div class="form-group">
+            <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
+            <#assign topicList=reflist_topic >
+            <select id="parent_page_name" name="parent_page_name" class="form-control" onchange="autoSave()">
+                <#list topicList as parentPage>
+                <#if topic.parentPageName == parentPage.name>
+                <option value="${parentPage.name}" selected>${parentPage.name}</option>
+                <#else>
+                <option value="${parentPage.name}">${parentPage.name}</option>
+            </#if>
+        </#list>
+        </select>
+    </div>
+    <!------------ modal to select a FA icon ----------------->
+    <div id="select-fa-icons" class="toastui-editor-popup" style="display: none;" >
+        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+            <i class="fa fa-times"></i>
+        </button>
+        <div class="toastui-editor-popup-header">
+            <div class="toastui-editor-popup-header-title">Select FA Icons</div>
+        </div>
+        <div class="toastui-editor-popup-body">
+            <div class="toastui-editor-popup-content-body">
+                <@selectIconFont id='selectIcon' class='' name='resource-icon' showListLabel=true showListIcon=true searchShow=true searchFocus=false searchHighlight=true type='yaml' prefix='fa-' iconsUrl='css/admin/font-awesome-icons.yml' resources=true defaultValue='' />
+            </div>
+        </div>
+        <div id="iconIsSelected"  style="display: none">
+            <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+                <div class="toastui-editor-popup-content-body">
+                    Seleted Icon : <span id="selectedIcon"> </span>
+                </div>
+            </div>
+            <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
+                <button class="btn btn-primary" type="button" onclick="insertIcon()">Insert</button>
+                <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!------------ end modal to select a FA icon ----------------->
+    <!-- wiki content that goes in the editor-->
+    <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
+           value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
+           data type="hidden"/>
+
+    <!-- here is the editor -->
+    <div class="form-group">
+        <div class="code-html tui-doc-contents">
+            <h2>Editor</h2>
+            <div id="editor"></div>
+        </div>
+    </div>
+    <input id="wiki_html_content" class="form-control" name="wiki_html_content" type="hidden"/>
+
+
+</div>
+</div>
+</div>
+
+<div id="help" class="col-sm-4 pull-right" style="display:none">
+    <br/>
+    <!--<img src="images/local/skin/creole_cheat_sheet.png" title="Manual Wiki" alt="Manuel"/> -->
+    <#include "syntax_help.html" />
+</div>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label for="modification_comment"><span class="glyphicon glyphicon-comment"></span> &nbsp; #i18n{wiki.modify_page.labelComment} :</label>
+            <input class="form-control" type="text" name="modification_comment" maxlength="50"/>
+        </div>
+        <button name="action_modifyPage" class="btn btn-primary" type="submit" title="#i18n{wiki.modify_page.buttonModify}" onclick="createVersion()">
+            <span class="glyphicon glyphicon-save"></span> &nbsp;#i18n{wiki.modify_page.buttonModify}
+        </button>
+        <button name="action_modifyPage" class="btn btn-primary" type="submit" title="#i18n{wiki.modify_page.buttonModify}" onclick="publishVersion()">
+            <span class="glyphicon glyphicon-save"></span> &nbsp;#i18n{wiki.modify_page.SaveAndPublish}
+        </button>
+    </div>
+    <div class="col-sm-6">
+        <div class="well">
+            <legend><span class="glyphicon glyphicon-user"></span> &nbsp; #i18n{wiki.modify_page.titleRole}</legend>
+            <div class="form-group row">
+                <label class="col-sm-5 col-form-label" for="view_role">#i18n{wiki.modify_page.labelViewRole} :</label>
+                <div class="col-sm-7">
+                    <@select name="view_role" default_value="${topic.viewRole}" items=page_roles_list sort=true />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-5 col-form-label" for="edit_role">#i18n{wiki.modify_page.labelEditRole} :</label>
+                <div class="col-sm-7">
+                    <@select name="edit_role" default_value="${topic.editRole}" items=page_roles_list sort=true />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+</div>
+</div>
+
+<div class="row" >
+    <div class="container panel panel-default">
+        <h3><span class="glyphicon glyphicon-picture"></span> &nbsp; #i18n{wiki.modify_page.titleImages}</h3>
+        <div class="row" >
+            <div class="col-sm-6">
+                <@messages infos=infos />
+                <table class="table table-condensed table-stripend">
+                    <thead>
+                    <tr>
+                        <th>#i18n{wiki.modify_page.colImage}</th>
+                        <th>#i18n{wiki.modify_page.colDescription}</th>
+                        <th>#i18n{wiki.modify_page.colPasteEditor}</th>
+                        <th>#i18n{portal.util.labelActions}</th>
+                    </tr>
+                    </thead>
+                    <tbody  id="table-images">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <form id="ajax-form-image-upload" action="jsp/site/Portal.jsp" method="post" enctype="multipart/form-data" >
+                    <input type="hidden" name="page" value="wiki" />
+                    <input type="hidden" name="page_name" value="${topic.pageName}" />
+                    <input type="hidden" name="action" value="uploadImage" />
+                    <input type="hidden" name="topic_id" value="${topic.idTopic}" />
+                    <div class="well">
+                        <legend><span class="glyphicon glyphicon-plus"></span> &nbsp; #i18n{wiki.modify_page.titleAddImage}</legend>
+                        <@messages errors=errors />
+                        <!-- loader.gif -->
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label" for="name">#i18n{wiki.modify_page.labelFile}&nbsp;: </label>
+                            <div class="col-sm-8">
+                                <input class="form-control" name="image_file" type="file" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label" for="name">#i18n{wiki.modify_page.labelDescription}&nbsp;: </label>
+                            <div class="col-sm-8">
+                                <input class="form-control" name="image_name" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-8">
+                                <button id="btn-image-upload" class="btn btn-primary" name="name" type="submit" >
+                                    <span class="glyphicon glyphicon-upload"></span> &nbsp; #i18n{wiki.modify_page.buttonUpload}
+                                </button>
+                            </div>
+                        </div>
+                        <div id="loader-image-upload" class="progress progress-striped active" style="display:none">
+                            <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                <span class="sr-only">Loading ...</span>
+                            </div>
+                        </div>
+                        </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirm-delete-page" tabindex="-1" role="dialog" aria-labelledby="DeletePageConfirmation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>#i18n{wiki.message.confirmTitle}</h3>
+            </div>
+            <div class="modal-body">
+                #i18n{wiki.message.confirmDelete}
+            </div>
+            <div class="modal-footer">
+                <form id="form-page-delete" action="jsp/site/Portal.jsp" method="post" >
+                    <input type="hidden" name="page" value="wiki" />
+                    <input type="hidden" name="page_name" value="${topic.pageName}" />
+                    <input type="hidden" name="action" value="deletePage" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">#i18n{portal.util.labelCancel}</button>
+                    <button id="btn-page-delete" type="submit" class="btn btn-danger" >#i18n{portal.util.labelDelete}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirm-delete-image" tabindex="-1" role="dialog" aria-labelledby="DeleteImageConfirmation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>#i18n{wiki.message.confirmTitle}</h3>
+            </div>
+            <div class="modal-body">
+                #i18n{wiki.message.confirmRemoveImage}
+            </div>
+            <div class="modal-footer">
+                <form id="ajax-form-image-delete" action="jsp/site/Portal.jsp" method="post" >
+                    <input type="hidden" name="page" value="wiki" />
+                    <input type="hidden" name="page_name" value="${topic.pageName}" />
+                    <input type="hidden" name="action" value="removeImage" />
+                    <input id="id-image-to-remove" type="hidden" name="id_image" value="" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">#i18n{portal.util.labelCancel}</button>
+                    <button id="btn-image-delete" type="submit" class="btn btn-danger" >#i18n{portal.util.labelDelete}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
+<!-- Tui Editor integration -->
+<!-- Added to check demo page in Internet Explorer -->
+<script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/tui_editor/data/md-plugins.js"></script>
+<!-- Editor -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.min.js"></script>
+<!-- Chart -->
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_chart/toastui-chart.js"></script>
+
+<!-- Color Picker -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_color_picker/tui-color-picker.min.js"></script>
+<!-- Editor's Plugin -->
+<script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/plugins/editor-plugin-chart/cdn/toastui-editor-plugin-chart.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
+
+<script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
+<script type="text/javascript" class="code-js">
+    const { Editor } = toastui;
+    const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
+
+    let wikiContent = document.getElementById('wiki_content').value;
+
+    const chartOptions = {
+        minWidth: 100,
+        maxWidth: 600,
+        minHeight: 100,
+        maxHeight: 300
+    };
+
+    const editor = new Editor({
+        el: document.querySelector('#editor'),
+        customHTMLRenderer: {
+            latex(node) {
+                const generator = new latexjs.HtmlGenerator({ hyphenate: false });
+                const { body } = latexjs.parse(node.literal, { generator }).htmlDocument();
+                document.head.appendChild(generator.stylesAndScripts(""))
+                return [
+                    { type: 'openTag', tagName: 'div', outerNewLine: true },
+                    { type: 'html', content: body.innerHTML },
+                    { type: 'closeTag', tagName: 'div', outerNewLine: true }
+                ];
+            },
+            i(node) {
+                return [
+                    { type: 'openTag', tagName: 'div', outerNewLine: false, className: node.className },
+                    { type: 'html', content: node.literal },
+                    { type: 'closeTag', tagName: 'div', outerNewLine: false },
+                ];
+            },
+            htmlBlock: {
+                iframe(node) {
+                    return [
+                        { type: 'openTag', tagName: 'iframe', outerNewLine: true, attributes: node.attrs },
+                        { type: 'html', content: node.childrenHTML },
+                        { type: 'closeTag', tagName: 'iframe', outerNewLine: true },
+                    ];
+                },
+            },
+        },
+        previewStyle: 'vertical',
+        height: '500px',
+        initialValue: wikiContent,
+        plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
+        events: {
+            change: () => {
+                document.getElementById('wiki_content').value = editor.getMarkdown();
+                autoSave();
+            },
+        },
+    });
+
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 0 }, {
+        name: 'addIconButton',
+        tooltip: 'FA Icons',
+        text: 'FA',
+        className: 'fa fa-search',
+        style: { backgroundImage: 'none' },
+    });
+
+    let addIconButton = document.getElementsByClassName("fa fa-search")[0];
+    addIconButton.addEventListener('click', function() {
+           document.getElementsByClassName("toastui-editor-popup")[0].style.display = "block";
+          document.getElementsByClassName("ss-option").forEach(function(option) {
+                if (option.innerText.indexOf("[brands]") > -1) {
+                     option.style.display = "none";
+                }
+           });
+            document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
+                document.getElementsByClassName("ss-option").forEach(function(option) {
+                    if (option.innerText.indexOf("[brands]") > -1) {
+                        option.style.display = "none";
+                    }
+                });
+            });
+
+       });
+
+        document.getElementById("selectIcon").addEventListener("change", function() {
+            let icon = document.getElementById("selectIcon").value;
+            document.getElementById("iconIsSelected").style.display = "block";
+            document.getElementById("selectedIcon").innerHTML = '<i class="fa fa-' + icon + '"></i>';
+        });
+        function insertIcon() {
+            let icon =  document.getElementById("selectedIcon").children[0].outerHTML;
+            editor.insertText("$$i\n"+icon+ "\n$$");
+            document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+        }
+    function closeToastUiModal() {
+        document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+    }
+</script>
+
+
+<script language="javascript">
+
+    function replaceAll(find, replace, str)
+    {
+        return str.replace(new RegExp(find, 'g'), replace);
+    };
+
+    function validate()
+    {
+        let htmlContent = editor.getHTML()
+        htmlContent = removeCustomInputsDiv(htmlContent);
+        htmlContent = escapeSpecialCharsFromContent(htmlContent);
+        document.getElementById('wiki_html_content').value = htmlContent;
+        escapeSpecialChars( 'wiki_content' );
+        return true;
+    };
+
+    function removeCustomInputsDiv(htmlContent) {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(htmlContent, 'text/html');
+        for (let i = 0; i < doc.body.children.length; i++) {
+            if (doc.body.children[i].className === "toastui-editor-custom-block") {
+                let keep = doc.body.children[i].children[1].children[0];
+                doc.body.children[i].replaceWith(keep);
+            }
+        }
+        return doc.body.innerHTML;
+    }
+
+    function escapeSpecialChars( id )
+    {
+        var content = document.getElementById( id ).value;
+        content = replaceAll( '<' , '[lt;' , content );
+        content = replaceAll( '>' , '[gt;' , content );
+        content = replaceAll( '"' , '[quot;' , content );
+        content = replaceAll( '&nbsp;' , '[nbsp;' , content );
+        content = replaceAll( '&' , '[amp;' , content );
+        content = replaceAll( '#' , '[hashmark;' , content );
+        content = replaceAll('`', '[codeQuote;', content)
+        content = replaceAll("'", '[simpleQuote;', content)
+        document.getElementById( id ).value = content;
+    }
+
+    function updateImages()
+    {
+        $.get( 'jsp/site/Portal.jsp', { page: "wiki", view: "listImages", topic_id: ${topic.idTopic} } , function( data ){
+            populateImages($( "#table-images" ) , data )
+        });
+    };
+
+    function populateImages(select, data) {
+        select.html('');
+        var items = [];
+        $.each(data, function (id , image ) {
+            items.push( '<tr>' );
+            items.push( '<td><img src="image?resource_type=wiki_image&id=' + image.id + '" alt="' + image.name + '" height="40px"</td>' );
+            items.push( '<td>' + image.name + '</td>' );
+            items.push( '<td>' );
+            items.push( '{{' + image.id + '|' + image.name + '}}<br/> ' );
+            items.push( '{{' + image.id + '|' + image.name + '|<em>width</em>|<em>height</em>|<em>align</em> }}' );
+            items.push( '</td>' );
+            items.push( '<td>' );
+            items.push( '<a data-title="' + image.id + '" data-toggle="modal" data-target="#confirm-delete-image" href="#" class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}">' );
+            items.push( '<span class="glyphicon glyphicon-trash"></span>' );
+            items.push( '</a>' );
+            items.push( '</td>' );
+            items.push( '</tr>' );
+        });
+        select.append(items.join(''));
+    };
+
+</script>
+
+
+
+<script language="javascript">
+
+    $(document).ready(function() {
+
+        // Help block management
+        $("#btn-help").click(function() {
+            $("#help").toggle("slow");
+            this.blur();
+            if ($("#main-panel").hasClass("col-sm-7"))
+            {
+                $("#main-panel").removeClass("col-sm-7");
+                $("#main-panel").addClass("col-sm-12");
+            }
+            else
+            {
+                $("#main-panel").removeClass("col-sm-12");
+                $("#main-panel").addClass("col-sm-7");
+            }
+        });
+
+
+
+
+        // Image upload ajax form
+        var formUploadImage = $('#ajax-form-image-upload');
+        var loaderUploadImage = $('#loader-image-upload'); // loder.gif image
+        var buttonUploadImage = $('#btn-image-upload'); // upload button
+
+        buttonUploadImage.click(function(){
+            // implement with ajaxForm Plugin
+            formUploadImage.ajaxForm({
+                beforeSend: function(){
+                    loaderUploadImage.show();
+                    buttonUploadImage.attr('disabled', 'disabled');
+                },
+                success: function(e){
+                    loaderUploadImage.hide();
+                    formUploadImage.resetForm();
+                    buttonUploadImage.removeAttr('disabled');
+                    updateImages();
+                },
+                error: function(e){
+                    buttonUploadImage.removeAttr('disabled');
+                }
+            });
+        });
+
+        // Delete Image confirmation
+        $('#confirm-delete-image').on('show.bs.modal', function(e) {
+            $(this).find('#id-image-to-remove').attr('value', $(e.relatedTarget).data('title'));
+        });
+
+        // Delete image ajax form
+        var formDeleteImage = $('#ajax-form-image-delete');
+        var buttonDeleteImage = $('#btn-image-delete'); // delete button
+        var modalConfirmDeleteImage = $('#confirm-delete-image');
+
+        buttonDeleteImage.click(function(){
+            // implement with ajaxForm Plugin
+            formDeleteImage.ajaxForm({
+                beforeSend: function(){
+                    buttonDeleteImage.attr('disabled', 'disabled');
+                },
+                success: function(e){
+                    formDeleteImage.resetForm();
+                    buttonDeleteImage.removeAttr('disabled');
+                    modalConfirmDeleteImage.modal('hide');
+                    updateImages();
+                },
+                error: function(e){
+                    buttonDeleteImage.removeAttr('disabled');
+                    modalConfirmDeleteImage.modal('hide');
+                }
+            });
+        });
+
+        updateImages();
+    });
+
+</script>
+
+
+<script language="javascript">
+    function publishVersion()
+    {
+        document.getElementById('publish_version').value = 'true';
+        validate();
+    }
+</script>
+<script language="javascript">
+    function createVersion()
+    {
+        document.getElementById('create_version').value = 'true';
+        validate();
+    }
+</script>
+
+
+<script>
+    function toogleAutosave(){
+        if(document.getElementById('autoSaveMode').checked){
+            document.getElementById('autoSaveLabel').innerText =  'Auto-save mode is activated';
+        } else{
+            document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is deactivated';
+        }
+    }
+    function escapeSpecialCharsFromContent( content )
+    {
+        content = replaceAll( '<' , '[lt;' , content );
+        content = replaceAll( '>' , '[gt;' , content );
+        content = replaceAll( '"' , '[quot;' , content );
+        content = replaceAll( '&nbsp;' , '[nbsp;' , content );
+        content = replaceAll( '&' , '[amp;' , content );
+        content = replaceAll( '#' , '[hashmark;' , content );
+        content = replaceAll('`', '[codeQuote;', content)
+        content = replaceAll("'", '[simpleQuote;', content)
+        return content
+    }
+    function displayAutoSave(result){
+        if(result){
+            document.getElementById('autoSave').style.display = 'block';
+            document.getElementById('autoSaveSucess').style.display = 'block';
+        } else{
+            document.getElementById('autoSave').style.display = 'block';
+            document.getElementById('autoSaveFailed').style.display = 'block';
+        }
+        setTimeout(function(){
+            document.getElementById('autoSave').style.display = 'none';
+            document.getElementById('autoSaveSucess').style.display = 'none';
+            document.getElementById('autoSaveFailed').style.display = 'none';
+        }, 3000);
+    }
+    // auto save
+    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
+        let response = await fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                credentials: "same-origin"
+            },
+            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
+        });
+        let result = await response;
+        displayAutoSave(result);
+    }
+    function callInputs() {
+        const version = document.getElementById("topic_version").value;
+        const topic_id = document.getElementById("topic_id").value;
+        if(version !== undefined && version !== null && version !== ""){
+            let parentPage = document.getElementById("parent_page_name").value;
+            let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
+            let title = document.getElementById("page_title_" + localeJs).value;
+            let topicTitle = escapeSpecialCharsFromContent(title);
+            let wikiHtmlContent = editor.getHTML()
+            wikiHtmlContent = removeCustomInputsDiv(wikiHtmlContent);
+            wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
+            saveContent(version, parentPage, topic_id, topicTitle, topicContent,wikiHtmlContent)
+        }
+    }
+    // if auto save mode is activated and auto is done
+    let hasToWait = false;
+    function autoSave() {
+        if(document.getElementById('autoSaveMode').checked) {
+            if (!hasToWait) {
+                hasToWait = true;
+                setTimeout(function () {
+                    callInputs();
+                    hasToWait = false;
+                }, 2000);
+            }
+        }
+    }
+</script>
+<script>
+    // register last user on modify page
+    function saveLastUserOnModifyPage(){
+        const topic_id = document.getElementById("topic_id").value;
+        fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                credentials: "same-origin"
+            },
+            body: JSON.stringify(topic_id)
+        });
+    }
+    // do when page is loaded
+    document.onreadystatechange = function() {
+        if (document.readyState === 'complete') {
+            setInterval(function (){
+                    saveLastUserOnModifyPage();}
+                , 15000);
+        }
+    }
+</script>
+
+
+
