@@ -173,7 +173,6 @@
         <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
         <div class="form-group">
             <input class="form-control" id="page_title_${locale}" type="text" name="page_title_${locale}" value="<#if version?? && version.getWikiContent(locale)??>${version.getWikiContent( locale).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
-
         </div>
 
         <div class="form-group">
@@ -224,8 +223,9 @@
         </div>
     </div>
     <!------------ end modal to select a FA icon ----------------->
+
     <!------------ modal to select an alert box ----------------->
-    <div id="select-alert" class="toastui-editor-popup" style="display: none;" >
+    <div id="selectAlertType" class="toastui-editor-popup" style="display: none;" >
         <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
         <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
             <span class="fa fa-times"></span>
@@ -233,25 +233,14 @@
         <div class="toastui-editor-popup-header">
             <div class="toastui-editor-popup-header-title">Select Alert an Box</div>
             <select id="alertBoxType" class="form-control" onchange="changeAlertBoxType(this.value)" >
+                <option selected>Select an alert</option>
                 <option value="info">Info</option>
                 <option value="warning">Warning</option>
                 <option value="danger">Danger</option>
                 <option value="success">Success</option>
             </select>
         </div>
-        <div id="alertIsSelected"  style="display: none">
-            <div id="selectedAlertClass"><span id="selectedAlertType"></span> This is an warning alert</div></p>
-            <div class="toastui-editor-popup-content-body" style="margin: 25px;">
-                <label for="alertBoxContent">Content :</label>
-                <textarea id="alertBoxContent" class="form-control" name="alertBoxContent" rows="5" ></textarea>
-            </div>
-            <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
-                <button class="btn btn-primary" type="button" onclick="insertAlert(this.value)">Insert</button>
-                <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
-            </div>
-        </div>
     </div>
-
                 <!-- wiki content that goes in the editor-->
     <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
            value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
@@ -513,7 +502,7 @@
     });
     const addAlertButton = document.getElementsByClassName("alert alert-danger")[0];
     addAlertButton.addEventListener('click', function() {
-        document.getElementsByClassName("toastui-editor-popup")[1].style.display = "block";
+        document.getElementById("selectAlertType").style.display = "block";
     });
 
     const addIconButton = document.getElementsByClassName("fa fa-search")[0];
@@ -559,17 +548,30 @@
     }
     document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
     function changeAlertBoxType(alertValue) {
-        document.getElementById("selectedAlertClass").className = "alert alert-"+alertValue;
-        document.getElementById("selectedAlertType").className = "glyphicon glyphicon-"+alertValue+"-sign";
-        document.getElementById("alertIsSelected").style.display = "block";
-    }
-    function insertAlert(contentValue){
-        const alertClass =  document.getElementById("selectedAlertClass").className;
-        const alertIcon = document.getElementById("selectedAlertType").className;
-        const alertHtml = '<div class="'+alertClass+'"><span id="'+alertIcon+'"></span>'+ contentValue +'</div></p>\n';
+        let alertIcon = "fa-solid fa-info"
+        switch (alertValue) {
+            case "danger":
+                alertIcon = "fa-solid fa-triangle-exclamation"
+                break;
+            case "warning":
+                alertIcon = "fa-solid fa-exclamation"
+                break;
+            case "info":
+                alertIcon = "fa-solid fa-info"
+                break;
+            case "success":
+                alertIcon = "fa-solid fa-check"
+                break;
+            default:
+                alertIcon = "fa-solid fa-info"
+        }
+
+        const alertHtml = '<div class="alert alert-' + alertValue + '"><span class="'+alertIcon+'"></span>  <span> </span>My alert message goes here.</div>';
         editor.insertText("$$span\n"+alertHtml+ "\n$$");
         closeToastUiModal();
     }
+</script>
+
 </script>
 
 
