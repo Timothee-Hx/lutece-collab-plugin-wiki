@@ -3,12 +3,8 @@
     <meta charset="UTF-8" />
     <title>12. Editor with All Plugins</title>
     <!-- Editor -->
-    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/toastui-editor.css" />
     <!-- Chart -->
     <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
-    <link rel="stylesheet"
-          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <!-- Color syntax -->
     <link rel="stylesheet" href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"/>
     <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"/>
@@ -17,7 +13,6 @@
 
     <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
 </head>
 <#assign baseUrl = url />
 <script>
@@ -515,7 +510,6 @@
         initialValue: wikiContent,
         plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
         toolbarItems: [
-
             ['heading', 'bold', 'italic', 'strike'],
             ['hr', 'quote'],
             ['ul', 'ol', 'task', 'indent', 'outdent'],
@@ -551,10 +545,10 @@
         style: { backgroundImage: 'none' },
     });
     editor.insertToolbarItem({ groupIndex: 0, itemIndex: 3 }, {
-        name: 'addLabelButton',
-        tooltip: 'Labels',
-        text: 'Label',
-        className: 'label label-primary editor',
+        name: 'toc',
+        tooltip: 'Table of Contents',
+        text: 'TOC',
+        className: 'fa fa-list editor',
         style: { backgroundImage: 'none' },
     });
     const addAlertButton = document.getElementsByClassName("alert alert-danger editor")[0];
@@ -644,11 +638,52 @@
         closeToastUiModal();
     }
     const tableOfContentButton = document.getElementsByClassName("fa fa-list editor")[0];
-    document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
+    tableOfContentButton.addEventListener('click', function() {
         // create a table of content
+        const html = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
+      const toc =  createTableOfContent(html);
+        console.log(toc);
     });
-    function createTableOfContent(html){
-//todo
+    function createTableOfContent(html) {
+        // href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=home#H2_Premiers_pas"
+        // get the url of the page
+        let thisPageurl = window.location.href;
+        thisPageurl = thisPageurl.replace("view=modifyPage", "view=viewPage");
+        thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, 'text/html');
+        let headers = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+        let tableOfContent = document.createElement("div")
+        tableOfContent.id = "tableOfContent";
+        tableOfContent.className = "accordion";
+
+        for (let i = 0; i < headers.length; i++) {
+            let header = headers[i];
+            let headerText = header.innerText;
+            let headerLevel = header.tagName;
+            let headerId = header.id;
+            let headerHtml = header.outerHTML;
+            let headerHtmlLink = headerHtml.replace(headerText, '<a href="' + thisPageurl + '#' + headerId + '">' + headerText + '</a>');
+            if (headerLevel === "H1" || headerLevel === "H2" || headerLevel === "H3") {
+                tableOfContent.innerHTML += '<div class="accordion-item">';
+                tableOfContent.innerHTML += '<h2 class="accordion-header" id="heading' + i + '">';
+                tableOfContent.innerHTML += '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse' + i + '" aria-expanded="false" aria-controls="collapse' + i + '">';
+                tableOfContent.innerHTML += headerText;
+                tableOfContent.innerHTML += '</button>';
+                tableOfContent.innerHTML += '</h2>';
+                tableOfContent.innerHTML += '<div id="collapse' + i + '" class="accordion-collapse collapse" aria-labelledby="heading' + i + '" data-bs-parent="#tableOfContent">';
+                tableOfContent.innerHTML += '<div class="accordion-body">';
+                tableOfContent.innerHTML += '<a href="' + thisPageurl + '#' + headerId + '">' + headerText + '</a>';
+                tableOfContent.innerHTML += '</div>';
+                tableOfContent.innerHTML += '</div>';
+                tableOfContent.innerHTML += '</div>';
+            } else {
+                tableOfContent.innerHTML += headerHtmlLink;
+            }
+            // this goes
+            return tableOfContent;
+        }
+        editor.insertText("$$span\n"+tableOfContent.innerHTML+ "\n$$");
     }
 
 </script>
