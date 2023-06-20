@@ -292,7 +292,6 @@
 </div>
 
 
-
 <div id="help" class="col-sm-4 pull-right" style="display:none">
     <br/>
     <!--<img src="images/local/skin/creole_cheat_sheet.png" title="Manual Wiki" alt="Manuel"/> -->
@@ -417,6 +416,8 @@
         </div>
     </div>
 </div>
+
+<div id="tableOfContent" class="accordion"><div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse0" aria-expanded="false" aria-controls="collapse0"><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#I etape">I etape</a></button></h2><div id="collapse0" class="accordion-collapse collapse" aria-labelledby="heading0"><div class="accordion-body" style="margin-left: 20px;"></div><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#1.a.sous partie" style="color: black; padding: 10px;">1.a.sous partie</a></div><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#1.b sous partie" style="color: black; padding: 10px;">1.b sous partie</a></div></div></div><div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3"><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#II etape 2">II etape 2</a></button></h2><div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"><div class="accordion-body" style="margin-left: 20px;"></div><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#2.a sous partie" style="color: black; padding: 10px;">2.a sous partie</a></div><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#2.n sous partie" style="color: black; padding: 10px;">2.n sous partie</a></div></div></div><div class="accordion-item"><h2 class="accordion-header"><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#etape 3 sans sous partie" style="color: black; padding: 10px;">etape 3 sans sous partie</a></div></h2></div></div>
 
 <div class="modal fade" id="confirm-delete-image" tabindex="-1" role="dialog" aria-labelledby="DeleteImageConfirmation" aria-hidden="true">
     <div class="modal-dialog">
@@ -646,14 +647,12 @@
         // create a table of content
         const html = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
       const toc =  createTableOfContent(html);
-      let conteneur = document.createElement("div")
-        conteneur.appendChild(toc);
-        editor.insertText("$$span\n"+conteneur.innerHTML+ "\n$$");
+      let container = document.createElement("div")
+        container.appendChild(toc);
+        editor.insertText("$$span\n "+container.innerHTML+ "\n $$");
 
     });
     function createTableOfContent(html) {
-        // href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=home#H2_Premiers_pas"
-        // get the url of the page
         let thisPageurl = window.location.href;
         thisPageurl = thisPageurl.replace("view=modifyPage", "view=viewPage");
         thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
@@ -674,50 +673,62 @@
             if (headerLevel === "H1" || headerLevel === "H2" || headerLevel === "H3") {
                 let accordionItem = document.createElement("div");
                 accordionItem.className = "accordion-item";
-                let accordionHeader = document.createElement("h2");
-                accordionHeader.className = "accordion-header";
-                let accordionButton = document.createElement("button");
-                accordionButton.className = "accordion-button collapsed";
-                accordionButton.setAttribute("type", "button");
-                accordionButton.setAttribute("data-bs-toggle", "collapse");
-                accordionButton.setAttribute("data-bs-target", "#collapse" + i);
-                accordionButton.setAttribute("aria-expanded", "false");
-                accordionButton.setAttribute("aria-controls", "collapse" + i);
-                accordionButton.appendChild(linkElement);
-                accordionHeader.appendChild(accordionButton);
-                accordionItem.appendChild(accordionHeader);
                 if (headers[i + 1] !== undefined) {
                     if (headers[i + 1].tagName === "H1" || headers[i + 1].tagName === "H2" || headers[i + 1].tagName === "H3") {
+                        let accordionHeader = document.createElement("h6");
+                        accordionHeader.className = "accordion-header";
+                        let linkContainer = document.createElement("div");
+                        linkElement.style= "color: black; padding: 10px"
+                        linkContainer.appendChild(linkElement);
+                        accordionHeader.appendChild(linkContainer)
+                        accordionItem.appendChild(accordionHeader);
                         tableOfContent.appendChild(accordionItem);
                     } else if (headers[i + 1].tagName === "H4" || headers[i + 1].tagName === "H5" || headers[i + 1].tagName === "H6") {
+                        let accordionHeader = document.createElement("h2");
+                        accordionHeader.className = "accordion-header";
+                        let accordionButton = document.createElement("button");
+                        accordionButton.className = "accordion-button";
+                        accordionButton.setAttribute("type", "button");
+                        accordionButton.setAttribute("data-bs-toggle", "collapse");
+                        accordionButton.setAttribute("data-bs-target", "#collapse" + i);
+                        accordionButton.setAttribute("aria-expanded", "false");
+                        accordionButton.setAttribute("aria-controls", "collapse" + i);
+                        accordionButton.appendChild(linkElement);
+                        accordionHeader.appendChild(accordionButton);
+                        accordionItem.appendChild(accordionHeader);
                         let accordionCollapse = document.createElement("div");
                         accordionCollapse.id = "collapse" + i;
                         accordionCollapse.className = "accordion-collapse collapse";
                         accordionCollapse.setAttribute("aria-labelledby", "heading" + i);
                         let accordionBody = document.createElement("div");
                         accordionBody.className = "accordion-body";
+                        accordionBody.style.marginLeft = "20px";
                         accordionCollapse.appendChild(accordionBody);
                         accordionItem.appendChild(accordionCollapse);
                         tableOfContent.appendChild(accordionItem);
                     }
                 } else {
+                    let accordionHeader = document.createElement("h6");
+                    accordionHeader.className = "accordion-header";
+                    let linkContainer = document.createElement("div");
+                    linkElement.style= "color: black; padding: 10px"
+                    linkContainer.appendChild(linkElement);
+                    accordionHeader.appendChild(linkContainer)
+                    accordionItem.appendChild(accordionHeader);
                     tableOfContent.appendChild(accordionItem);
                 }
               }
             if (headerLevel === "H4" || headerLevel === "H5" || headerLevel === "H6") {
-                // insert accordion body in the previous accordion item
+                let linkContainer = document.createElement("div");
+                linkElement.style= "color: black; padding: 10px"
+                linkContainer.appendChild(linkElement);
                 let accordionCollapse = tableOfContent.lastChild.lastChild;
-                console.log(accordionCollapse)
-                accordionCollapse.appendChild(linkElement);
+                accordionCollapse.appendChild(linkContainer);
             }
             }
-
-        console.log(tableOfContent)
         return tableOfContent;
     }
-
 </script>
-
 
 <script language="javascript">
 
@@ -991,5 +1002,18 @@
         }
     }
 </script>
-
+<script defer>
+    let accordionButtons = document.getElementsByClassName('accordion-button');
+for (let i = 0; i < accordionButtons.length; i++) {
+    accordionButtons[i].addEventListener('click', function () {
+     accordionButtons[i].classList.toggle('collapsed');
+     let parent = document.getElementsByClassName('accordion-button')[i].parentNode
+        console.log(parent)
+     let accordionBody =   parent.nextSibling;
+     console.log(accordionBody)
+     accordionBody.classList.toggle('show')
+     console.log(accordionBody)
+    });
+}
+</script>
 
