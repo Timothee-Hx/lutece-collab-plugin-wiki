@@ -416,12 +416,6 @@
         </div>
     </div>
 </div>
-
-<div id="tableOfContent" class="accordion"><div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse0" aria-expanded="false" aria-controls="collapse0"><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#I etape">I etape</a></button></h2><div id="collapse0" class="accordion-collapse collapse" aria-labelledby="heading0"><div class="accordion-body" style="margin-left: 20px;"></div><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#1.a.sous partie" style="color: black; padding: 10px;">1.a.sous partie</a></div><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#1.b sous partie" style="color: black; padding: 10px;">1.b sous partie</a></div></div></div><div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3"><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#II etape 2">II etape 2</a></button></h2><div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"><div class="accordion-body" style="margin-left: 20px;"></div><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#2.a sous partie" style="color: black; padding: 10px;">2.a sous partie</a></div><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#2.n sous partie" style="color: black; padding: 10px;">2.n sous partie</a></div></div></div><div class="accordion-item"><h2 class="accordion-header"><div><a href="http://localhost:8080/lutece/jsp/site/Portal.jsp?page=wiki&amp;view=viewPage&amp;page_name=home#etape 3 sans sous partie" style="color: black; padding: 10px;">etape 3 sans sous partie</a></div></h2></div></div>
-
-<div class="modal fade" id="confirm-delete-image" tabindex="-1" role="dialog" aria-labelledby="DeleteImageConfirmation" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
             <div class="modal-header">
                 <h3>#i18n{wiki.message.confirmTitle}</h3>
             </div>
@@ -662,7 +656,6 @@
         let tableOfContent = document.createElement("div")
         tableOfContent.id = "tableOfContent";
         tableOfContent.className = "accordion";
-
         for (let i = 0; i < headers.length; i++) {
             let header = headers[i];
             let headerText = header.innerText;
@@ -688,11 +681,8 @@
                         accordionHeader.className = "accordion-header";
                         let accordionButton = document.createElement("button");
                         accordionButton.className = "accordion-button";
+                        accordionButton.style = "background-color: white; color:black;"
                         accordionButton.setAttribute("type", "button");
-                        accordionButton.setAttribute("data-bs-toggle", "collapse");
-                        accordionButton.setAttribute("data-bs-target", "#collapse" + i);
-                        accordionButton.setAttribute("aria-expanded", "false");
-                        accordionButton.setAttribute("aria-controls", "collapse" + i);
                         accordionButton.appendChild(linkElement);
                         accordionHeader.appendChild(accordionButton);
                         accordionItem.appendChild(accordionHeader);
@@ -702,7 +692,7 @@
                         accordionCollapse.setAttribute("aria-labelledby", "heading" + i);
                         let accordionBody = document.createElement("div");
                         accordionBody.className = "accordion-body";
-                        accordionBody.style.marginLeft = "20px";
+                        accordionBody.style.marginLeft = "25px";
                         accordionCollapse.appendChild(accordionBody);
                         accordionItem.appendChild(accordionCollapse);
                         tableOfContent.appendChild(accordionItem);
@@ -711,7 +701,7 @@
                     let accordionHeader = document.createElement("h6");
                     accordionHeader.className = "accordion-header";
                     let linkContainer = document.createElement("div");
-                    linkElement.style= "color: black; padding: 10px"
+                    linkElement.style= "color: black; padding: 16px;"
                     linkContainer.appendChild(linkElement);
                     accordionHeader.appendChild(linkContainer)
                     accordionItem.appendChild(accordionHeader);
@@ -720,12 +710,13 @@
               }
             if (headerLevel === "H4" || headerLevel === "H5" || headerLevel === "H6") {
                 let linkContainer = document.createElement("div");
-                linkElement.style= "color: black; padding: 10px"
+                linkElement.style= "color: black; padding: 15px; font-size:15px"
                 linkContainer.appendChild(linkElement);
-                let accordionCollapse = tableOfContent.lastChild.lastChild;
-                accordionCollapse.appendChild(linkContainer);
+                let accordionBody = tableOfContent.lastChild.lastChild.lastChild
+                accordionBody.appendChild(linkContainer);
             }
             }
+        console.log(tableOfContent)
         return tableOfContent;
     }
 </script>
