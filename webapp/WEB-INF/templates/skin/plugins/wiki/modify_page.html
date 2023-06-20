@@ -209,6 +209,7 @@
             </div>
         </div>
     </div>
+
     <!------------ modal to select an alert box ----------------->
     <div id="selectAlertType" class="toastui-editor-popup" style="display: none;" >
         <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
@@ -290,6 +291,8 @@
 </div>
 </div>
 
+
+
 <div id="help" class="col-sm-4 pull-right" style="display:none">
     <br/>
     <!--<img src="images/local/skin/creole_cheat_sheet.png" title="Manual Wiki" alt="Manuel"/> -->
@@ -332,7 +335,6 @@
 
 </div>
 </div>
-
 <div class="row" >
     <div class="container panel panel-default">
         <h3><span class="glyphicon glyphicon-picture"></span> &nbsp; #i18n{wiki.modify_page.titleImages}</h3>
@@ -508,12 +510,14 @@
         previewStyle: 'vertical',
         height: '500px',
         initialValue: wikiContent,
+        scrollSync: false,
         plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
         toolbarItems: [
             ['heading', 'bold', 'italic', 'strike'],
             ['hr', 'quote'],
             ['ul', 'ol', 'task', 'indent', 'outdent'],
             ['table', 'image', 'link', 'codeblock'],
+        //    ['scrollSync'],
         ],
         events: {
             change: () => {
@@ -642,7 +646,10 @@
         // create a table of content
         const html = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
       const toc =  createTableOfContent(html);
-        console.log(toc);
+      let conteneur = document.createElement("div")
+        conteneur.appendChild(toc);
+        editor.insertText("$$span\n"+conteneur.innerHTML+ "\n$$");
+
     });
     function createTableOfContent(html) {
         // href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=home#H2_Premiers_pas"
@@ -661,29 +668,52 @@
             let header = headers[i];
             let headerText = header.innerText;
             let headerLevel = header.tagName;
-            let headerId = header.id;
-            let headerHtml = header.outerHTML;
-            let headerHtmlLink = headerHtml.replace(headerText, '<a href="' + thisPageurl + '#' + headerId + '">' + headerText + '</a>');
+            let linkElement = document.createElement("a");
+            linkElement.href = thisPageurl + '#' + headerText;
+            linkElement.innerText = headerText;
             if (headerLevel === "H1" || headerLevel === "H2" || headerLevel === "H3") {
-                tableOfContent.innerHTML += '<div class="accordion-item">';
-                tableOfContent.innerHTML += '<h2 class="accordion-header" id="heading' + i + '">';
-                tableOfContent.innerHTML += '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse' + i + '" aria-expanded="false" aria-controls="collapse' + i + '">';
-                tableOfContent.innerHTML += headerText;
-                tableOfContent.innerHTML += '</button>';
-                tableOfContent.innerHTML += '</h2>';
-                tableOfContent.innerHTML += '<div id="collapse' + i + '" class="accordion-collapse collapse" aria-labelledby="heading' + i + '" data-bs-parent="#tableOfContent">';
-                tableOfContent.innerHTML += '<div class="accordion-body">';
-                tableOfContent.innerHTML += '<a href="' + thisPageurl + '#' + headerId + '">' + headerText + '</a>';
-                tableOfContent.innerHTML += '</div>';
-                tableOfContent.innerHTML += '</div>';
-                tableOfContent.innerHTML += '</div>';
-            } else {
-                tableOfContent.innerHTML += headerHtmlLink;
+                let accordionItem = document.createElement("div");
+                accordionItem.className = "accordion-item";
+                let accordionHeader = document.createElement("h2");
+                accordionHeader.className = "accordion-header";
+                let accordionButton = document.createElement("button");
+                accordionButton.className = "accordion-button collapsed";
+                accordionButton.setAttribute("type", "button");
+                accordionButton.setAttribute("data-bs-toggle", "collapse");
+                accordionButton.setAttribute("data-bs-target", "#collapse" + i);
+                accordionButton.setAttribute("aria-expanded", "false");
+                accordionButton.setAttribute("aria-controls", "collapse" + i);
+                accordionButton.appendChild(linkElement);
+                accordionHeader.appendChild(accordionButton);
+                accordionItem.appendChild(accordionHeader);
+                if (headers[i + 1] !== undefined) {
+                    if (headers[i + 1].tagName === "H1" || headers[i + 1].tagName === "H2" || headers[i + 1].tagName === "H3") {
+                        tableOfContent.appendChild(accordionItem);
+                    } else if (headers[i + 1].tagName === "H4" || headers[i + 1].tagName === "H5" || headers[i + 1].tagName === "H6") {
+                        let accordionCollapse = document.createElement("div");
+                        accordionCollapse.id = "collapse" + i;
+                        accordionCollapse.className = "accordion-collapse collapse";
+                        accordionCollapse.setAttribute("aria-labelledby", "heading" + i);
+                        let accordionBody = document.createElement("div");
+                        accordionBody.className = "accordion-body";
+                        accordionCollapse.appendChild(accordionBody);
+                        accordionItem.appendChild(accordionCollapse);
+                        tableOfContent.appendChild(accordionItem);
+                    }
+                } else {
+                    tableOfContent.appendChild(accordionItem);
+                }
+              }
+            if (headerLevel === "H4" || headerLevel === "H5" || headerLevel === "H6") {
+                // insert accordion body in the previous accordion item
+                let accordionCollapse = tableOfContent.lastChild.lastChild;
+                console.log(accordionCollapse)
+                accordionCollapse.appendChild(linkElement);
             }
-            // this goes
-            return tableOfContent;
-        }
-        editor.insertText("$$span\n"+tableOfContent.innerHTML+ "\n$$");
+            }
+
+        console.log(tableOfContent)
+        return tableOfContent;
     }
 
 </script>
