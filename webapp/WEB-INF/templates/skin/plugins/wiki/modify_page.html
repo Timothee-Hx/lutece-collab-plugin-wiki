@@ -639,13 +639,7 @@
     }
     const tableOfContentButton = document.getElementsByClassName("fa fa-list editor")[0];
     tableOfContentButton.addEventListener('click', function() {
-        // create a table of content
-        const html = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-      const toc =  createTableOfContent(html);
-      let container = document.createElement("div")
-        container.appendChild(toc);
-        editor.insertText("$$span\n "+container.innerHTML+ "\n $$");
-
+        editor.insertText("$$span\n "+<span>TOC</span>+ "\n $$");
     });
     function createTableOfContent(html) {
         let thisPageurl = window.location.href;
@@ -945,6 +939,14 @@
 
         displayAutoSave(result);
     }
+    function checkforTOC(wikiHtmlContent){
+        let tocLocation = document.getElementsByTagName('span')[0];
+       let toc = createTableOfContent(wikiHtmlContent);
+        if(tocLocation !== null && tocLocation !== undefined){
+            wikiHtmlContent = wikiHtmlContent.replace(tocLocation, toc.outerHTML);
+        }
+        return wikiHtmlContent;
+    }
     function callInputs() {
         const version = document.getElementById("topic_version").value;
         const topic_id = document.getElementById("topic_id").value;
@@ -954,7 +956,8 @@
             let title = document.getElementById("page_title_" + localeJs).value;
             let topicTitle = escapeSpecialCharsFromContent(title);
             let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-            wikiHtmlContent = removeCustomInputsDiv(wikiHtmlContent);
+             wikiHtmlContent = checkforTOC(wikiHtmlContent);
+                // wikiHtmlContent = removeCustomInputsDiv(wikiHtmlContent);
             wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
            saveContent(version, parentPage, topic_id, topicTitle, topicContent,wikiHtmlContent)
         }
@@ -1002,11 +1005,8 @@ for (let i = 0; i < accordionButtons.length; i++) {
     accordionButtons[i].addEventListener('click', function () {
      accordionButtons[i].classList.toggle('collapsed');
      let parent = document.getElementsByClassName('accordion-button')[i].parentNode
-        console.log(parent)
      let accordionBody =   parent.nextSibling;
-     console.log(accordionBody)
      accordionBody.classList.toggle('show')
-     console.log(accordionBody)
     });
 }
 
