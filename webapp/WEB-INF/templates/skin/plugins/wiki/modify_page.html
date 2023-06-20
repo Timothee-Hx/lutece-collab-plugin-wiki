@@ -416,6 +416,7 @@
         </div>
     </div>
 </div>
+
             <div class="modal-header">
                 <h3>#i18n{wiki.message.confirmTitle}</h3>
             </div>
@@ -730,7 +731,7 @@
 
     function validate()
     {
-        let htmlContent = editor.getHTML()
+        let htmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
         htmlContent = removeCustomInputsDiv(htmlContent);
         htmlContent = escapeSpecialCharsFromContent(htmlContent);
         document.getElementById('wiki_html_content').value = htmlContent;
@@ -940,6 +941,8 @@
             body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
         });
         let result = await response;
+        console.log(result)
+
         displayAutoSave(result);
     }
     function callInputs() {
@@ -950,7 +953,7 @@
             let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
             let title = document.getElementById("page_title_" + localeJs).value;
             let topicTitle = escapeSpecialCharsFromContent(title);
-            let wikiHtmlContent = editor.getHTML()
+            let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
             wikiHtmlContent = removeCustomInputsDiv(wikiHtmlContent);
             wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
            saveContent(version, parentPage, topic_id, topicTitle, topicContent,wikiHtmlContent)
@@ -1006,5 +1009,7 @@ for (let i = 0; i < accordionButtons.length; i++) {
      console.log(accordionBody)
     });
 }
+
+console.log(document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML)
 </script>
 
