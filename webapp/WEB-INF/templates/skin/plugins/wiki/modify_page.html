@@ -229,7 +229,6 @@
     </div>
     <!------------ modal  select a badge ----------------->
     <div id="selectBadge" class="toastui-editor-popup" style="display: none;" >
-        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
         <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
             <span class="fa fa-times"></span>
         </button>
@@ -269,8 +268,20 @@
             </div>
         </div>
     </div>
+<!------------ modal Table of content ----------------->
+<div id="tableOfContentModal"  class="toastui-editor-popup" style="display: none;" >
+    <div class="toastui-editor-popup-header" style="padding: 20px;">
+        <div class="toastui-editor-popup-header-title">Table of content</div>
+            <label class="switch">
+        <input id="tableOfContentCheckBox" type="checkbox" onchange="changeToc(this.value)"/>
+        <span class="slider round"></span>
+</label>
 
-
+    <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+        <span class="fa fa-times"></span>
+    </button>
+        </div>
+</div>
 
     <!-- wiki content that goes in the editor-->
     <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
@@ -436,7 +447,7 @@
         </div>
     </div>
 </div>
-
+<div class="toastui-editor-toolbar-item-wrapper" style="display: inline-block;"><label class="scroll-sync active"><input type="checkbox"><span class="switch"></span></label></div>
 
 
 <script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
@@ -513,7 +524,7 @@
             ['hr', 'quote'],
             ['ul', 'ol', 'task', 'indent', 'outdent'],
             ['table', 'image', 'link', 'codeblock'],
-        //    ['scrollSync'],
+            ['scrollSync'],
         ],
         events: {
             change: () => {
@@ -551,24 +562,32 @@
         className: 'fa fa-list editor',
         style: { backgroundImage: 'none' },
     });
+    // insert a switch button in the toolbar
+
     const addAlertButton = document.getElementsByClassName("alert alert-danger editor")[0];
     addAlertButton.addEventListener('click', function() {
         document.getElementById("selectAlertType").style.display = "block";
     });
-
-    const addIconButton = document.getElementsByClassName("fa fa-search editor")[0];
+    let addIconButton = document.getElementsByClassName("fa fa-search")[0];
     addIconButton.addEventListener('click', function() {
-        document.getElementById("selectFaIcons").style.display = "block";
+        document.getElementsByClassName("toastui-editor-popup")[0].style.display = "block";
         document.getElementsByClassName("ss-option").forEach(function(option) {
             if (option.innerText.indexOf("[brands]") > -1) {
                 option.style.display = "none";
             }
         });
+        document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
+            document.getElementsByClassName("ss-option").forEach(function(option) {
+                if (option.innerText.indexOf("[brands]") > -1) {
+                    option.style.display = "none";
+                }
+            });
+        });
+
     });
 
     const addBadgeButton = document.getElementsByClassName("badge badge-primary editor")[0];
     addBadgeButton.addEventListener('click', function() {
-        console.log("addBadge")
         document.getElementById("selectBadge").style.display = "block";
     });
 
@@ -639,22 +658,58 @@
     }
     const tableOfContentButton = document.getElementsByClassName("fa fa-list editor")[0];
     tableOfContentButton.addEventListener('click', function() {
-        const tocHtmlLabel = '<span class="toc">TOC</span>';
-        editor.insertText("$$span\n "+tocHtmlLabel+ "\n$$");
+        editorHasToc();
+        document.getElementById("tableOfContentModal").style.display = "block";
     });
-    function checkforTOC(wikiHtmlContent){
-        // parse the html content
+    function changeToc() {
+        let wikiHtmlContent = document.getElementsByClassName("ProseMirror")[0].innerHTML;
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(wikiHtmlContent, 'text/html');
+        let toc = document.getElementsByClassName("ProseMirror")[0].getElementsByClassName('toastui-editor-md-custom-block-line-background')
+        let hasToc = false;
+        for(let i = 0; i < toc.length; i++) {
+            if (toc[i].firstElementChild.innerText.indexOf('<span class="toc"></span>') > -1){
+                document.getElementsByClassName("ProseMirror")[0].getElementsByClassName('toastui-editor-md-custom-block-line-background')[i].nextElementSibling.remove();
+                document.getElementsByClassName("ProseMirror")[0].getElementsByClassName('toastui-editor-md-custom-block-line-background')[i].previousElementSibling.remove();
+                document.getElementsByClassName("ProseMirror")[0].getElementsByClassName('toastui-editor-md-custom-block-line-background')[i].previousElementSibling.remove();
+                hasToc = true;
+              }
+        }
+        if(!hasToc){
+            let tocHtml = '<span class="toc"></span>';
+            editor.insertText("$$span\n"+tocHtml+ "\nx$$");
+        }
+        setTimeout(function(){
+            closeToastUiModal()
+        }, 1000);
 
+    }
+    function editorHasToc (){
+        const wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
         let parser = new DOMParser();
         let doc = parser.parseFromString(wikiHtmlContent, 'text/html');
 
-        // check for elements with class toc
         let toc = doc.getElementsByClassName('toc');
-        if(toc.length > 0){
+        if(toc !== undefined && toc.length > 0){
+            console.log(toc);
+            document.getElementById("tableOfContentCheckBox").checked = true;
+        } else {
+            document.getElementById("tableOfContentCheckBox").checked = false;
+        }
+    }
+
+    document.onload = (function() {
+        editorHasToc();
+    });
+    function checkforTOC(wikiHtmlContent){
+        // parse the html content
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(wikiHtmlContent, 'text/html');
+        // check for elements with class toc
+        let toc = doc.getElementsByClassName('toc')[0];
+        if(toc !== undefined){
             let tableOfContent = createTableOfContent(doc);
-            for(let i = 0; i < toc.length; i++){
-                doc.getElementsByClassName('toc')[i].replaceWith(tableOfContent)
-            }
+                doc.getElementsByClassName('toc')[0].replaceWith(tableOfContent)
         }
         doc.querySelectorAll(".toastui-editor-md-preview-highlight").forEach(function (element) {
             element.classList.remove("toastui-editor-md-preview-highlight");
@@ -713,7 +768,6 @@
         let tocContainer = document.createElement("span");
         tocContainer.style = "position: fixed; left: 20px; width: 20px";
         tocContainer.appendChild(tableOfContent);
-        console.log(tocContainer);
         return tocContainer;
     }
 </script>
