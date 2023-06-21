@@ -41,6 +41,7 @@
         <javascript-files-scope>xpage</javascript-files-scope>  
         <javascript-file>wiki/prettify/run_prettify.js?skin=desert</javascript-file>
         <javascript-file>wiki/prism/prism.js</javascript-file>
+        <javascript-file>wiki/wiki_edit_page/wiki_edit.js</javascript-file>
     </javascript-files>
 
     <!-- XPages parameters -->
