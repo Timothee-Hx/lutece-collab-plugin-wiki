@@ -639,7 +639,7 @@
     }
     const tableOfContentButton = document.getElementsByClassName("fa fa-list editor")[0];
     tableOfContentButton.addEventListener('click', function() {
-        editor.insertText("$$span\n "+<span>TOC</span>+ "\n $$");
+        editor.insertText("$$span\n "+'<span>TOC</span>'+ "\n $$");
     });
     function createTableOfContent(html) {
         let thisPageurl = window.location.href;
