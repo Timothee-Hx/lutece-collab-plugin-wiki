@@ -22,10 +22,10 @@
     <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.css" />
     <!-- Code Highlight -->
 
-
     <link
             rel="stylesheet"
             href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"  />
 </head>
 
 
@@ -52,6 +52,11 @@
     </div>
 </div>
 
+<script src="js/plugins/wiki/font_awesome/font_awesome_icons_list.js">
+    setInterval(function () {
+        console.log(getFaIcon());
+    }, 1000);
+</script>
 
     <script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
     <!-- Tui Editor integration -->
@@ -98,3 +103,17 @@
         });
 
     </script>
+<script defer>
+    let accordionButtons = document.getElementsByClassName('accordion-button');
+    for (let i = 0; i < accordionButtons.length; i++) {
+        accordionButtons[i].addEventListener('click', function () {
+            accordionButtons[i].classList.toggle('collapsed');
+            let parent = document.getElementsByClassName('accordion-button')[i].parentNode
+            console.log(parent)
+            let accordionBody =   parent.nextSibling;
+            console.log(accordionBody)
+            accordionBody.classList.toggle('show')
+            console.log(accordionBody)
+        });
+    }
+</script>

@@ -2,29 +2,23 @@
 
     <meta charset="UTF-8" />
     <title>12. Editor with All Plugins</title>
-    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/data/tuidoc-example-style.css" />
     <!-- Editor -->
-    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/toastui-editor.css" />
     <!-- Chart -->
     <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
-
     <!-- Color syntax -->
-    <link
-            rel="stylesheet"
-            href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"
-    />
-    <link
-            rel="stylesheet"
-            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"
-    />
+    <link rel="stylesheet" href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"/>
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"/>
     <!-- Merged Table -->
     <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.css" />
 
-    <link
-            rel="stylesheet"
-            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
-
+    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
+<#assign baseUrl = url />
+<script>
+    const baseUrl = "${baseUrl}";
+</script>
+
 <div class="row">
     <div class="container panel panel-default">
         <form method="post" id="form_wiki" action="jsp/site/Portal.jsp">
@@ -119,7 +113,6 @@
         </script>
 
 
-
         <!-- this is to go to another language with a link-->
         <label for="select_language_list">Select a language with a link to a new page :</label>
         <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
@@ -157,17 +150,16 @@
             window.location.href = "${url}&locale=" + locale;
         }
     }
+
 </script>
 
 
 <!-- wiki page title -->
-
 <div class="tab-content">
     <div id="tab-${locale}" class="tab-pane active"  role="tabpanel" >
         <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
         <div class="form-group">
             <input class="form-control" id="page_title_${locale}" type="text" name="page_title_${locale}" value="<#if version?? && version.getWikiContent(locale)??>${version.getWikiContent( locale).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
-
         </div>
 
         <div class="form-group">
@@ -183,13 +175,107 @@
         </#list>
         </select>
     </div>
+    <!------------ modal to select a FA icon ----------------->
+    <div id="selectFaIcons" class="toastui-editor-popup" style="display: none;" >
+        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+            <span class="fa fa-times"></span>
+        </button>
+        <div class="toastui-editor-popup-header">
+            <div class="toastui-editor-popup-header-title">Select FA Icons</div>
+        </div>
+        <div class="toastui-editor-popup-body">
+            <div class="toastui-editor-popup-content-body">
+                <@selectIconFont id='selectIcon' class='' name='resource-icon' showListLabel=true showListIcon=true searchShow=true searchFocus=false searchHighlight=true type='yaml' prefix='fa-' iconsUrl='css/admin/font-awesome-icons.yml' resources=true defaultValue='' />
+            </div>
+        </div>
+        <div id="iconIsSelected"  style="display: none">
+            <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+                <label for="iconSize">Icon Size :</label>
+                <select id="iconSize" class="form-control" onchange="changeIconSize()">
+                    <option value="fa-1x">fa-1x</option>
+                    <option value="fa-2x">fa-2x</option>
+                    <option value="fa-3x">fa-3x</option>
+                    <option value="fa-4x">fa-4x</option>
+                    <option value="fa-5x">fa-5x</option>
+                </select>
+                <div class="toastui-editor-popup-content-body">
+                    Seleted Icon : <span id="selectedIcon"> </span>
+                </div>
+            </div>
+            <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
+                <button class="btn btn-primary" type="button" onclick="insertIcon()">Insert</button>
+                <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!------------ modal to select an alert box ----------------->
+    <div id="selectAlertType" class="toastui-editor-popup" style="display: none;" >
+        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+            <span class="fa fa-times"></span>
+        </button>
+        <div class="toastui-editor-popup-header">
+            <div class="toastui-editor-popup-header-title">Select an Alert-Box</div>
+            <select id="alertBoxType" class="form-control" onchange="selectAlertBoxType(this.value)" >
+                <option selected disabled>Select an alert</option>
+                <option value="info">Info</option>
+                <option value="warning">Warning</option>
+                <option value="danger">Danger</option>
+                <option value="success">Success</option>
+            </select>
+        </div>
+    </div>
+    <!------------ modal  select a badge ----------------->
+    <div id="selectBadge" class="toastui-editor-popup" style="display: none;" >
+        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+            <span class="fa fa-times"></span>
+        </button>
+        <div class="toastui-editor-popup-header">
+            <div class="toastui-editor-popup-header-title">Select a Badge</div>
+            <select id="badgeType" class="form-control" onchange="selectBadge(this.value)" >
+                <option selected disabled>Select a badge</option>
+                <option value="badge bg-primary" > <span class="badge bg-primary">Primary</span></option>
+                <option value="badge bg-secondary" class="badge bg-secondary">Secondary</option>
+                <option value="badge bg-success" class="badge bg-success">Success</option>
+                <option value="badge bg-danger" class="badge bg-danger">Danger</option>
+                <option value="badge bg-warning" class="badge bg-warning">Warning</option>
+                <option value="badge bg-info" class="badge bg-info">Info</option>
+                <option value="badge bg-light" class="badge bg-light">Light</option>
+                <option value="badge bg-dark" class="badge bg-dark">Dark</option>
+            </select>
+        </div>
+        <div id="badgeIsSelected"  style="display: none">
+            <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+                <label for="badgeSize">Badge Headings :</label>
+                <select id="badgeSize" class="form-control" onchange="changeBadgeSize(this.value)">
+                    <option value="div">No headings</option>
+                    <option value="h1" class="h1">h1</option>
+                    <option value="h2" class="h2">h2</option>
+                    <option value="h3" class="h3">h3</option>
+                    <option value="h4" class="h4">h4</option>
+                    <option value="h5" class="h5">h5</option>
+                    <option value="h6" selected class="h6">h6</option>
+                </select>
+                <div class="toastui-editor-popup-content-body">
+                    Selected Badge : <div id="selectedBadge"> </div>
+                </div>
+            </div>
+            <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
+                <button class="btn btn-primary" type="button" onclick="insertBadge()">Insert</button>
+                <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
 
 
     <!-- wiki content that goes in the editor-->
     <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
            value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
-       data type="hidden"/>
+           data type="hidden"/>
 
     <!-- here is the editor -->
     <div class="form-group">
@@ -204,6 +290,7 @@
 </div>
 </div>
 </div>
+
 
 <div id="help" class="col-sm-4 pull-right" style="display:none">
     <br/>
@@ -247,7 +334,6 @@
 
 </div>
 </div>
-
 <div class="row" >
     <div class="container panel panel-default">
         <h3><span class="glyphicon glyphicon-picture"></span> &nbsp; #i18n{wiki.modify_page.titleImages}</h3>
@@ -331,9 +417,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="confirm-delete-image" tabindex="-1" role="dialog" aria-labelledby="DeleteImageConfirmation" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
             <div class="modal-header">
                 <h3>#i18n{wiki.message.confirmTitle}</h3>
             </div>
@@ -376,23 +459,9 @@
 
 <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
-<!--<script type="module">
-    const targetNode = document.querySelector("#wiki_content");
-    const observerOptions = {
-        childList: true,
-        attributes: true,
-
-        // Omit (or set to false) to observe only changes to the parent node
-        subtree: true,
-    };
-
-    const observer = new MutationObserver(autoSave);
-    observer.observe(targetNode, observerOptions);
-</script>
--->
 <script type="text/javascript" class="code-js">
-
     const { Editor } = toastui;
+
     const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
 
     let wikiContent = document.getElementById('wiki_content').value;
@@ -410,11 +479,18 @@
             latex(node) {
                 const generator = new latexjs.HtmlGenerator({ hyphenate: false });
                 const { body } = latexjs.parse(node.literal, { generator }).htmlDocument();
-
+                document.head.appendChild(generator.stylesAndScripts(""))
                 return [
                     { type: 'openTag', tagName: 'div', outerNewLine: true },
                     { type: 'html', content: body.innerHTML },
                     { type: 'closeTag', tagName: 'div', outerNewLine: true }
+                ];
+            },
+            span(node) {
+                return [
+                    { type: 'openTag', tagName: 'div', outerNewLine: false, className: node.className },
+                    { type: 'html', content: node.literal },
+                    { type: 'closeTag', tagName: 'div', outerNewLine: false },
                 ];
             },
             htmlBlock: {
@@ -425,20 +501,219 @@
                         { type: 'closeTag', tagName: 'iframe', outerNewLine: true },
                     ];
                 },
-
-            }
+            },
         },
         previewStyle: 'vertical',
         height: '500px',
         initialValue: wikiContent,
+        scrollSync: false,
         plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
+        toolbarItems: [
+            ['heading', 'bold', 'italic', 'strike'],
+            ['hr', 'quote'],
+            ['ul', 'ol', 'task', 'indent', 'outdent'],
+            ['table', 'image', 'link', 'codeblock'],
+        //    ['scrollSync'],
+        ],
         events: {
             change: () => {
                 document.getElementById('wiki_content').value = editor.getMarkdown();
                 autoSave();
             },
-        }
+        },
     });
+
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 0 }, {
+        name: 'IconButton',
+        tooltip: 'FA Icons',
+        text: 'FA',
+        className: 'fa fa-search editor',
+        style: { backgroundImage: 'none' },
+    });
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 1 }, {
+        name: 'Alert',
+        tooltip: 'Alert Boxes',
+        text: 'alert',
+        className: 'alert alert-danger editor',
+        style: { backgroundImage: 'none' },
+    });
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 2 }, {
+        name: 'BadgeButton',
+        tooltip: 'Badges',
+        text: 'Badge',
+        className: 'badge badge-primary editor',
+        style: { backgroundImage: 'none' },
+    });
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 3 }, {
+        name: 'toc',
+        tooltip: 'Table of Contents',
+        text: 'TOC',
+        className: 'fa fa-list editor',
+        style: { backgroundImage: 'none' },
+    });
+    const addAlertButton = document.getElementsByClassName("alert alert-danger editor")[0];
+    addAlertButton.addEventListener('click', function() {
+        document.getElementById("selectAlertType").style.display = "block";
+    });
+
+    const addIconButton = document.getElementsByClassName("fa fa-search editor")[0];
+    addIconButton.addEventListener('click', function() {
+        document.getElementById("selectFaIcons").style.display = "block";
+        document.getElementsByClassName("ss-option").forEach(function(option) {
+            if (option.innerText.indexOf("[brands]") > -1) {
+                option.style.display = "none";
+            }
+        });
+    });
+
+    const addBadgeButton = document.getElementsByClassName("badge badge-primary editor")[0];
+    addBadgeButton.addEventListener('click', function() {
+        console.log("addBadge")
+        document.getElementById("selectBadge").style.display = "block";
+    });
+
+
+    document.getElementById("selectIcon").addEventListener("change", function() {
+        const icon = document.getElementById("selectIcon").value;
+        document.getElementById("iconIsSelected").style.display = "block";
+        document.getElementById("selectedIcon").innerHTML = '<span class="fa fa-' + icon + '"></span><br/>';
+    });
+    function changeIconSize() {
+        const icon = document.getElementById("selectIcon").value;
+        const iconSize = document.getElementById("iconSize").value;
+        document.getElementById("selectedIcon").style.display = "none";
+        document.getElementById("selectedIcon").innerHTML = '<span class="fa fa-' + icon +" " + iconSize + '"></span><br/>';
+        document.getElementById("selectedIcon").style.display = "block";
+    }
+    function insertIcon() {
+        const icon =  document.getElementById("selectedIcon").children[0].outerHTML;
+        editor.insertText("$$span\n"+icon+ "\n$$");
+        document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+    }
+    function closeToastUiModal() {
+        const popupNumber = document.getElementsByClassName("toastui-editor-popup").length
+        for (let i = 0; i < popupNumber; i++) {
+            document.getElementsByClassName("toastui-editor-popup")[i].style.display = "none";
+        }
+    }
+    document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
+    function selectAlertBoxType(alertValue) {
+        let alertIcon = "fa-solid fa-info"
+        switch (alertValue) {
+            case "danger":
+                alertIcon = "fa-solid fa-triangle-exclamation"
+                break;
+            case "warning":
+                alertIcon = "fa-solid fa-exclamation"
+                break;
+            case "info":
+                alertIcon = "fa-solid fa-info"
+                break;
+            case "success":
+                alertIcon = "fa-solid fa-check"
+                break;
+            default:
+                alertIcon = "fa-solid fa-info"
+        }
+
+        const alertHtml = '<div class="alert alert-' + alertValue + '"><span class="'+alertIcon+'"></span>  <span> </span>My alert message goes here.</div>';
+        editor.insertText("$$span\n"+alertHtml+ "\n$$");
+        closeToastUiModal();
+    }
+    function selectBadge(badgeValue) {
+        const badgeHtml = '<span class="badge badge-' + badgeValue + '">My badge message goes here.</span>';
+        document.getElementById("selectedBadge").innerHTML = badgeHtml;
+        document.getElementById("badgeIsSelected").style.display = "block";
+    }
+    function changeBadgeSize(badgeSize) {
+        const badgeClass = document.getElementById("badgeType").value;
+        document.getElementById("badgeIsSelected").style.display = "none";
+        const badgeHtml = '<' + badgeSize + '>' + '<span class="badge badge-' + badgeClass + '">My badge message goes here.</span>' + '</' + badgeSize + '>';
+        document.getElementById("selectedBadge").innerHTML = badgeHtml;
+        document.getElementById("badgeIsSelected").style.display = "block";
+    }
+    function insertBadge() {
+        const badgeHtml = document.getElementById("selectedBadge").innerHTML;
+        editor.insertText("$$span\n"+badgeHtml+ "\n$$");
+        closeToastUiModal();
+    }
+    const tableOfContentButton = document.getElementsByClassName("fa fa-list editor")[0];
+    tableOfContentButton.addEventListener('click', function() {
+        editor.insertText("$$span\n "+<span>TOC</span>+ "\n $$");
+    });
+    function createTableOfContent(html) {
+        let thisPageurl = window.location.href;
+        thisPageurl = thisPageurl.replace("view=modifyPage", "view=viewPage");
+        thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, 'text/html');
+        let headers = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+        let tableOfContent = document.createElement("div")
+        tableOfContent.id = "tableOfContent";
+        tableOfContent.className = "accordion";
+        for (let i = 0; i < headers.length; i++) {
+            let header = headers[i];
+            let headerText = header.innerText;
+            let headerLevel = header.tagName;
+            let linkElement = document.createElement("a");
+            linkElement.href = thisPageurl + '#' + headerText;
+            linkElement.innerText = headerText;
+            if (headerLevel === "H1" || headerLevel === "H2" || headerLevel === "H3") {
+                let accordionItem = document.createElement("div");
+                accordionItem.className = "accordion-item";
+                if (headers[i + 1] !== undefined) {
+                    if (headers[i + 1].tagName === "H1" || headers[i + 1].tagName === "H2" || headers[i + 1].tagName === "H3") {
+                        let accordionHeader = document.createElement("h6");
+                        accordionHeader.className = "accordion-header";
+                        let linkContainer = document.createElement("div");
+                        linkElement.style= "color: black; padding: 10px"
+                        linkContainer.appendChild(linkElement);
+                        accordionHeader.appendChild(linkContainer)
+                        accordionItem.appendChild(accordionHeader);
+                        tableOfContent.appendChild(accordionItem);
+                    } else if (headers[i + 1].tagName === "H4" || headers[i + 1].tagName === "H5" || headers[i + 1].tagName === "H6") {
+                        let accordionHeader = document.createElement("h2");
+                        accordionHeader.className = "accordion-header";
+                        let accordionButton = document.createElement("button");
+                        accordionButton.className = "accordion-button";
+                        accordionButton.style = "background-color: white; color:black;"
+                        accordionButton.setAttribute("type", "button");
+                        accordionButton.appendChild(linkElement);
+                        accordionHeader.appendChild(accordionButton);
+                        accordionItem.appendChild(accordionHeader);
+                        let accordionCollapse = document.createElement("div");
+                        accordionCollapse.id = "collapse" + i;
+                        accordionCollapse.className = "accordion-collapse collapse";
+                        accordionCollapse.setAttribute("aria-labelledby", "heading" + i);
+                        let accordionBody = document.createElement("div");
+                        accordionBody.className = "accordion-body";
+                        accordionBody.style.marginLeft = "25px";
+                        accordionCollapse.appendChild(accordionBody);
+                        accordionItem.appendChild(accordionCollapse);
+                        tableOfContent.appendChild(accordionItem);
+                    }
+                } else {
+                    let accordionHeader = document.createElement("h6");
+                    accordionHeader.className = "accordion-header";
+                    let linkContainer = document.createElement("div");
+                    linkElement.style= "color: black; padding: 16px;"
+                    linkContainer.appendChild(linkElement);
+                    accordionHeader.appendChild(linkContainer)
+                    accordionItem.appendChild(accordionHeader);
+                    tableOfContent.appendChild(accordionItem);
+                }
+              }
+            if (headerLevel === "H4" || headerLevel === "H5" || headerLevel === "H6") {
+                let linkContainer = document.createElement("div");
+                linkElement.style= "color: black; padding: 15px; font-size:15px"
+                linkContainer.appendChild(linkElement);
+                let accordionBody = tableOfContent.lastChild.lastChild.lastChild
+                accordionBody.appendChild(linkContainer);
+            }
+            }
+        console.log(tableOfContent)
+        return tableOfContent;
+    }
 </script>
 
 <script language="javascript">
@@ -450,12 +725,25 @@
 
     function validate()
     {
-        let htmlContent = editor.getHTML()
+        let htmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
+        htmlContent = removeCustomInputsDiv(htmlContent);
         htmlContent = escapeSpecialCharsFromContent(htmlContent);
         document.getElementById('wiki_html_content').value = htmlContent;
         escapeSpecialChars( 'wiki_content' );
         return true;
     };
+
+    function removeCustomInputsDiv(htmlContent) {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(htmlContent, 'text/html');
+        for (let i = 0; i < doc.body.children.length; i++) {
+            if (doc.body.children[i].className === "toastui-editor-custom-block") {
+                let keep = doc.body.children[i].children[1].children[0];
+                doc.body.children[i].replaceWith(keep);
+            }
+        }
+        return doc.body.innerHTML;
+    }
 
     function escapeSpecialChars( id )
     {
@@ -637,7 +925,7 @@
     }
     // auto save
     async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
-        let response = await fetch('http://localhost:8080/lutece/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
+        let response = await fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -647,7 +935,17 @@
             body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
         });
         let result = await response;
+        console.log(result)
+
         displayAutoSave(result);
+    }
+    function checkforTOC(wikiHtmlContent){
+        let tocLocation = document.getElementsByTagName('span')[0];
+       let toc = createTableOfContent(wikiHtmlContent);
+        if(tocLocation !== null && tocLocation !== undefined){
+            wikiHtmlContent = wikiHtmlContent.replace(tocLocation, toc.outerHTML);
+        }
+        return wikiHtmlContent;
     }
     function callInputs() {
         const version = document.getElementById("topic_version").value;
@@ -657,10 +955,11 @@
             let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
             let title = document.getElementById("page_title_" + localeJs).value;
             let topicTitle = escapeSpecialCharsFromContent(title);
-            let wikiHtmlContent = editor.getHTML()
-
+            let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
+             wikiHtmlContent = checkforTOC(wikiHtmlContent);
+                // wikiHtmlContent = removeCustomInputsDiv(wikiHtmlContent);
             wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
-            saveContent(version, parentPage, topic_id, topicTitle, topicContent,wikiHtmlContent)
+           saveContent(version, parentPage, topic_id, topicTitle, topicContent,wikiHtmlContent)
         }
     }
     // if auto save mode is activated and auto is done
@@ -672,7 +971,7 @@
                 setTimeout(function () {
                     callInputs();
                     hasToWait = false;
-                }, 5000);
+                }, 2000);
             }
         }
     }
@@ -681,7 +980,7 @@
     // register last user on modify page
     function saveLastUserOnModifyPage(){
         const topic_id = document.getElementById("topic_id").value;
-        fetch('http://localhost:8080/lutece/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
+        fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -700,3 +999,15 @@
         }
     }
 </script>
+<script defer>
+    let accordionButtons = document.getElementsByClassName('accordion-button');
+for (let i = 0; i < accordionButtons.length; i++) {
+    accordionButtons[i].addEventListener('click', function () {
+     accordionButtons[i].classList.toggle('collapsed');
+     let parent = document.getElementsByClassName('accordion-button')[i].parentNode
+     let accordionBody =   parent.nextSibling;
+     accordionBody.classList.toggle('show')
+    });
+}
+</script>
+
