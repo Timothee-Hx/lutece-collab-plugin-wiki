@@ -64,7 +64,7 @@
     <div>
         <#if version??>
         <label class="switch">
-            <input id="autoSaveMode" type="checkbox" checked onchange="toogleAutosave()">
+            <input id="autoSaveMode" type="checkbox" checked onchange="toggleAutosave()">
             <span class="slider round"></span>
         </label>
         <#else>
@@ -251,13 +251,13 @@
             <div class="toastui-editor-popup-content-body" style="margin: 25px;">
                 <label for="badgeSize">Badge Headings :</label>
                 <select id="badgeSize" class="form-control" onchange="changeBadgeSize(this.value)">
-                    <option value="div">No headings</option>
+                    <option value="div" selected>No headings</option>
                     <option value="h1" class="h1">h1</option>
                     <option value="h2" class="h2">h2</option>
                     <option value="h3" class="h3">h3</option>
                     <option value="h4" class="h4">h4</option>
                     <option value="h5" class="h5">h5</option>
-                    <option value="h6" selected class="h6">h6</option>
+                    <option value="h6" class="h6">h6</option>
                 </select>
                 <div class="toastui-editor-popup-content-body">
                     Selected Badge : <div id="selectedBadge"> </div>
@@ -639,18 +639,37 @@
     }
     const tableOfContentButton = document.getElementsByClassName("fa fa-list editor")[0];
     tableOfContentButton.addEventListener('click', function() {
-        editor.insertText("$$span\n "+'<span>TOC</span>'+ "\n $$");
+        const tocHtmlLabel = '<span class="toc">TOC</span>';
+        editor.insertText("$$span\n "+tocHtmlLabel+ "\n$$");
     });
-    function createTableOfContent(html) {
+    function checkforTOC(wikiHtmlContent){
+        // parse the html content
+
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(wikiHtmlContent, 'text/html');
+
+        // check for elements with class toc
+        let toc = doc.getElementsByClassName('toc');
+        if(toc.length > 0){
+            let tableOfContent = createTableOfContent(doc);
+            for(let i = 0; i < toc.length; i++){
+                doc.getElementsByClassName('toc')[i].replaceWith(tableOfContent)
+            }
+        }
+        doc.querySelectorAll(".toastui-editor-md-preview-highlight").forEach(function (element) {
+            element.classList.remove("toastui-editor-md-preview-highlight");
+        });
+        wikiHtmlContent = doc.documentElement.innerHTML;
+        return wikiHtmlContent;
+    }
+    function createTableOfContent(doc) {
         let thisPageurl = window.location.href;
         thisPageurl = thisPageurl.replace("view=modifyPage", "view=viewPage");
         thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(html, 'text/html');
         let headers = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
-        let tableOfContent = document.createElement("div")
+        let tableOfContent = document.createElement("ul")
         tableOfContent.id = "tableOfContent";
-        tableOfContent.className = "accordion";
+        tableOfContent.className = "nav flex-column";
         for (let i = 0; i < headers.length; i++) {
             let header = headers[i];
             let headerText = header.innerText;
@@ -658,61 +677,44 @@
             let linkElement = document.createElement("a");
             linkElement.href = thisPageurl + '#' + headerText;
             linkElement.innerText = headerText;
+            linkElement.className = "nav-link";
+            let navItem = document.createElement("li");
             if (headerLevel === "H1" || headerLevel === "H2" || headerLevel === "H3") {
-                let accordionItem = document.createElement("div");
-                accordionItem.className = "accordion-item";
+                navItem.className = "nav-item";
                 if (headers[i + 1] !== undefined) {
                     if (headers[i + 1].tagName === "H1" || headers[i + 1].tagName === "H2" || headers[i + 1].tagName === "H3") {
-                        let accordionHeader = document.createElement("h6");
-                        accordionHeader.className = "accordion-header";
-                        let linkContainer = document.createElement("div");
-                        linkElement.style= "color: black; padding: 10px"
-                        linkContainer.appendChild(linkElement);
-                        accordionHeader.appendChild(linkContainer)
-                        accordionItem.appendChild(accordionHeader);
-                        tableOfContent.appendChild(accordionItem);
+                        tableOfContent.appendChild(linkElement);
                     } else if (headers[i + 1].tagName === "H4" || headers[i + 1].tagName === "H5" || headers[i + 1].tagName === "H6") {
-                        let accordionHeader = document.createElement("h2");
-                        accordionHeader.className = "accordion-header";
-                        let accordionButton = document.createElement("button");
-                        accordionButton.className = "accordion-button";
-                        accordionButton.style = "background-color: white; color:black;"
-                        accordionButton.setAttribute("type", "button");
-                        accordionButton.appendChild(linkElement);
-                        accordionHeader.appendChild(accordionButton);
-                        accordionItem.appendChild(accordionHeader);
-                        let accordionCollapse = document.createElement("div");
-                        accordionCollapse.id = "collapse" + i;
-                        accordionCollapse.className = "accordion-collapse collapse";
-                        accordionCollapse.setAttribute("aria-labelledby", "heading" + i);
-                        let accordionBody = document.createElement("div");
-                        accordionBody.className = "accordion-body";
-                        accordionBody.style.marginLeft = "25px";
-                        accordionCollapse.appendChild(accordionBody);
-                        accordionItem.appendChild(accordionCollapse);
-                        tableOfContent.appendChild(accordionItem);
+                        let divContainer = document.createElement("div");
+                        divContainer.style = "display: flex; flex-direction: row; spacing: 10px; align-items: center;";
+                        let icon = document.createElement("i");
+                        icon.className = "fa fa-chevron-right";
+                        divContainer.appendChild(icon);
+                        divContainer.appendChild(linkElement);
+                        navItem.appendChild(divContainer);
+                        tableOfContent.appendChild(navItem);
+                        let subLinkContainer = document.createElement("ul");
+                        subLinkContainer.className = "subLinkContainer";
+                        subLinkContainer.style = "margin-left: 20px; display: none;";
+                        tableOfContent.appendChild(subLinkContainer);
+                    } else {
+                        tableOfContent.appendChild(linkElement);
                     }
-                } else {
-                    let accordionHeader = document.createElement("h6");
-                    accordionHeader.className = "accordion-header";
-                    let linkContainer = document.createElement("div");
-                    linkElement.style= "color: black; padding: 16px;"
-                    linkContainer.appendChild(linkElement);
-                    accordionHeader.appendChild(linkContainer)
-                    accordionItem.appendChild(accordionHeader);
-                    tableOfContent.appendChild(accordionItem);
                 }
-              }
+            }
             if (headerLevel === "H4" || headerLevel === "H5" || headerLevel === "H6") {
-                let linkContainer = document.createElement("div");
-                linkElement.style= "color: black; padding: 15px; font-size:15px"
-                linkContainer.appendChild(linkElement);
-                let accordionBody = tableOfContent.lastChild.lastChild.lastChild
-                accordionBody.appendChild(linkContainer);
+                // get the last div with class subLinkContainer
+                let subLinkContainers = tableOfContent.getElementsByClassName("subLinkContainer");
+                let subLinkContainer = subLinkContainers[subLinkContainers.length - 1];
+                console.log(subLinkContainer);
+                subLinkContainer.appendChild(linkElement);
             }
-            }
-        console.log(tableOfContent)
-        return tableOfContent;
+        }
+        let tocContainer = document.createElement("span");
+        tocContainer.style = "position: fixed; left: 20px; width: 20px";
+        tocContainer.appendChild(tableOfContent);
+        console.log(tocContainer);
+        return tocContainer;
     }
 </script>
 
@@ -726,13 +728,13 @@
     function validate()
     {
         let htmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-        htmlContent = removeCustomInputsDiv(htmlContent);
+      //  htmlContent = removeCustomInputsDiv(htmlContent);
         htmlContent = escapeSpecialCharsFromContent(htmlContent);
         document.getElementById('wiki_html_content').value = htmlContent;
         escapeSpecialChars( 'wiki_content' );
         return true;
     };
-
+/*
     function removeCustomInputsDiv(htmlContent) {
         let parser = new DOMParser();
         let doc = parser.parseFromString(htmlContent, 'text/html');
@@ -744,10 +746,11 @@
         }
         return doc.body.innerHTML;
     }
+ */
 
     function escapeSpecialChars( id )
     {
-        var content = document.getElementById( id ).value;
+        let content = document.getElementById( id ).value;
         content = replaceAll( '<' , '[lt;' , content );
         content = replaceAll( '>' , '[gt;' , content );
         content = replaceAll( '"' , '[quot;' , content );
@@ -876,21 +879,22 @@
 <script language="javascript">
     function publishVersion()
     {
+        const saveType = "publish";
         document.getElementById('publish_version').value = 'true';
-        validate();
+        callInputs(saveType);
     }
 </script>
 <script language="javascript">
     function createVersion()
-    {
+    {  const saveType = "saveNewVersion";
         document.getElementById('create_version').value = 'true';
-        validate();
+        callInputs(saveType);
     }
 </script>
 
 
 <script>
-    function toogleAutosave(){
+    function toggleAutosave(){
         if(document.getElementById('autoSaveMode').checked){
             document.getElementById('autoSaveLabel').innerText =  'Auto-save mode is activated';
         } else{
@@ -925,6 +929,7 @@
     }
     // auto save
     async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
+        console.log('saveContent')
         let response = await fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
             headers: {
@@ -935,31 +940,28 @@
             body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
         });
         let result = await response;
-        console.log(result)
-
         displayAutoSave(result);
     }
-    function checkforTOC(wikiHtmlContent){
-        let tocLocation = document.getElementsByTagName('span')[0];
-       let toc = createTableOfContent(wikiHtmlContent);
-        if(tocLocation !== null && tocLocation !== undefined){
-            wikiHtmlContent = wikiHtmlContent.replace(tocLocation, toc.outerHTML);
-        }
-        return wikiHtmlContent;
-    }
-    function callInputs() {
+
+    function callInputs(saveType) {
         const version = document.getElementById("topic_version").value;
         const topic_id = document.getElementById("topic_id").value;
-        if(version !== undefined && version !== null && version !== ""){
-            let parentPage = document.getElementById("parent_page_name").value;
-            let topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
-            let title = document.getElementById("page_title_" + localeJs).value;
+
+            const parentPage = document.getElementById("parent_page_name").value;
+            const title = document.getElementById("page_title_" + localeJs).value;
             let topicTitle = escapeSpecialCharsFromContent(title);
             let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
              wikiHtmlContent = checkforTOC(wikiHtmlContent);
-                // wikiHtmlContent = removeCustomInputsDiv(wikiHtmlContent);
             wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
-           saveContent(version, parentPage, topic_id, topicTitle, topicContent,wikiHtmlContent)
+            if(saveType === "autoSave") {
+                if (version !== undefined && version !== null && version !== "") {
+                    const topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
+                    saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent)
+                }
+            } else if (saveType === "saveInNewVersion" || saveType === "publish") {
+                const topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
+                document.getElementById('wiki_content').value = topicContent;
+                document.getElementById('wiki_html_content').value = wikiHtmlContent;
         }
     }
     // if auto save mode is activated and auto is done
@@ -969,7 +971,8 @@
             if (!hasToWait) {
                 hasToWait = true;
                 setTimeout(function () {
-                    callInputs();
+              const saveType = "autoSave";
+                    callInputs(saveType);
                     hasToWait = false;
                 }, 2000);
             }
@@ -995,18 +998,33 @@
         if (document.readyState === 'complete') {
             setInterval(function (){
                     saveLastUserOnModifyPage();}
-                , 15000);
+                , 4000);
         }
     }
 </script>
 <script defer>
-    let accordionButtons = document.getElementsByClassName('accordion-button');
-for (let i = 0; i < accordionButtons.length; i++) {
-    accordionButtons[i].addEventListener('click', function () {
-     accordionButtons[i].classList.toggle('collapsed');
-     let parent = document.getElementsByClassName('accordion-button')[i].parentNode
-     let accordionBody =   parent.nextSibling;
-     accordionBody.classList.toggle('show')
+    let spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-right');
+for (let i = 0; i < spanIconMoreLink.length; i++) {
+    spanIconMoreLink[i].addEventListener('click', function () {
+     let parent = document.getElementsByClassName('fa fa-chevron-right')[i].parentNode
+        spanIconMoreLink[i].class = 'fa fa-chevron-down';
+
+     let SubLinks = parent.nextSibling;
+     for(let i = 0; i < SubLinks.childNodes.length; i++){
+                 SubLinks.childNodes[i].style.display = 'block';
+     }
+    });
+}
+    let spanIconLessLink = document.getElementsByClassName('fa fa-chevron-down');
+for (let i = 0; i < spanIconLessLink.length; i++) {
+    spanIconLessLink[i].addEventListener('click', function () {
+     let parent = document.getElementsByClassName('fa fa-chevron-down')[i].parentNode
+        spanIconLessLink[i].class = 'fa fa-chevron-right';
+
+     let SubLinks = parent.nextSibling;
+     for(let i = 0; i < SubLinks.childNodes.length; i++){
+                 SubLinks.childNodes[i].style.display = 'none';
+     }
     });
 }
 </script>
