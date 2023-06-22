@@ -670,9 +670,16 @@
         className: 'fa fa-list editor',
         style: { backgroundImage: 'none' },
     });
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 4 }, {
+        name: 'Jumbotron',
+        tooltip: 'Jumbotron',
+        text: 'Jum',
+        className: 'jumbotron editor',
+        style: { backgroundImage: 'none' },
+    });
 
 
-    document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
+        document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
 
 
     /* -------------- CLOSE MODALES -------------- */
@@ -783,9 +790,20 @@
         editor.insertText("$$span\n"+badgeHtml+ "\n$$");
         closeToastUiModal();
     }
+    /* -------------- jumbotron -------------- */
+    const addJumbotronButton = document.getElementsByClassName("jumbotron editor")[0];
+    addJumbotronButton.addEventListener('click', function() {
+        insertJumbotron();
+    });
+    function insertJumbotron() {
+        const jumbotronTitle = "My jumbotron title";
+        const jumbotronText = "My jumbotron text, it can be long or short !";
+        const jumbotronHtml = '<div class="jumbotron"><h1>' + jumbotronTitle + '</h1><p>' + jumbotronText + '</p></div>';
+        editor.insertText("$$span\n"+jumbotronHtml+ "\n$$");
+        document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+    }
 
     /* -------------- TABLE OF CONTENT -------------- */
-
 
     const tableOfContentButton = document.getElementsByClassName("fa fa-list editor")[0];
     tableOfContentButton.addEventListener('click', function() {
@@ -843,9 +861,13 @@
             headerText = replaceAll( ' ' , '_' , headerText );
             headers[i].setAttribute('id', headerText);
         }
-        let linkElement = document.createElement("a");
-        // check for white spaces and replace them with -
-        // check for elements with class toc
+        let preElements = doc.querySelectorAll('pre');
+        for(let i = 0; i < preElements.length; i++) {
+            preElements[i].style.backgroundColor = "#282a36";
+        }
+        doc.querySelectorAll(".toastui-editor-md-preview-highlight").forEach(function (element) {
+            element.classList.remove("toastui-editor-md-preview-highlight");
+        });        // check for white spaces and replace them with -
         let toc = doc.getElementsByClassName('toc')[0];
         if(toc !== undefined){
             let tableOfContent = createTableOfContent(doc);
