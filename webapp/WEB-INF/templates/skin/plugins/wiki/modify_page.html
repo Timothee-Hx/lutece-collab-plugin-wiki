@@ -1047,7 +1047,7 @@
     }
     // auto save
     async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
-        let response = await fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
+        let response = await fetch('/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -1099,7 +1099,8 @@
     // register last user on modify page
     function saveLastUserOnModifyPage(){
         const topic_id = document.getElementById("topic_id").value;
-        fetch(baseUrl+'/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
+
+        fetch('/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
