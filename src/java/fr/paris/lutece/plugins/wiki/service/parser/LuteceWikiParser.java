@@ -153,6 +153,24 @@ public class LuteceWikiParser extends WikiParser
         return strRender;
     }
 
+    public static String reverseRender ( String str )
+    {
+
+        str = str.replaceAll("<", "\\[lt;");
+        str = str.replaceAll(">", "\\[gt;");
+        str = str.replaceAll("&nbsp;", "\\[nbsp;");
+        str = str.replaceAll("'", "\\[quot;");
+        str = str.replaceAll("&", "\\[amp;");
+        str = str.replaceAll("#", "\\[hashmark;");
+        str = str.replaceAll("`", "\\[codeQuote;");
+        str = str.replaceAll("'", "\\[simpleQuote;");
+        str = str.replaceAll("\\\\", "");
+
+        return str;
+    }
+
+
+
     /**
      * {@inheritDoc }
      */

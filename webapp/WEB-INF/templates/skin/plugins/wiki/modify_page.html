@@ -1146,5 +1146,24 @@
         });
     }
 
+
+    /*_________________________ MAKE SURE CUSTOM INPUT ARE NOT ON ONE LINE ___________________________*/
+    // On load if "$$span " or "$$ " is on one line, add "\n" after each $$span and $$
+  /*  window.addEventListener("load", (event) => {
+        let htmlText = document.getElementsByClassName("ProseMirror")[0].innerHTML;
+        let htmlTextArray = htmlText.split("$$span ");
+        let htmlTextArray2 = htmlText.split("$$ ");
+        if(htmlTextArray.length > 1){
+            let htmlTextArray3 = htmlTextArray.join("$$span \n");
+            document.getElementsByClassName("ProseMirror")[0].innerHTML = htmlTextArray3;
+        }
+        if(htmlTextArray2.length > 1){
+            let htmlTextArray4 = htmlTextArray2.join("$$ \n");
+            document.getElementsByClassName("ProseMirror")[0].innerHTML = htmlTextArray4;
+        }
+    });
+    
+   */
+
 </script>
 
