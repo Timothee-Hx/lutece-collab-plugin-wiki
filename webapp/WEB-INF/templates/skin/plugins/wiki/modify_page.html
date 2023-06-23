@@ -175,6 +175,7 @@
         </#list>
         </select>
     </div>
+
     <!------------ modal to select a FA icon ----------------->
     <div id="selectFaIcons" class="toastui-editor-popup" style="display: none;" >
         <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
@@ -621,6 +622,7 @@
                 },
             },
         },
+
         previewStyle: 'vertical',
         height: '500px',
         initialValue: wikiContent,
@@ -798,8 +800,11 @@
     function insertJumbotron() {
         const jumbotronTitle = "My jumbotron title";
         const jumbotronText = "My jumbotron text, it can be long or short !";
-        const jumbotronHtml = '<div class="jumbotron"><h1>' + jumbotronTitle + '</h1><p>' + jumbotronText + '</p></div>';
-        editor.insertText("$$span\n"+jumbotronHtml+ "\n$$");
+            let bootStrap5Jumbotron = '<div class="h-100 p-5 text-bg-dark rounded-3">\n' +
+                '          <h2 class="text-white">' + jumbotronTitle + '</h2>\n' +
+                '          <p class="text-light">' + jumbotronText + '</p>\n' +
+                '        </div>';
+        editor.insertText("$$span\n"+bootStrap5Jumbotron+ "\n$$");
         document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
     }
 
