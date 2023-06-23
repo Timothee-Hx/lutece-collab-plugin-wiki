@@ -1100,7 +1100,7 @@
     function saveLastUserOnModifyPage(){
         const topic_id = document.getElementById("topic_id").value;
 
-        fetch('/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
+        fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
