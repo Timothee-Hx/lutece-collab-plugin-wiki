@@ -16,8 +16,6 @@ public class WikiCreoleToMarkdown {
 
     public static String renderCustomContent ( String str){
         str = str.replaceAll("\\\\", "");
-
-
         str = str.replaceAll( "\\[lt;", "<" );
         str = str.replaceAll( "\\[gt;", ">" );
         str = str.replaceAll( "\\[nbsp;", "&nbsp;" );
@@ -26,8 +24,19 @@ public class WikiCreoleToMarkdown {
         str = str.replaceAll( "\\[hashmark;", "#" );
         str = str.replaceAll("\\[codeQuote;", "`");
         str = str.replaceAll("\\[simpleQuote;", "'");
+        str = str.replaceAll("badge badge-", "badge badge-badge bg-");
+        str = str.replaceAll("label label-", "badge badge-badge bg-");
+        str = str.replaceAll("glyphicon glyphicon-warning-sign", "fa fa-exclamation-triangle");
+        str = str.replaceAll("glyphicon glyphicon-info-sign", "fa fa-info-circle");
+        str = str.replaceAll("glyphicon glyphicon-question-sign", "fa fa-question-circle");
+        str = str.replaceAll("glyphicon glyphicon-ok-sign", "fa fa-check-circle");
+        str = str.replaceAll("glyphicon glyphicon-remove-sign", "fa fa-times-circle");
+        str = str.replaceAll("glyphicon glyphicon-chevron-right", "fa fa-chevron-right");
+        str = str.replaceAll("glyphicon glyphicon-chevron-left", "fa fa-chevron-left");
+        str = str.replaceAll("glyphicon glyphicon-chevron-up", "fa fa-chevron-up");
         return str;
     }
+
 
     public static String wikiCreoleToMd(String strWikiText, String strPageName, String strPageUrl, String strLanguage ) {
 
@@ -93,6 +102,7 @@ public class WikiCreoleToMarkdown {
                     }
             }
         }
+
 
         // remove tags <html> <head> and <body> and keep the inner of the body
        htmlContent = docBody.toString();
