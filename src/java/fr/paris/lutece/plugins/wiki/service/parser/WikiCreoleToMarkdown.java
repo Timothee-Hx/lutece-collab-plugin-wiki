@@ -104,6 +104,7 @@ public class WikiCreoleToMarkdown {
         }
 
 
+
         // remove tags <html> <head> and <body> and keep the inner of the body
        htmlContent = docBody.toString();
 
