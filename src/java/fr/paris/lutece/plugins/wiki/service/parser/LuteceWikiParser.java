@@ -164,6 +164,7 @@ public class LuteceWikiParser extends WikiParser
         str = str.replaceAll("#", "\\[hashmark;");
         str = str.replaceAll("`", "\\[codeQuote;");
         str = str.replaceAll("'", "\\[simpleQuote;");
+        str = str.replaceAll("'", "\\[simpleQuote;");
         str = str.replaceAll("\\\\", "");
 
         return str;

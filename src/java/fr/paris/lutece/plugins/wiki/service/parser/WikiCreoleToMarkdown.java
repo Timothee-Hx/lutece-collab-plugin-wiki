@@ -15,8 +15,7 @@ public class WikiCreoleToMarkdown {
     public static String renderCustomContent ( String str){
         str = str.replaceAll("\\\\", "");
 
-        String customStart = "$$span";
-        String customEnd =   "$$" ;
+
         str = str.replaceAll( "\\[lt;", "<" );
         str = str.replaceAll( "\\[gt;", ">" );
         str = str.replaceAll( "\\[nbsp;", "&nbsp;" );
@@ -25,20 +24,6 @@ public class WikiCreoleToMarkdown {
         str = str.replaceAll( "\\[hashmark;", "#" );
         str = str.replaceAll("\\[codeQuote;", "`");
         str = str.replaceAll("\\[simpleQuote;", "'");
-        str = customStart + str + customEnd;
-        // if there is two $$span, remove one of them
-        StringBuilder sb = new StringBuilder(str);
-        int i = 0;
-        while ((i = sb.indexOf(customStart, i)) != -1) {
-            sb.delete(i, i + customStart.length());
-            i++;
-        }
-
-
-        str = sb.toString();
-        System.out.println("####################################str: " + str);
-
-        // remove all backslash
         return str;
     }
 
@@ -55,9 +40,10 @@ public class WikiCreoleToMarkdown {
 
             System.out.println("element.class: " + element.className());
             if(element.className().equals("well")){
-                String toc = "<span class=toc></span>";
+                String toc = "$$span"+" "+"<span class='toc'></span>"+ " "+ "$$";
                 toc = LuteceWikiParser.reverseRender(toc);
                 docBody.prepend(toc);
+
             } else if (element.className().equals("jumbotron")) {
                 /*
                    let bootStrap5Jumbotron = '<div class="h-100 p-5 text-bg-dark rounded-3">\n' +
@@ -76,7 +62,8 @@ public class WikiCreoleToMarkdown {
 
                 if(!element.tagName().equals("table")){
                     System.out.println("__________FIRST_________element.class: " + element.toString());
-                List<Element> elChildren = element.children();
+
+                    List<Element> elChildren = element.children();
 
                     for(Element elChild : elChildren){
 
@@ -90,22 +77,50 @@ public class WikiCreoleToMarkdown {
         // remove tags <html> <head> and <body> and keep the inner of the body
        htmlContent = docBody.toString();
 
+
         MutableDataSet options = new MutableDataSet();
 
+// do net underline headings
+        options.set(HtmlRenderer.HARD_BREAK, "<br />\n");
+       // options.set(FlexmarkHtmlConverter.SKIP_FENCED_CODE, true);
 
-        options.set(FlexmarkHtmlConverter.SKIP_FENCED_CODE, true);
-
-        options.set(FlexmarkHtmlConverter.BR_AS_PARA_BREAKS, true);
+        options.set(FlexmarkHtmlConverter.BR_AS_PARA_BREAKS, false);
         options.set(FlexmarkHtmlConverter.OUTPUT_ATTRIBUTES_ID, false);
         options.set(FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false);
 
                 String markdown = FlexmarkHtmlConverter.builder(options).build().convert(htmlContent);
-                markdown = renderCustomContent(markdown);
+        markdown = renderCustomContent(markdown);
+       String newMarkdown = "";
+        // parse each line of markdown variable and when finding "$$span" and $$" add new line before and after with System.lineSeparator()
+
+
+       // this is supposed to be the correct way to do it but this doesn't show the break lines in the markdown editor for a unknown reason
+                   for(String line : markdown.split(System.lineSeparator())) {
+                  System.out.println("__________lineNoSearch_________\n" + line);
+                  if (line.contains("$$span")) {
+                      System.out.println("_________________________line______________________\n" + line);
+                      // remove "$$" adn "$$span" in the line
+                      line = line.replace("$$span", "");
+                      line = line.replace("$$", "");
+
+                      String reFormatedLine =  System.lineSeparator() + "$$span" + System.lineSeparator() + line + System.lineSeparator() + "$$" + System.lineSeparator();
+                      System.out.println("_________________________reFormatedLine______________________\n" + reFormatedLine);
+
+                      newMarkdown += reFormatedLine;
+
+                      // add a new line after before and after line
+                  } else {
+                      newMarkdown += line + System.lineSeparator();
+                  }
+              }
+
+
                 // find all tagNameWikiConvertion and replace by the tagName
 
-        System.out.println("________________________MARKDOWN_________________\n" + markdown.toString());
+        System.out.println("________________________MARKDOWN_________________\n" + newMarkdown);
 
 
-        return markdown;
+        return newMarkdown;
     }
+
 }
