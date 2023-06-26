@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -31,7 +32,6 @@ public class WikiCreoleToMarkdown {
     public static String wikiCreoleToMd(String strWikiText, String strPageName, String strPageUrl, String strLanguage ) {
 
         String htmlContent = new LuteceWikiParser(  strWikiText,  strPageName,  strPageUrl,  strLanguage  ).toString( );
-
 
         Document htmlDocument =  Jsoup.parse(htmlContent);
           Element docBody = htmlDocument.body();
@@ -66,7 +66,11 @@ public class WikiCreoleToMarkdown {
                 jumbotron.replaceWith(p);
 
            } else if (!element.className().isEmpty()) {
-                if(!element.tagName().equals("table")){
+             String[] classNamesToSkip = {"null", "table", "tbody", "thead", "tr", "td", "th"};
+                if(Arrays.asList(classNamesToSkip).contains(element.className())){
+                   i++;
+                }
+               else {
                     if(element.parent().tagName().equals("p")){
                         System.out.println(i);
                         int subDivClassToSkip =  element.parent().children().size();
@@ -85,6 +89,7 @@ public class WikiCreoleToMarkdown {
                         p.text(customElement);
                         element.replaceWith(p);
                     }
+
                     }
             }
         }
@@ -120,8 +125,6 @@ public class WikiCreoleToMarkdown {
                   }
               }
 
-
-                // find all tagNameWikiConvertion and replace by the tagName
 
         System.out.println("________________________MARKDOWN_________________\n" + newMarkdown);
 
