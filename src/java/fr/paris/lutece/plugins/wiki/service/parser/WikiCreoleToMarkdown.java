@@ -6,6 +6,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 
 import java.util.List;
 
@@ -35,77 +36,82 @@ public class WikiCreoleToMarkdown {
         Document htmlDocument =  Jsoup.parse(htmlContent);
           Element docBody = htmlDocument.body();
         List<Element> elements = docBody.getAllElements();
-        for (Element element : elements) {
-
-
-            System.out.println("element.class: " + element.className());
+        for (int i = 0; i < elements.size(); i++) {
+            Element element = elements.get(i);
             if(element.className().equals("well")){
                 String toc = "$$span"+" "+"<span class='toc'></span>"+ " "+ "$$";
                 toc = LuteceWikiParser.reverseRender(toc);
                 docBody.prepend(toc);
 
             } else if (element.className().equals("jumbotron")) {
-                /*
-                   let bootStrap5Jumbotron = '<div class="h-100 p-5 text-bg-dark rounded-3">\n' +
-                '          <h2 class="text-white">' + jumbotronTitle + '</h2>\n' +
-                '          <p class="text-light">' + jumbotronText + '</p>\n' +
-                '        </div>';
-        editor.insertText("$$span\n"+bootStrap5Jumbotron+ "\n$$");
-                 */
-          /*      Element jumbotron = element;
+                Element jumbotron = element;
                 String jumbotronTitle = jumbotron.select("h1").text();
                 String jumbotronText = jumbotron.select("p").text();
-                String bootStrap5Jumbotron = "<p>$$span</p>";
-                bootStrap5Jumbotron += "<p>tagNameWikiConvertStart div classNameWikiConvertStart h-100 p-5 text-bg-dark rounded-3 classNameWikiConvertEnd tagNameWikiConvertEnd\n";
-          */
-           } else if (!element.className().isEmpty()) {
-
-                if(!element.tagName().equals("table")){
-                    System.out.println("__________FIRST_________element.class: " + element.toString());
-
-                    List<Element> elChildren = element.children();
-
-                    for(Element elChild : elChildren){
-
-                            System.out.println("_________________CHILDREN____________elChild.class: " + elChild.className());
-                        }
-                    }
+                Element container = new Element("span");
+                container.attr("class", "h-100 p-5 text-bg-light rounded-3");
+                container.attr("style", "display: block;");
+                if(jumbotron.select("img").size() > 0){
+                    Element img = jumbotron.select("img").first();
+                    Element figure = new Element("figure");
+                    figure.attr("class", "figure");
+                    figure.appendChild(img);
+                    container.appendChild(figure);
                 }
-            }
+                container.appendChild(new Element("h1").attr("class", "text-dark").text(jumbotronTitle));
+                container.appendChild(new Element("p").attr("class", "text-muted").text(jumbotronText));
+                String bootStrap5Jumbotron = "$$span\n" + container.toString() + "\n$$";
+                bootStrap5Jumbotron = LuteceWikiParser.reverseRender(bootStrap5Jumbotron);
+                Element p = new Element("p");
+                p.text(bootStrap5Jumbotron);
+                jumbotron.replaceWith(p);
 
-        System.out.println("htmlContent____________________________\n" + docBody.toString());
+           } else if (!element.className().isEmpty()) {
+                if(!element.tagName().equals("table")){
+                    if(element.parent().tagName().equals("p")){
+                        System.out.println(i);
+                        int subDivClassToSkip =  element.parent().children().size();
+                        System.out.println("elements.size() " + elements.size());
+                        String parent = element.parent().outerHtml();
+                        String customElement = LuteceWikiParser.reverseRender(parent.toString());
+                        customElement = "$$span" + customElement + "$$";
+                        Element p = new Element("p");
+                        p.text(customElement);
+                        element.parent().replaceWith(p);
+                        i = i + subDivClassToSkip-1;
+            } else {
+                        String customElement =  LuteceWikiParser.reverseRender(element.outerHtml().toString());
+                        customElement = "$$span" + customElement + "$$";
+                        Element p = new Element("p");
+                        p.text(customElement);
+                        element.replaceWith(p);
+                    }
+                    }
+            }
+        }
+
         // remove tags <html> <head> and <body> and keep the inner of the body
        htmlContent = docBody.toString();
 
 
         MutableDataSet options = new MutableDataSet();
 
-// do net underline headings
-        options.set(HtmlRenderer.HARD_BREAK, "<br />\n");
-       // options.set(FlexmarkHtmlConverter.SKIP_FENCED_CODE, true);
 
+        options.set(HtmlRenderer.HARD_BREAK, "<br />\n");
         options.set(FlexmarkHtmlConverter.BR_AS_PARA_BREAKS, false);
         options.set(FlexmarkHtmlConverter.OUTPUT_ATTRIBUTES_ID, false);
         options.set(FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false);
-
-                String markdown = FlexmarkHtmlConverter.builder(options).build().convert(htmlContent);
+        String markdown = FlexmarkHtmlConverter.builder(options).build().convert(htmlContent);
         markdown = renderCustomContent(markdown);
        String newMarkdown = "";
-        // parse each line of markdown variable and when finding "$$span" and $$" add new line before and after with System.lineSeparator()
 
 
-       // this is supposed to be the correct way to do it but this doesn't show the break lines in the markdown editor for a unknown reason
-                   for(String line : markdown.split(System.lineSeparator())) {
-                  System.out.println("__________lineNoSearch_________\n" + line);
+       for(String line : markdown.split(System.lineSeparator())) {
                   if (line.contains("$$span")) {
-                      System.out.println("_________________________line______________________\n" + line);
                       // remove "$$" adn "$$span" in the line
                       line = line.replace("$$span", "");
                       line = line.replace("$$", "");
 
                       String reFormatedLine =  System.lineSeparator() + "$$span" + System.lineSeparator() + line + System.lineSeparator() + "$$" + System.lineSeparator();
-                      System.out.println("_________________________reFormatedLine______________________\n" + reFormatedLine);
-
                       newMarkdown += reFormatedLine;
 
                       // add a new line after before and after line
@@ -124,3 +130,4 @@ public class WikiCreoleToMarkdown {
     }
 
 }
+
