@@ -476,7 +476,7 @@ function displayAutoSave(result){
 }
 // auto save
 async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
-    let response = await fetch('/jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
+    let response = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
