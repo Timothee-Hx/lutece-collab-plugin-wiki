@@ -78,7 +78,6 @@ public class WikiDynamicInputs {
             int topicVersionId = newContent.getTopicVersion();
 
             int nTopicId = topic.getIdTopic();
-
             TopicVersion topicVersion = TopicVersionHome.findByPrimaryKey(topicVersionId);
             topicVersion.setIdTopic(nTopicId);
             topicVersion.setIdTopicVersion(topicVersionId);
@@ -89,7 +88,6 @@ public class WikiDynamicInputs {
             topicVersion.setEditComment(topicVersion.getEditComment());
             topicVersion.setIsPublished(false);
             topicVersion.setLuteceUserId(user.getFirstName()+"-"+user.getName());
-            // set the new content for one language
                 WikiContent content = new WikiContent();
                 content.setPageTitle( newContent.getTopicTitle());
                 content.setWikiContent( newContent.getTopicContent());

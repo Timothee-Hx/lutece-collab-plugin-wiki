@@ -35,6 +35,7 @@
         <css-stylesheet>wiki/prism/prism.css</css-stylesheet>
         <css-stylesheet>wiki/toastui/toastui-editor.css</css-stylesheet>
         <css-stylesheet>wiki/toastui/toastui-editor-dark.css</css-stylesheet>
+        <css-stylesheet>wiki/toastui/darkMode.css</css-stylesheet>
     </css-stylesheets>
     
     <!-- Specific plugin CSS stylesheet -->
@@ -42,7 +43,7 @@
         <javascript-files-scope>xpage</javascript-files-scope>  
         <javascript-file>wiki/prettify/run_prettify.js?skin=desert</javascript-file>
         <javascript-file>wiki/prism/prism.js</javascript-file>
-        <javascript-file>wiki/wiki_edit_page/wiki_edit.js</javascript-file>
+    <!--    <javascript-file>wiki/wiki_edit_page/wiki_edit.js</javascript-file> -->
     </javascript-files>
 
     <!-- XPages parameters -->

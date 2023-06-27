@@ -834,10 +834,8 @@
         } else{
             document.getElementById('darkModeLabel').innerHTML = "<span class='fa fa-sun fa-2x' ></span>";
         }
-        const el = document.getElementsByTagName("body")[0];
-        if(el.classList.contains("dark-mode")){
-            el.classList.remove("dark-mode ");}
-        else{ el.classList.add("dark-mode");}
+        let element = document.body;
+        element.classList.toggle("darkmode");
     }
 
     function checkForDarkMode(html){

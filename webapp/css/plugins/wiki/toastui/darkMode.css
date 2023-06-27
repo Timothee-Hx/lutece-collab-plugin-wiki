@@ -1,0 +1,120 @@
+@charset "utf-8";
+
+
+.darkmode  {
+    background-color: #232428;
+    border-bottom-color: #303238;
+}
+
+.darkmode  p,
+.darkmode  h1,
+.darkmode  h2,
+.darkmode  h3,
+.darkmode  h4,
+.darkmode  h5,
+.darkmode  h6 {
+    color: #fff;
+}
+
+.darkmode  h1,
+.darkmode  h2 {
+    border-color: #fff;
+}
+
+.darkmode  del {
+    color: #777980;
+}
+
+
+.darkmode  pre {
+    background-color: #232428;
+}
+
+.darkmode  pre code {
+    background-color: transparent;
+    color: #fff;
+}
+
+
+
+.darkmode  div {
+    color: #fff;
+}
+
+
+.darkmode button {
+    color:  #4b96e6;
+    background-color: #232428;
+}
+
+
+.darkmode button:hover {
+    background-color: #232428;
+    border-color: #595c68;
+    color: #1f70de;
+
+}
+.darkmode button:visited{
+    color: #9f6ef8;
+}
+
+
+.darkmode  ul,
+.darkmode  menu,
+.darkmode  ol,
+.darkmode  dir {
+    color: #f8a2a2;
+}
+
+.darkmode  ul > li::before {
+    background-color: #55575f;
+}
+
+.darkmode  hr {
+    border-color: #55575f;
+}
+
+
+.darkmode  a{
+    color: #4b96e6;
+}
+.darkmode  a:visited {
+    color: #9f6ef8;
+}
+
+
+.darkmode  a:hover {
+    color: #1f70de;
+}
+
+.darkmode  table {
+    border-color: #303238;
+}
+
+.darkmode  table th,
+.darkmode  table td {
+    border-color: #303238;
+}
+
+.darkmode  table td,
+.darkmode  table td p {
+    color: #fff;
+}
+
+
+.darkmode  th,
+.darkmode  td {
+    background-color: rgba(178, 174, 124, 0.5);
+}
+
+.darkmode  th,
+.darkmode  td {
+    background-color: rgba(255, 250, 193, 0.25);
+}
+
+.darkmode  ::after {
+    background-color: rgba(255, 250, 193, 0.25);
+}
+.darkmode .alert  {
+    color: #000;
+}
