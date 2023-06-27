@@ -100,6 +100,26 @@ public class WikiCreoleToMarkdown {
                     }
 
                     }
+            } else if (element.tagName().equals("img")) {
+                //class=""  width="200"  height=""  align="right"
+                Boolean imgContainsAttributes = element.hasAttr("class") && !element.className().isEmpty()
+                        || element.hasAttr("width") && element.getElementsByAttribute("width").size() > 0
+                        || element.hasAttr("height") && element.getElementsByAttribute("height").size() > 0
+                        || element.hasAttr("align") && element.getElementsByAttribute("align").size() > 0;
+                if(element.parent().tagName().equals("p")){
+                    String parent = element.parent().outerHtml();
+                    String customElement = LuteceWikiParser.reverseRender(parent.toString());
+                    customElement = "$$span" + customElement + "$$";
+                    Element p = new Element("p");
+                    p.text(customElement);
+                    element.parent().replaceWith(p);
+                } else if (imgContainsAttributes) {
+                    String customElement = LuteceWikiParser.reverseRender(element.outerHtml().toString());
+                    customElement = "$$span" + customElement + "$$";
+                    Element p = new Element("p");
+                    p.text(customElement);
+                    element.replaceWith(p);
+                }
             }
         }
 
