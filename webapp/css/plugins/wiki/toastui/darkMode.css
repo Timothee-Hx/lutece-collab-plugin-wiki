@@ -59,13 +59,6 @@
 }
 
 
-.darkmode  ul,
-.darkmode  menu,
-.darkmode  ol,
-.darkmode  dir {
-    color: #f8a2a2;
-}
-
 .darkmode  ul > li::before {
     background-color: #55575f;
 }
@@ -117,4 +110,19 @@
 }
 .darkmode .alert  {
     color: #000;
+}
+.darkmode  .footer .lutece-wrapper .footer-lutece .links li a {
+    color: #fff;
+}
+.darkmode  .footer .lutece-wrapper .footer-lutece .links li a:hover {
+    color: #1f70de;
+}
+.darkmode  .footer .lutece-wrapper .footer-lutece .links li a:visited {
+    color: #9f6ef8;
+}
+.darkmode .footer .lutece-wrapper .footer-lutece .contact li a {
+    background-color: #fff;
+}
+.darkmode .wiki-topic-nav {
+    color:  #fff;
 }

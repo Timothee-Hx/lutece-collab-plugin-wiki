@@ -24,16 +24,17 @@
             rel="stylesheet"
             href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
 </head>
 <div class="row">
     <div class="col-sm-12">
         <div class="container panel panel-default">
             <div class="text-right">
                 <#if lastVersion?? >
-                <small>${lastVersion.dateEdition} ${lastVersion.userName!''} ${lastVersion.userPseudo!''} 
+                <small>${lastVersion.dateEdition} ${lastVersion.userName!''} ${lastVersion.userPseudo!''}
                 <img class="avatar-small img-circle" src="${lastVersion.userAvatarUrl!''}" alt="avatar" />
                 <#if isExtendInstalled?? && isExtendInstalled >
-                    &nbsp;<span class="glyphicon glyphicon-eye-open"></span> 
+                    &nbsp;<span class="glyphicon glyphicon-eye-open"></span>
                     @Extender[${topic.idTopic},WIKI,hit,{show:true}]@
                 </#if>
                 </small>
@@ -65,12 +66,23 @@
                   </#if>
                 </#list>
             </div>
-
+<!------------------- DARK MODE -------------------------->
+<div id="darkModeSwitch" style="display: none">
+    <div  style="display: flex; justify-content: end;  flex-direction: row; margin-top: 15px" >
+        <div style="margin-right: 10px">
+            <div id="darkModeLabel"><span class="fa fa-sun fa-2x"></span></div>
+        </div>
+        <label class="switch">
+            <input  id="darkModeId"   type="checkbox"  onchange="toggleDarkMode()" >
+            <span class="slider round"></span>
+        </label>
+    </div>
+</div>
+<!---------------------------------------------->
             <div id="div-new-page" style="display:none">
                 <form class="form-search" action="jsp/site/Portal.jsp" method="get" >
                     <input type="hidden" name="page" value="wiki" />
                     <input type="hidden" name="action" value="newPage" />
-
                     <div class="input-append">
                         <input class="search-query col-sm-4" id="input-new-page" type="text" name="page_name" /> &nbsp;
                         <button class="btn btn-primary btn-xs" type="submit" >
@@ -96,7 +108,7 @@
 
             <h1 id="wiki-heading">${topic_title}</h1>
             <hr>
-            <div>
+            <div >
             ${result}
             </div>
 
@@ -114,6 +126,7 @@
         });
     });
 </script>
+
 <script defer>
     let spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-right');
     for (let i = 0; i < spanIconMoreLink.length; i++) {
@@ -136,5 +149,43 @@
                 SubLinks.childNodes[i].style.display = 'none';
             }
         });
+    }
+
+    window.addEventListener("load", (event) => {
+        if(document.getElementsByClassName('darkModeClassOn').length > 0){
+            console.log('darkModeClassOn');
+
+            document.getElementById('darkModeSwitch').style.display = 'block';
+        }
+        let darkMode = localStorage.getItem('darkMode');
+        let darkModeId = document.getElementById('darkModeId');
+        let darkModeLabel = document.getElementById('darkModeLabel');
+        if (darkMode === 'true') {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+        } else {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+        }
+    });
+
+
+    function toggleDarkMode() {
+        let darkMode = localStorage.getItem('darkMode');
+        let darkModeId = document.getElementById('darkModeId');
+        let darkModeLabel = document.getElementById('darkModeLabel');
+        if (darkMode === 'true') {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+            localStorage.setItem('darkMode', 'true');
+        }
     }
 </script>

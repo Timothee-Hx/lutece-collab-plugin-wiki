@@ -88,7 +88,7 @@
 </div>
 
 <!------------------- DARK MODE -------------------------->
-<div class="darkModeClass" style="display: none">
+<div id="darkModeSwitch" style="display: none">
 <div  style="display: flex; justify-content: end;  flex-direction: row; margin-top: 15px" >
     <div style="margin-right: 10px">
         <div id="darkModeLabel"><span class="fa fa-sun fa-2x"></span></div>
@@ -654,8 +654,8 @@
     editor.insertToolbarItem({ groupIndex: 0, itemIndex: 1 }, {
         name: 'Alert',
         tooltip: 'Alert Boxes',
-        text: 'alert',
-        className: 'alert alert-danger editor',
+        text: 'Alert',
+        className: 'fa-solid fa-triangle-exclamation editor',
         style: { backgroundImage: 'none' },
     });
     editor.insertToolbarItem({ groupIndex: 0, itemIndex: 2 }, {
@@ -701,7 +701,7 @@
 
 
     /* -------------- ALERT  -------------- */
-    const addAlertButton = document.getElementsByClassName("alert alert-danger editor")[0];
+    const addAlertButton = document.getElementsByClassName("fa-solid fa-triangle-exclamation editor")[0];
     addAlertButton.addEventListener('click', function() {
         document.getElementById("selectAlertType").style.display = "block";
     });
@@ -815,6 +815,50 @@
         document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
     }
 
+    /* -------------- DARK MODE -------------- */
+    const darkModeButton = document.getElementsByClassName("fa fa-moon editor")[0];
+    darkModeButton.addEventListener('click', function() {
+        document.getElementById("darkModeSwitch").style.display = "block";
+        const htmlToInsert = '<span class="darkModeClassOn"></span>';
+        editor.insertText("$$span\n"+htmlToInsert+ "\n$$");
+    });
+
+    function toggleDarkMode() {
+        let darkMode = localStorage.getItem('darkMode');
+        let darkModeId = document.getElementById('darkModeId');
+        let darkModeLabel = document.getElementById('darkModeLabel');
+        if (darkMode === 'true') {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+
+    window.addEventListener("load", (event) => {
+        if(document.getElementsByClassName('ProseMirror')[0].innerText.indexOf("darkModeClassOn") > -1){
+            document.getElementById("darkModeSwitch").style.display = "block";
+        }
+        let darkMode = localStorage.getItem('darkMode');
+        let darkModeId = document.getElementById('darkModeId');
+        let darkModeLabel = document.getElementById('darkModeLabel');
+        if (darkMode === 'true') {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+        } else {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+        }
+    });
+
+
     /* -------------- TABLE OF CONTENT -------------- */
 
     const tableOfContentButton = document.getElementsByClassName("fa fa-list editor")[0];
@@ -823,37 +867,6 @@
         editor.insertText("$$span\n"+tocHtml+ "\n$$");
 
     });
-    /* -------------- DARK MODE -------------- */
-    const darkModeButton = document.getElementsByClassName("fa fa-moon editor")[0];
-    darkModeButton.addEventListener('click', function() {
-        document.getElementsByClassName("darkModeClass")[0].style.display = "block";
-    });
-    function toggleDarkMode(){
-        if(document.getElementById('darkModeId').checked){
-            document.getElementById('darkModeLabel').innerHTML =  "<span class='fa fa-moon fa-2x' ></span>";
-        } else{
-            document.getElementById('darkModeLabel').innerHTML = "<span class='fa fa-sun fa-2x' ></span>";
-        }
-        let element = document.body;
-        element.classList.toggle("darkmode");
-    }
-
-    function checkForDarkMode(html){
-        const el = document.getElementsByTagName("body")[0];
-
-        if(el.classList.contains('toastui-editor-dark')){
-            // add class on first element
-            // take the first element
-            html.classList.add('toastui-editor-dark');
-            alert(html)
-            setTimeout(function(){
-                // remove class on first element
-
-            }, 30000);
-        }
-        return html;
-    }
-
     function editorHasToc (){
         const wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
         let parser = new DOMParser();
@@ -920,7 +933,7 @@
 
         let tableOfContent = document.createElement("ul")
         tableOfContent.id = "tableOfContent";
-        tableOfContent.className = "nav flex-column";
+        tableOfContent.className = "nav flex-column wiki-topic-nav";
         for (let i = 0; i < headers.length; i++) {
             let header = headers[i];
             let headerText = header.innerText;
@@ -985,19 +998,7 @@
         escapeSpecialChars( 'wiki_content' );
         return true;
     };
-    /*
-        function removeCustomInputsDiv(htmlContent) {
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(htmlContent, 'text/html');
-            for (let i = 0; i < doc.body.children.length; i++) {
-                if (doc.body.children[i].className === "toastui-editor-custom-block") {
-                    let keep = doc.body.children[i].children[1].children[0];
-                    doc.body.children[i].replaceWith(keep);
-                }
-            }
-            return doc.body.innerHTML;
-        }
-     */
+
 
     function escapeSpecialChars( id )
     {
@@ -1061,7 +1062,6 @@
             document.getElementById('autoSaveFailed').style.display = 'none';
         }, 3000);
     }
-    // auto save
     async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
         let response = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
@@ -1086,7 +1086,6 @@
         let topicTitle = escapeSpecialCharsFromContent(title);
         let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
         wikiHtmlContent = checkforTOC(wikiHtmlContent);
-        wikiHtmlContent = checkForDarkMode(wikiHtmlContent);
         wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
         if(saveType === "autoSave") {
             if (version !== undefined && version !== null && version !== "") {
@@ -1162,6 +1161,8 @@
             }
         });
     }
+
+    /*_________________________ ON LOAD REMOVE UNDERLINE ADDED BY THE HTML TO MARKDOWN CONVERTION ___________________________*/
     function removeUnderLineHeadings (underLineWithEqual){
         for(let i = 0; i < underLineWithEqual.length; i++){
             let previousElement = underLineWithEqual[i].parentElement.previousElementSibling.firstElementChild;
