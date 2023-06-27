@@ -1,8 +1,7 @@
 .darkmode  {
-    background-color: #232428;
+    background-color: #282a36;
     border-bottom-color: #303238;
 }
-.darkmode  p,
 .darkmode  h1,
 .darkmode  h2,
 .darkmode  h3,
@@ -10,6 +9,12 @@
 .darkmode  h5,
 .darkmode  h6 {
     color: #fff;
+}
+.darkmode  p{
+    color: #9f6ef8;
+}
+.darkmode  nav{
+    color: #494545;
 }
 
 .darkmode  h1,
@@ -42,7 +47,7 @@
 
 
 .darkmode button:hover {
-    background-color: #232428;
+    background-color: #282a36;
     border-color: #595c68;
     color: #1f70de;
 
@@ -53,11 +58,11 @@
 
 
 .darkmode  ul > li::before {
-    background-color: #55575f;
+    background-color: #282a36;
 }
 
 .darkmode  hr {
-    border-color: #55575f;
+    border-color: #282a36;
 }
 
 
@@ -105,7 +110,7 @@
     color: #000;
 }
 .darkmode  .footer .lutece-wrapper .footer-lutece .links li a {
-    color: #fff;
+    color: #9f6ef8;
 }
 .darkmode  .footer .lutece-wrapper .footer-lutece .links li a:hover {
     color: #1f70de;
@@ -113,6 +118,10 @@
 .darkmode  .footer .lutece-wrapper .footer-lutece .links li a:visited {
     color: #9f6ef8;
 }
-.darkmode .footer .lutece-wrapper .footer-lutece .contact li a {
-    background-color: #fff;
+
+.darkmode .navbar-nav .nav-item a{
+    color: #f3e1e1;
+}
+.darkmode .navbar-main {
+    background-color: #44475a;
 }
