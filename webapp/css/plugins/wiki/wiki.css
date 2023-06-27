@@ -62,4 +62,6 @@ span.diff-html-conflict {
 .wiki-topic-nav {
     position: fixed;
     left: 15px;
+    font-size: large;
+    width: 275px;
 }

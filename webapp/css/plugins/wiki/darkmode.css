@@ -11,7 +11,7 @@
     color: #fff;
 }
 .darkmode  p{
-    color: #9f6ef8;
+    color: #f3e1e1;
 }
 .darkmode  nav{
     color: #494545;
@@ -53,7 +53,7 @@
 
 }
 .darkmode button:visited{
-    color: #9f6ef8;
+    color: #b493f3;
 }
 
 
@@ -70,7 +70,7 @@
     color: #4b96e6;
 }
 .darkmode  a:visited {
-    color: #9f6ef8;
+    color: #b493f3;
 }
 
 
@@ -110,13 +110,13 @@
     color: #000;
 }
 .darkmode  .footer .lutece-wrapper .footer-lutece .links li a {
-    color: #9f6ef8;
+    color: #b493f3;
 }
 .darkmode  .footer .lutece-wrapper .footer-lutece .links li a:hover {
     color: #1f70de;
 }
 .darkmode  .footer .lutece-wrapper .footer-lutece .links li a:visited {
-    color: #9f6ef8;
+    color: #b493f3;
 }
 
 .darkmode .navbar-nav .nav-item a{
