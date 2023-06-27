@@ -59,3 +59,8 @@ span.diff-html-conflict {
 .wiki_underline {
     text-decoration: underline;
 }
+
+.dark-mode {
+    background-color: black;
+    color: white;
+}
