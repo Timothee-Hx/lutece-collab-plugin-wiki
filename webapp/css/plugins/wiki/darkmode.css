@@ -1,11 +1,7 @@
-@charset "utf-8";
-
-
 .darkmode  {
     background-color: #232428;
     border-bottom-color: #303238;
 }
-
 .darkmode  p,
 .darkmode  h1,
 .darkmode  h2,
@@ -32,10 +28,7 @@
 
 .darkmode  pre code {
     background-color: transparent;
-    color: #fff;
 }
-
-
 
 .darkmode  div {
     color: #fff;
@@ -122,7 +115,4 @@
 }
 .darkmode .footer .lutece-wrapper .footer-lutece .contact li a {
     background-color: #fff;
-}
-.darkmode .wiki-topic-nav {
-    color:  #fff;
 }

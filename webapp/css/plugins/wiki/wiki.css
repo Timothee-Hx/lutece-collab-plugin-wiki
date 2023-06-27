@@ -59,3 +59,7 @@ span.diff-html-conflict {
 .wiki_underline {
     text-decoration: underline;
 }
+.wiki-topic-nav {
+    position: fixed;
+    left: 15px;
+}
