@@ -129,34 +129,6 @@
 
 
 <script defer>
-    let spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-left');
-
-    for (let i = 0; i < spanIconMoreLink.length; i++) {
-        spanIconMoreLink[i].addEventListener('click', function () {
-
-            let sublist = document.getElementsByClassName('fa fa-chevron-left')[i].parentNode.parentNode.nextSibling
-            sublist.style.display = 'block';
-            spanIconMoreLink[i].classList.add('fa-chevron-down');
-            spanIconMoreLink[i].classList.remove('fa-chevron-left')
-
-        });
-    }
-    let spanIconLessLink = document.getElementsByClassName('fa fa-chevron-down');
-
-    for (let i = 0; i < spanIconLessLink.length; i++) {
-        spanIconLessLink[i].addEventListener('click', function () {
-            let parent = document.getElementsByClassName('fa fa-chevron-down')[i].parentNode.parentNode
-            spanIconLessLink[i].class = 'fa fa-chevron-right';
-
-            let SubLinksGroup = parent.nextSibling;
-            SubLinksGroup.style.display = 'none';
-
-            spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-left');
-            spanIconLessLink =  document.getElementsByClassName('fa fa-chevron-down');
-        });
-    }
-
-
     window.addEventListener("load", (event) => {
         if(document.getElementsByClassName('darkModeClassOn').length > 0){
             document.getElementById('darkModeSwitch').style.display = 'block';
