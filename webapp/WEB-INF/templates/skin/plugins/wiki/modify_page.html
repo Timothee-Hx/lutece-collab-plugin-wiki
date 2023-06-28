@@ -274,8 +274,6 @@
                 </div>
             </div>
         </div>
-
-
         <!-- wiki content that goes in the editor-->
         <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
                value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
@@ -570,6 +568,7 @@
         updateImages();
     });
 
+
     /* -------------- EDITOR -------------- */
 
     const { Editor } = toastui;
@@ -678,6 +677,13 @@
         className: 'fa fa-moon editor',
         style: { backgroundImage: 'none' },
     });
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 6 }, {
+        name: 'iframe',
+        tooltip: 'insert video or iframe',
+        text: 'iframe',
+        className: 'fa fa-video editor',
+        style: { backgroundImage: 'none' },
+    });
 
 
     document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
@@ -721,6 +727,11 @@
         editor.insertText("$$span\n"+alertHtml+ "\n$$");
         closeToastUiModal();
     }
+/* -------------- VIDEO  -------------- */
+ let addVideoButton = document.getElementsByClassName("fa fa-video editor")[0];
+    addVideoButton.addEventListener('click', function() {
+   alert("You can insert a video or an iframe, for example on youtube, click on share and then embed, copy the embed code and paste it in the editor");
+    });
 
 
     /* -------------- ICONS -------------- */
@@ -1147,9 +1158,6 @@
         callInputs(saveType);
     }
 
-
-
-
     function replaceAll(find, replace, str)
     {
         return str.replace(new RegExp(find, 'g'), replace);
@@ -1287,7 +1295,6 @@
         underLineWithEqual = document.getElementsByClassName("toastui-editor-md-heading toastui-editor-md-heading1 toastui-editor-md-delimiter toastui-editor-md-setext");
         removeUnderLineHeadings(underLineWithEqual);
     });
-
 
 
 

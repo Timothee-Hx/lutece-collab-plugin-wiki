@@ -165,8 +165,6 @@
             document.body.classList.remove('darkmode');
         }
     });
-
-
     function toggleDarkMode() {
         let darkMode = localStorage.getItem('darkMode');
         let darkModeId = document.getElementById('darkModeId');
@@ -183,4 +181,29 @@
             localStorage.setItem('darkMode', 'true');
         }
     }
+    window.addEventListener("load", (event) => {
+        // on every tagName "PRE" add a copy button on the top right corner
+           var pre = document.getElementsByTagName('pre');
+              for (var i = 0; i < pre.length; i++) {
+                var button = document.createElement('button');
+                button.className = 'btn btn-primary btn-xs';
+                button.style.float = 'right';
+                button.style.marginTop = '10px';
+                button.style.marginRight = '10px';
+                button.textContent = 'Copy';
+                button.onclick = function() {
+                  copyToClipboard(this.nextElementSibling.textContent);
+                };
+                pre[i].insertAdjacentElement('beforebegin', button)
+              }
+    });
+
+    function copyToClipboard(text) {
+        var dummy = document.createElement('textarea');
+        document.body.appendChild(dummy);
+        dummy.value = text;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        }
 </script>
