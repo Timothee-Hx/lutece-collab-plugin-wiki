@@ -33,8 +33,6 @@
         <css-stylesheet>wiki/spinner.css</css-stylesheet>
         <css-stylesheet>wiki/toggle_switch.css</css-stylesheet>
         <css-stylesheet>wiki/prism/prism.css</css-stylesheet>
-        <css-stylesheet>wiki/toastui/toastui-editor.css</css-stylesheet>
-        <css-stylesheet>wiki/toastui/toastui-editor-dark.css</css-stylesheet>
     </css-stylesheets>
     
     <!-- Specific plugin CSS stylesheet -->
