@@ -46,7 +46,7 @@
                     </button>
                     <#if has_admin_role >
                     <a data-toggle="modal" data-target="#confirm-delete-page"  class="btn btn-danger" class="btn btn-danger" title="#i18n{portal.util.labelDelete}">
-                        <span class="glyphicon glyphicon-trash"></span> #i18n{portal.util.labelDelete}
+                        <span class="fa fa-trash fa-2x"></span> #i18n{portal.util.labelDelete}
                     </a>
                 </#if>
                 <button id="btn-help" class="btn btn-default" type="button" title="#i18n{wiki.menu.help}">
@@ -517,7 +517,7 @@
             items.push( '</td>' );
             items.push( '<td>' );
             items.push( '<a data-title="' + image.id + '" data-toggle="modal" data-target="#confirm-delete-image" href="#" class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}">' );
-            items.push( '<span class="glyphicon glyphicon-trash"></span>' );
+            items.push( '<span class="fa fa-trash fa-2x"></span>' );
             items.push( '</a>' );
             items.push( '</td>' );
             items.push( '</tr>' );
