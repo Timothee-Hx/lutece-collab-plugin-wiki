@@ -76,6 +76,11 @@
             <version>2.4</version>
             <classifier>jdk15</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>common</artifactId>
+            <version>3.6.200-v20130402-1505</version>
+        </dependency>
     </dependencies>
 
     <properties>
