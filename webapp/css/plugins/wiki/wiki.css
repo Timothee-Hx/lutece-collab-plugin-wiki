@@ -65,3 +65,8 @@ span.diff-html-conflict {
     font-size: large;
     width: 275px;
 }
+.wiki-topic-nav .subLinkContainer {
+    list-style-type: none;
+    padding-left: 15px;
+    font-size: medium;
+}

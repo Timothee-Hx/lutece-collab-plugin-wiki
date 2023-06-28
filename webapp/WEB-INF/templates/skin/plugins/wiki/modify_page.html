@@ -1005,20 +1005,16 @@
                         divContainer.appendChild(linkElement);
                         navItem.appendChild(divContainer);
                         tableOfContent.appendChild(navItem);
-                        let icon = document.createElement("span");
-                        icon.className = "fa fa-chevron-left";
-                        icon.style = "padding: 5px; btn btn-tertiary btn-sm";
-                        divContainer.appendChild(icon);
                         let subLinkContainer = document.createElement("ul");
                         subLinkContainer.className = "subLinkContainer";
-                        subLinkContainer.style = "display: none;";
                         tableOfContent.appendChild(subLinkContainer);
                     } else {
                         tableOfContent.appendChild(linkElement);
                     }
                 }
             }
-            if (headerLevel === "H2" || headerLevel === "H2") {
+            if (headerLevel === "H2" || headerLevel === "H3") {
+
                 // get the last div with class subLinkContainer
                 let subLinkContainers = tableOfContent.getElementsByClassName("subLinkContainer");
                 let subLinkContainer = subLinkContainers[subLinkContainers.length - 1];
