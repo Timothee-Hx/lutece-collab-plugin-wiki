@@ -639,18 +639,29 @@ public class WikiApp extends MVCApplication
             String strParentPageName = request.getParameter(Constants.PARAMETER_PARENT_PAGE_NAME);
             Boolean publish = Boolean.parseBoolean(request.getParameter(Constants.PARAMETER_PUBLISH));
             Boolean newVersion = Boolean.parseBoolean(request.getParameter(Constants.PARAMETER_CREATE_NEW_VERSION));
-            TopicVersion topicVersion = TopicVersionHome.findByPrimaryKey(nVersionId);
-
+            TopicVersion topicVersion = new TopicVersion();
+            if(nVersionId == 0) {
+                newVersion = true;
+            } else {
+                topicVersion = TopicVersionHome.findByPrimaryKey(nVersionId);
+                topicVersion.setIdTopicVersionPrevious(nVersionId);
+            }
             topicVersion.setIdTopic(nTopicId);
             topicVersion.setUserName(user.getName());
             topicVersion.setEditComment(strComment);
-            topicVersion.setIdTopicVersionPrevious(nVersionId);
             topicVersion.setIsPublished(publish);
-
                 String strPageTitle = request.getParameter(Constants.PARAMETER_PAGE_TITLE + "_" + strLocale);
                 String strContent = request.getParameter(Constants.PARAMETER_CONTENT + "_" + strLocale);
                 String htmlContent = request.getParameter(Constants.PARAMETER_HTML_CONTENT);
                 WikiContent content = new WikiContent();
+                if(nVersionId == 0) {
+                    for (String locale : WikiLocaleService.getLanguages()) {
+                        content.setPageTitle(request.getParameter(Constants.PARAMETER_PAGE_TITLE + "_" + locale));
+                        content.setContentLabellingMarkdownLanguage(request.getParameter(Constants.PARAMETER_CONTENT + "_" + locale));
+                        content.setHtmlWikiContent(request.getParameter(Constants.PARAMETER_HTML_CONTENT));
+                        topicVersion.addLocalizedWikiContent(locale, content);
+                    }
+                }
                 content.setPageTitle(strPageTitle);
                 content.setContentLabellingMarkdownLanguage(strContent);
                 content.setHtmlWikiContent(htmlContent);
@@ -677,6 +688,7 @@ public class WikiApp extends MVCApplication
                 topic.setParentPageName(strParentPageName);
                 TopicHome.update(topic);
             }
+
         }
         Map<String, String> mapParameters = new ConcurrentHashMap<>();
         mapParameters.put(Constants.PARAMETER_PAGE_NAME, strPageName);
@@ -797,9 +809,6 @@ public class WikiApp extends MVCApplication
 
         String strLanguage = getLanguage( request );
         String strContentHtml = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
-
-        // we don't want it to be converted in html
-        // String strPageContent = new LuteceWikiParser( strContent, strPageName, null, strLanguage ).toString( );
 
         String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
 

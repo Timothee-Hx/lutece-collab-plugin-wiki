@@ -34,19 +34,19 @@
                 <#if version??>
                 <input id="topic_version" type="hidden" name="id_topic_version" value="${version.idTopicVersion}" />
                 <#else>
-                <input type="hidden" name="id_topic_version" value="0" />
+                <input id="topic_version"  type="hidden" name="id_topic_version" value="0" />
             </#if>
             <div class="col-sm-12">
                 <div class="btn-group btn-group-xs pull-right">
                     <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
                         <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
                     </a>
-                    <button name="view_preview" class="btn btn-default" type="submit" title="#i18n{wiki.menu.preview}" onclick="validate()">
+                    <button name="view_preview" class="btn btn-default" type="submit" title="#i18n{wiki.menu.preview}" onclick="preview()">
                         <span class="glyphicon glyphicon-eye-open"></span> #i18n{wiki.menu.preview}
                     </button>
                     <#if has_admin_role >
                     <a data-toggle="modal" data-target="#confirm-delete-page"  class="btn btn-danger" class="btn btn-danger" title="#i18n{portal.util.labelDelete}">
-                        <span class="fa fa-trash fa-2x"></span> #i18n{portal.util.labelDelete}
+                        <span class="glyphicon glyphicon-trash"></span> #i18n{portal.util.labelDelete}
                     </a>
                 </#if>
                 <button id="btn-help" class="btn btn-default" type="button" title="#i18n{wiki.menu.help}">
@@ -65,17 +65,10 @@
         </#if>
     </div>
     <div>
-        <#if version??>
         <label class="switch">
-            <input id="autoSaveMode" type="checkbox" checked onchange="toggleAutosave()">
+            <input id="autoSaveMode" type="checkbox" onchange="toggleAutosave()">
             <span class="slider round"></span>
         </label>
-        <#else>
-        <label class="switch">
-            <input id="autoSaveMode" type="checkbox" disabled onchange="alert('In order to save automatically the content, you must manually save a first version');">
-            <span class="slider round"></span>
-        </label>
-    </#if>
 </div>
 </div>
 <div style="display: flex; justify-content: end;  flex-direction: row;">
@@ -129,25 +122,7 @@
         </script>
 
 
-        <!-- this is to go to another language with a link-->
-        <label for="select_language_list">Select a language with a link to a new page :</label>
-        <ul class="nav nav-tabs" role="tablist" id="navTabsWikiLanguages">
-            <#list languages_list?keys as locale>
-            <#assign urlWithLocale = url + "&locale=" + languages_list[locale] />
-            <#if locale == keyLocale>
-            <button  disabled  class="wiki_Language_Button_Selected">
-                ${languages_list[locale]}
-            </button>
-            <#else>
-            <button type="button" class="wiki_Language_Button" >
-                <a href="${urlWithLocale}"
-                   target="_blank" rel="noopener noreferrer">
-                    ${languages_list[locale]}
-                </a>
-            </button>
-        </#if>
-    </#list>
-    </ul>
+
     <!-- this is to go to another language with a Select
 -->
     <label for="select_language_list">Select a language with a select :</label>
@@ -160,14 +135,7 @@
     </#if>
 </#list>
 </select>
-<script type="text/javascript">
-    function changeLanguage(locale) {
-        if (confirm("voulez vous sauvegarder vos modifications ?") == true) {
-            window.location.href = "${url}&locale=" + locale;
-        }
-    }
 
-</script>
 
 
 <!-- wiki page title -->
@@ -517,7 +485,7 @@
             items.push( '</td>' );
             items.push( '<td>' );
             items.push( '<a data-title="' + image.id + '" data-toggle="modal" data-target="#confirm-delete-image" href="#" class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}">' );
-            items.push( '<span class="fa fa-trash fa-2x"></span>' );
+            items.push( '<span class="glyphicon glyphicon-trash"></span>' );
             items.push( '</a>' );
             items.push( '</td>' );
             items.push( '</tr>' );
@@ -1059,8 +1027,123 @@ switch (jumbotronValue) {
         return tableOfContent;
     }
 
+    /*___________________________ AUTO_SAVE  ___________________________*/
+    window.addEventListener("load", (event) => {
+        if( parseInt(document.getElementById('topic_version').value)  !== 0 && window.localStorage.getItem('autoSaveMode') === null){
+            window.localStorage.setItem('autoSaveMode', 'true');
+                 document.getElementById('autoSaveMode').checked = true;
+        }
+        else if (parseInt(document.getElementById('topic_version').value)  !== 0 ) {
+            window.localStorage.getItem('autoSaveMode') === 'true'
+                ? document.getElementById('autoSaveMode').checked = true
+                : document.getElementById('autoSaveMode').checked = false;
+        }
 
+    });
+
+    function toggleAutosave(){
+
+       if(parseInt(document.getElementById('topic_version').value)  === 0){
+           alert('In order to save automatically the content, you must manually save a first version');
+              document.getElementById('autoSaveMode').checked = false;
+       }
+       else if (parseInt(document.getElementById('topic_version').value)  !== 0){
+           if (document.getElementById('autoSaveMode').checked) {
+               document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is activated';
+               window.localStorage.setItem('autoSaveMode', 'true');
+           } else {
+               document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is deactivated';
+               window.localStorage.setItem('autoSaveMode', 'false');
+           }
+       }
+    }
+    function displayAutoSave(autoSaveResult){
+        if(autoSaveResult){
+            document.getElementById('autoSave').style.display = 'block';
+            document.getElementById('autoSaveSucess').style.display = 'block';
+        } else{
+            document.getElementById('autoSave').style.display = 'block';
+            document.getElementById('autoSaveFailed').style.display = 'block';
+        }
+        setTimeout(function(){
+            document.getElementById('autoSave').style.display = 'none';
+            document.getElementById('autoSaveSucess').style.display = 'none';
+            document.getElementById('autoSaveFailed').style.display = 'none';
+        }, 3000);
+    }
+    // if auto save mode is activated and auto is done
+    let hasToWait = false;
+    function autoSave() {
+        if(document.getElementById('autoSaveMode').checked) {
+            if (!hasToWait) {
+                hasToWait = true;
+                setTimeout(function () {
+                    const saveType = "autoSave";
+                    callInputs(saveType);
+                    hasToWait = false;
+                }, 2000);
+            }
+        }
+    }
+
+    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
+        let autoSaveResponse = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                credentials: "same-origin"
+            },
+            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
+        });
+        let autoSaveResult = await autoSaveResponse;
+        displayAutoSave(autoSaveResult);
+    }
+
+    /*___________________________ ON LANGUAGE CHANGE  ___________________________*/
+    function changeLanguage(locale) {
+        const saveType = "autoSave";
+        let url = window.location.href;
+        if(url.includes("locale=")){
+            url = url.replace(/locale=[a-z]*/g, "locale=" + locale);
+        } else {
+            url = url + "&locale=" + locale;
+        }
+        console.log(url);
+        if (document.getElementById('autoSaveMode').checked) {
+            callInputs(saveType);
+            window.location.replace(url)
+        }   else {
+            if (window.confirm("Auto save is disabled. Do you want to save the content?")){
+                callInputs(saveType)
+                // redirect to the url
+                window.location.replace(url)
+            } else {
+                window.location.replace(url)
+            }
+        }
+    }
     /*___________________________ ON POST  ___________________________*/
+    function publishVersion()
+    {
+        const saveType = "publish";
+        document.getElementById('publish_version').value = 'true';
+        callInputs(saveType);
+    }
+
+    function createVersion()
+    {  const saveType = "saveNewVersion";
+        document.getElementById('create_version').value = 'true';
+        callInputs(saveType);
+    }
+    function preview()
+    {
+        const saveType = "preview";
+        callInputs(saveType);
+    }
+
+
+
 
     function replaceAll(find, replace, str)
     {
@@ -1091,29 +1174,7 @@ switch (jumbotronValue) {
         content = replaceAll("'", '[simpleQuote;', content)
         document.getElementById( id ).value = content;
     }
-
-
-
-    function publishVersion()
-    {
-        const saveType = "publish";
-        document.getElementById('publish_version').value = 'true';
-        callInputs(saveType);
-    }
-
-    function createVersion()
-    {  const saveType = "saveNewVersion";
-        document.getElementById('create_version').value = 'true';
-        callInputs(saveType);
-    }
-
-    function toggleAutosave(){
-        if(document.getElementById('autoSaveMode').checked){
-            document.getElementById('autoSaveLabel').innerText =  'Auto-save mode is activated';
-        } else{
-            document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is deactivated';
-        }
-    }
+    
     function escapeSpecialCharsFromContent( content )
     {
         content = replaceAll( '<' , '[lt;' , content );
@@ -1126,34 +1187,6 @@ switch (jumbotronValue) {
         content = replaceAll("'", '[simpleQuote;', content)
         return content
     }
-    function displayAutoSave(result){
-        if(result){
-            document.getElementById('autoSave').style.display = 'block';
-            document.getElementById('autoSaveSucess').style.display = 'block';
-        } else{
-            document.getElementById('autoSave').style.display = 'block';
-            document.getElementById('autoSaveFailed').style.display = 'block';
-        }
-        setTimeout(function(){
-            document.getElementById('autoSave').style.display = 'none';
-            document.getElementById('autoSaveSucess').style.display = 'none';
-            document.getElementById('autoSaveFailed').style.display = 'none';
-        }, 3000);
-    }
-    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
-        let response = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                credentials: "same-origin"
-            },
-            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
-        });
-        let result = await response;
-        displayAutoSave(result);
-    }
-
 
     function callInputs(saveType) {
         const version = document.getElementById("topic_version").value;
@@ -1169,24 +1202,10 @@ switch (jumbotronValue) {
             if (version !== undefined && version !== null && version !== "") {
                 saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent)
             }
-        } else if (saveType === "saveNewVersion" || saveType === "publish") {
+        } else if (saveType === "saveNewVersion" || saveType === "publish" || saveType === "preview") {
             document.getElementById('wiki_content').value = topicContent;
             document.getElementById('wiki_html_content').value = wikiHtmlContent;
 
-        }
-    }
-    // if auto save mode is activated and auto is done
-    let hasToWait = false;
-    function autoSave() {
-        if(document.getElementById('autoSaveMode').checked) {
-            if (!hasToWait) {
-                hasToWait = true;
-                setTimeout(function () {
-                    const saveType = "autoSave";
-                    callInputs(saveType);
-                    hasToWait = false;
-                }, 2000);
-            }
         }
     }
 
@@ -1263,6 +1282,7 @@ switch (jumbotronValue) {
         underLineWithEqual = document.getElementsByClassName("toastui-editor-md-heading toastui-editor-md-heading1 toastui-editor-md-delimiter toastui-editor-md-setext");
         removeUnderLineHeadings(underLineWithEqual);
     });
+
 
 
 
