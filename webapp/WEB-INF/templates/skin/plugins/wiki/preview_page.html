@@ -104,16 +104,5 @@
 
     </script>
 <script defer>
-    let accordionButtons = document.getElementsByClassName('accordion-button');
-    for (let i = 0; i < accordionButtons.length; i++) {
-        accordionButtons[i].addEventListener('click', function () {
-            accordionButtons[i].classList.toggle('collapsed');
-            let parent = document.getElementsByClassName('accordion-button')[i].parentNode
-            console.log(parent)
-            let accordionBody =   parent.nextSibling;
-            console.log(accordionBody)
-            accordionBody.classList.toggle('show')
-            console.log(accordionBody)
-        });
-    }
+
 </script>

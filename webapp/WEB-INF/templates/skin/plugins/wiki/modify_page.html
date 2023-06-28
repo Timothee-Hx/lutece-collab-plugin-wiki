@@ -69,7 +69,7 @@
             <input id="autoSaveMode" type="checkbox" onchange="toggleAutosave()">
             <span class="slider round"></span>
         </label>
-</div>
+    </div>
 </div>
 <div style="display: flex; justify-content: end;  flex-direction: row;">
 
@@ -85,15 +85,15 @@
 
 <!------------------- DARK MODE -------------------------->
 <div id="darkModeSwitch" style="display: none">
-<div  style="display: flex; justify-content: end;  flex-direction: row; margin-top: 15px" >
-    <div style="margin-right: 10px">
-        <div id="darkModeLabel"><span class="fa fa-sun fa-2x"></span></div>
+    <div  style="display: flex; justify-content: end;  flex-direction: row; margin-top: 15px" >
+        <div style="margin-right: 10px">
+            <div id="darkModeLabel"><span class="fa fa-sun fa-2x"></span></div>
+        </div>
+        <label class="switch">
+            <input  id="darkModeId"   type="checkbox"  onchange="toggleDarkMode()" >
+            <span class="slider round"></span>
+        </label>
     </div>
-<label class="switch">
-    <input  id="darkModeId"   type="checkbox"  onchange="toggleDarkMode()" >
-    <span class="slider round"></span>
-</label>
-</div>
 </div>
 <!---------------------------------------------->
 
@@ -123,175 +123,175 @@
 
 
 
-    <!-- this is to go to another language with a Select
--->
-    <label for="select_language_list">Select a language with a select :</label>
-    <select id="select_language_list" class="form-control" onchange="changeLanguage(this.value)" >
-        <#list languages_list?keys as locale>
-        <#if locale == keyLocale>
-        <option value="${languages_list[locale]}" selected>${languages_list[locale]}</option>
-        <#else>
-        <option value="${languages_list[locale]}">${languages_list[locale]}</option>
-    </#if>
-</#list>
-</select>
+        <!-- this is to go to another language with a Select
+    -->
+        <label for="select_language_list">Select a language with a select :</label>
+        <select id="select_language_list" class="form-control" onchange="changeLanguage(this.value)" >
+            <#list languages_list?keys as locale>
+            <#if locale == keyLocale>
+            <option value="${languages_list[locale]}" selected>${languages_list[locale]}</option>
+            <#else>
+            <option value="${languages_list[locale]}">${languages_list[locale]}</option>
+        </#if>
+    </#list>
+    </select>
 
 
 
-<!-- wiki page title -->
-<div class="tab-content">
-    <div id="tab-${locale}" class="tab-pane active"  role="tabpanel" >
-        <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
-        <div class="form-group">
-            <input class="form-control" id="page_title_${locale}" type="text" name="page_title_${locale}" value="<#if version?? && version.getWikiContent(locale)??>${version.getWikiContent( locale).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
-        </div>
-
-        <div class="form-group">
-            <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
-            <#assign topicList=reflist_topic >
-            <select id="parent_page_name" name="parent_page_name" class="form-control" onchange="autoSave()">
-                <#list topicList as parentPage>
-                <#if topic.parentPageName == parentPage.name>
-                <option value="${parentPage.name}" selected>${parentPage.name}</option>
-                <#else>
-                <option value="${parentPage.name}">${parentPage.name}</option>
-            </#if>
-        </#list>
-        </select>
-    </div>
-
-    <!------------ modal to select a FA icon ----------------->
-    <div id="selectFaIcons" class="toastui-editor-popup" style="display: none;" >
-        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
-        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
-            <span class="fa fa-times"></span>
-        </button>
-        <div class="toastui-editor-popup-header">
-            <div class="toastui-editor-popup-header-title">Select FA Icons</div>
-        </div>
-        <div class="toastui-editor-popup-body">
-            <div class="toastui-editor-popup-content-body">
-                <@selectIconFont id='selectIcon' class='' name='resource-icon' showListLabel=true showListIcon=true searchShow=true searchFocus=false searchHighlight=true type='yaml' prefix='fa-' iconsUrl='css/admin/font-awesome-icons.yml' resources=true defaultValue='' />
+    <!-- wiki page title -->
+    <div class="tab-content">
+        <div id="tab-${locale}" class="tab-pane active"  role="tabpanel" >
+            <label for="page_title">#i18n{wiki.modify_page.pageTitle} :</label>
+            <div class="form-group">
+                <input class="form-control" id="page_title_${locale}" type="text" name="page_title_${locale}" value="<#if version?? && version.getWikiContent(locale)??>${version.getWikiContent( locale).pageTitle}</#if>" maxlength="100"  onkeydown="autoSave()"/>
             </div>
+
+            <div class="form-group">
+                <label for="parent_page_name">#i18n{wiki.modify_page.labelParentPageName} :</label>
+                <#assign topicList=reflist_topic >
+                <select id="parent_page_name" name="parent_page_name" class="form-control" onchange="autoSave()">
+                    <#list topicList as parentPage>
+                    <#if topic.parentPageName == parentPage.name>
+                    <option value="${parentPage.name}" selected>${parentPage.name}</option>
+                    <#else>
+                    <option value="${parentPage.name}">${parentPage.name}</option>
+                </#if>
+            </#list>
+            </select>
         </div>
-        <div id="iconIsSelected"  style="display: none">
-            <div class="toastui-editor-popup-content-body" style="margin: 25px;">
-                <label for="iconSize">Icon Size :</label>
-                <select id="iconSize" class="form-control" onchange="changeIconSize()">
-                    <option value="fa-1x">fa-1x</option>
-                    <option value="fa-2x">fa-2x</option>
-                    <option value="fa-3x">fa-3x</option>
-                    <option value="fa-4x">fa-4x</option>
-                    <option value="fa-5x">fa-5x</option>
-                </select>
+
+        <!------------ modal to select a FA icon ----------------->
+        <div id="selectFaIcons" class="toastui-editor-popup" style="display: none;" >
+            <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+            <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+                <span class="fa fa-times"></span>
+            </button>
+            <div class="toastui-editor-popup-header">
+                <div class="toastui-editor-popup-header-title">Select FA Icons</div>
+            </div>
+            <div class="toastui-editor-popup-body">
                 <div class="toastui-editor-popup-content-body">
-                    Seleted Icon : <span id="selectedIcon"> </span>
+                    <@selectIconFont id='selectIcon' class='' name='resource-icon' showListLabel=true showListIcon=true searchShow=true searchFocus=false searchHighlight=true type='yaml' prefix='fa-' iconsUrl='css/admin/font-awesome-icons.yml' resources=true defaultValue='' />
                 </div>
             </div>
-            <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
-                <button class="btn btn-primary" type="button" onclick="insertIcon()">Insert</button>
-                <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!------------ modal to select an alert box ----------------->
-    <div id="selectAlertType" class="toastui-editor-popup" style="display: none;" >
-        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
-        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
-            <span class="fa fa-times"></span>
-        </button>
-        <div class="toastui-editor-popup-header">
-            <div class="toastui-editor-popup-header-title">Select an Alert-Box</div>
-            <select id="alertBoxType" class="form-control" onchange="selectAlertBoxType(this.value)" >
-                <option selected disabled>Select an alert</option>
-                <option value="info">Info</option>
-                <option value="warning">Warning</option>
-                <option value="danger">Danger</option>
-                <option value="success">Success</option>
-            </select>
-        </div>
-    </div>
-    <!------------ modal to select a jumbotron ----------------->
-    <div id="selectJumbotronModal"  class="toastui-editor-popup" style="display: none;" >
-        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
-        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
-            <span class="fa fa-times"></span>
-        </button>
-        <div class="toastui-editor-popup-header">
-            <div class="toastui-editor-popup-header-title">Select a Jumbotron</div>
-            <select id="jumbotronType" class="form-control" onchange="selectJumbotron(this.value)" >
-                <option selected disabled>Select a jumbotron</option>
-                <option value="bg-primary text-white" class="p-3 mb-2 bg-primary text-white">.bg-primary</option>
-                <option value="bg-body-tertiary text-dark" class="p-3 mb-2 bg-body-tertiary text-dark">.bg-body-tertiary</option>
-                <option value="bg-success text-white" class="p-3 mb-2 bg-success text-white">.bg-success</option>
-                <option value="bg-danger text-white" class="p-3 mb-2 bg-danger text-white">.bg-danger</option>
-                <option value="bg-warning text-dark" class="p-3 mb-2 bg-warning text-dark">.bg-warning</option>
-                <option value="bg-dark text-white" class="p-3 mb-2 bg-dark text-white">.bg-dark</option>
-                <option value="bg-white text-dark" class="p-3 mb-2 bg-white text-dark">.bg-white</option>
-            </select>
-        </div>
-    </div>
-
-    <!------------ modal  select a badge ----------------->
-    <div id="selectBadge" class="toastui-editor-popup" style="display: none;" >
-        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
-            <span class="fa fa-times"></span>
-        </button>
-        <div class="toastui-editor-popup-header">
-            <div class="toastui-editor-popup-header-title">Select a Badge</div>
-            <select id="badgeType" class="form-control" onchange="selectBadge(this.value)" >
-                <option selected disabled>Select a badge</option>
-                <option value="badge bg-primary" > <span class="badge bg-primary">Primary</span></option>
-                <option value="badge bg-secondary" class="badge bg-secondary">Secondary</option>
-                <option value="badge bg-success" class="badge bg-success">Success</option>
-                <option value="badge bg-danger" class="badge bg-danger">Danger</option>
-                <option value="badge bg-warning" class="badge bg-warning">Warning</option>
-                <option value="badge bg-info" class="badge bg-info">Info</option>
-                <option value="badge bg-light" class="badge bg-light">Light</option>
-                <option value="badge bg-dark" class="badge bg-dark">Dark</option>
-            </select>
-        </div>
-        <div id="badgeIsSelected"  style="display: none">
-            <div class="toastui-editor-popup-content-body" style="margin: 25px;">
-                <label for="badgeSize">Badge Headings :</label>
-                <select id="badgeSize" class="form-control" onchange="changeBadgeSize(this.value)">
-                    <option value="div" selected>No headings</option>
-                    <option value="h1" class="h1">h1</option>
-                    <option value="h2" class="h2">h2</option>
-                    <option value="h3" class="h3">h3</option>
-                    <option value="h4" class="h4">h4</option>
-                    <option value="h5" class="h5">h5</option>
-                    <option value="h6" class="h6">h6</option>
-                </select>
-                <div class="toastui-editor-popup-content-body">
-                    Selected Badge : <div id="selectedBadge"> </div>
+            <div id="iconIsSelected"  style="display: none">
+                <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+                    <label for="iconSize">Icon Size :</label>
+                    <select id="iconSize" class="form-control" onchange="changeIconSize()">
+                        <option value="fa-1x">fa-1x</option>
+                        <option value="fa-2x">fa-2x</option>
+                        <option value="fa-3x">fa-3x</option>
+                        <option value="fa-4x">fa-4x</option>
+                        <option value="fa-5x">fa-5x</option>
+                    </select>
+                    <div class="toastui-editor-popup-content-body">
+                        Seleted Icon : <span id="selectedIcon"> </span>
+                    </div>
+                </div>
+                <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
+                    <button class="btn btn-primary" type="button" onclick="insertIcon()">Insert</button>
+                    <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
                 </div>
             </div>
-            <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
-                <button class="btn btn-primary" type="button" onclick="insertBadge()">Insert</button>
-                <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
+        </div>
+
+        <!------------ modal to select an alert box ----------------->
+        <div id="selectAlertType" class="toastui-editor-popup" style="display: none;" >
+            <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+            <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+                <span class="fa fa-times"></span>
+            </button>
+            <div class="toastui-editor-popup-header">
+                <div class="toastui-editor-popup-header-title">Select an Alert-Box</div>
+                <select id="alertBoxType" class="form-control" onchange="selectAlertBoxType(this.value)" >
+                    <option selected disabled>Select an alert</option>
+                    <option value="info">Info</option>
+                    <option value="warning">Warning</option>
+                    <option value="danger">Danger</option>
+                    <option value="success">Success</option>
+                </select>
             </div>
         </div>
-    </div>
-
-
-    <!-- wiki content that goes in the editor-->
-    <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
-           value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
-           data type="hidden"/>
-
-    <!-- here is the editor -->
-    <div class="form-group">
-        <div class="code-html tui-doc-contents">
-            <h2>Editor</h2>
-            <div id="editor"></div>
+        <!------------ modal to select a jumbotron ----------------->
+        <div id="selectJumbotronModal"  class="toastui-editor-popup" style="display: none;" >
+            <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+            <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+                <span class="fa fa-times"></span>
+            </button>
+            <div class="toastui-editor-popup-header">
+                <div class="toastui-editor-popup-header-title">Select a Jumbotron</div>
+                <select id="jumbotronType" class="form-control" onchange="selectJumbotron(this.value)" >
+                    <option selected disabled>Select a jumbotron</option>
+                    <option value="bg-primary text-white" class="p-3 mb-2 bg-primary text-white">.bg-primary</option>
+                    <option value="bg-body-tertiary text-dark" class="p-3 mb-2 bg-body-tertiary text-dark">.bg-body-tertiary</option>
+                    <option value="bg-success text-white" class="p-3 mb-2 bg-success text-white">.bg-success</option>
+                    <option value="bg-danger text-white" class="p-3 mb-2 bg-danger text-white">.bg-danger</option>
+                    <option value="bg-warning text-dark" class="p-3 mb-2 bg-warning text-dark">.bg-warning</option>
+                    <option value="bg-dark text-white" class="p-3 mb-2 bg-dark text-white">.bg-dark</option>
+                    <option value="bg-white text-dark" class="p-3 mb-2 bg-white text-dark">.bg-white</option>
+                </select>
+            </div>
         </div>
+
+        <!------------ modal  select a badge ----------------->
+        <div id="selectBadge" class="toastui-editor-popup" style="display: none;" >
+            <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+                <span class="fa fa-times"></span>
+            </button>
+            <div class="toastui-editor-popup-header">
+                <div class="toastui-editor-popup-header-title">Select a Badge</div>
+                <select id="badgeType" class="form-control" onchange="selectBadge(this.value)" >
+                    <option selected disabled>Select a badge</option>
+                    <option value="badge bg-primary" > <span class="badge bg-primary">Primary</span></option>
+                    <option value="badge bg-secondary" class="badge bg-secondary">Secondary</option>
+                    <option value="badge bg-success" class="badge bg-success">Success</option>
+                    <option value="badge bg-danger" class="badge bg-danger">Danger</option>
+                    <option value="badge bg-warning" class="badge bg-warning">Warning</option>
+                    <option value="badge bg-info" class="badge bg-info">Info</option>
+                    <option value="badge bg-light" class="badge bg-light">Light</option>
+                    <option value="badge bg-dark" class="badge bg-dark">Dark</option>
+                </select>
+            </div>
+            <div id="badgeIsSelected"  style="display: none">
+                <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+                    <label for="badgeSize">Badge Headings :</label>
+                    <select id="badgeSize" class="form-control" onchange="changeBadgeSize(this.value)">
+                        <option value="div" selected>No headings</option>
+                        <option value="h1" class="h1">h1</option>
+                        <option value="h2" class="h2">h2</option>
+                        <option value="h3" class="h3">h3</option>
+                        <option value="h4" class="h4">h4</option>
+                        <option value="h5" class="h5">h5</option>
+                        <option value="h6" class="h6">h6</option>
+                    </select>
+                    <div class="toastui-editor-popup-content-body">
+                        Selected Badge : <div id="selectedBadge"> </div>
+                    </div>
+                </div>
+                <div class="toastui-editor-popup-content-footer"  style="margin: 25px;">
+                    <button class="btn btn-primary" type="button" onclick="insertBadge()">Insert</button>
+                    <button class="btn btn-default" type="button" onclick="closeToastUiModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- wiki content that goes in the editor-->
+        <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
+               value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
+               data type="hidden"/>
+
+        <!-- here is the editor -->
+        <div class="form-group">
+            <div class="code-html tui-doc-contents">
+                <h2>Editor</h2>
+                <div id="editor"></div>
+            </div>
+        </div>
+        <input id="wiki_html_content" class="form-control" name="wiki_html_content" type="hidden"/>
+
+
     </div>
-    <input id="wiki_html_content" class="form-control" name="wiki_html_content" type="hidden"/>
-
-
-</div>
 </div>
 </div>
 
@@ -794,7 +794,7 @@
     /* -------------- jumbotron -------------- */
     const addJumbotronButton = document.getElementsByClassName("jumbotron editor")[0];
     addJumbotronButton.addEventListener('click', function() {
-       document.getElementById("selectJumbotronModal").style.display = "block";
+        document.getElementById("selectJumbotronModal").style.display = "block";
     });
 
     function selectJumbotron(jumbotronValue) {
@@ -802,57 +802,57 @@
         let jumbotronH1Class = '';
         let jumbotronPClass = '';
         let buttonClass = '';
-switch (jumbotronValue) {
-    case "bg-primary text-white":
-        jumbotronBgDivClass += " bg-primary text-white";
-        jumbotronH1Class = "text-white";
-        jumbotronPClass = "text-light";
-        buttonClass = "btn btn-lg btn-secondary text-white";
-        break;
-        case "bg-body-tertiary text-dark":
-        jumbotronBgDivClass += " bg-body-tertiary text-dark";
-        jumbotronH1Class = "text-dark";
-        jumbotronPClass = "text-dark";
-        buttonClass = "btn btn-outline-secondary text-dark";
-        break;
-         case "bg-success text-white":
-        jumbotronBgDivClass += " bg-success text-white";
-        jumbotronH1Class = "text-white";
-        jumbotronPClass = "text-light";
-             buttonClass = "btn btn-lg btn-secondary text-white";
-        break;
-         case "bg-danger text-white":
-             jumbotronBgDivClass += " bg-danger text-white";
+        switch (jumbotronValue) {
+            case "bg-primary text-white":
+                jumbotronBgDivClass += " bg-primary text-white";
                 jumbotronH1Class = "text-white";
                 jumbotronPClass = "text-light";
-             buttonClass = "btn btn-lg btn-secondary text-white";
-        break;
+                buttonClass = "btn btn-lg btn-secondary text-white";
+                break;
+            case "bg-body-tertiary text-dark":
+                jumbotronBgDivClass += " bg-body-tertiary text-dark";
+                jumbotronH1Class = "text-dark";
+                jumbotronPClass = "text-dark";
+                buttonClass = "btn btn-outline-secondary text-dark";
+                break;
+            case "bg-success text-white":
+                jumbotronBgDivClass += " bg-success text-white";
+                jumbotronH1Class = "text-white";
+                jumbotronPClass = "text-light";
+                buttonClass = "btn btn-lg btn-secondary text-white";
+                break;
+            case "bg-danger text-white":
+                jumbotronBgDivClass += " bg-danger text-white";
+                jumbotronH1Class = "text-white";
+                jumbotronPClass = "text-light";
+                buttonClass = "btn btn-lg btn-secondary text-white";
+                break;
             case "bg-warning text-dark":
                 jumbotronBgDivClass += " bg-warning text-dark";
-                    jumbotronH1Class = "text-dark";
-                    jumbotronPClass = "text-dark";
+                jumbotronH1Class = "text-dark";
+                jumbotronPClass = "text-dark";
                 buttonClass = "btn btn-lg btn-secondary text-white";
-        break;
-    case "bg-dark text-white":
-        jumbotronBgDivClass += " bg-dark";
-        jumbotronH1Class = "text-white";
-        jumbotronPClass = "text-light";
-        buttonClass = "btn btn-outline-light text-white";
-        break;
+                break;
+            case "bg-dark text-white":
+                jumbotronBgDivClass += " bg-dark";
+                jumbotronH1Class = "text-white";
+                jumbotronPClass = "text-light";
+                buttonClass = "btn btn-outline-light text-white";
+                break;
             case "bg-white text-dark":
                 jumbotronBgDivClass += " bg-white text-dark";
-                    jumbotronH1Class = "text-dark";
-                    jumbotronPClass = "text-dark";
-                    buttonClass = "btn btn-lg btn-primary text-white";
-        break;
+                jumbotronH1Class = "text-dark";
+                jumbotronPClass = "text-dark";
+                buttonClass = "btn btn-lg btn-primary text-white";
+                break;
 
-}
+        }
         const jumbotronTitle = "My jumbotron title";
         const jumbotronText = "My jumbotron text, it can be long or short !";
         let bootStrap5Jumbotron = '<div class="h-100 p-5 rounded-3 '+ jumbotronBgDivClass + '">\n' +
             '          <h1 class="'+ jumbotronH1Class + '">' + jumbotronTitle + '</h1>\n' +
             '          <p class="'+ jumbotronPClass + '">' + jumbotronText + '</p>\n' +
-        '<a href="https://lutece.paris.fr/fr/" class="' + buttonClass +'" style="text-decoration: none">Learn more</a>\n' +
+            '<a href="https://lutece.paris.fr/fr/" class="' + buttonClass +'" style="text-decoration: none">Learn more</a>\n' +
             '        </div>';
         editor.insertText("$$span\n"+bootStrap5Jumbotron+ "\n$$");
         closeToastUiModal();
@@ -976,9 +976,11 @@ switch (jumbotronValue) {
     function createTableOfContent(doc) {
         let thisPageurl = window.location.href;
         thisPageurl = "jsp/"+ thisPageurl.split("jsp/")[1];
-        thisPageurl = thisPageurl.replace("view=modifyPage", "view=viewPage");
+        thisPageurl = thisPageurl.replace("view=modifyPage", "view=page");
         thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
-        let headers = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+        thisPageurl = thisPageurl.replace(/&locale=[0-9]*/g, "");
+        thisPageurl = thisPageurl.replace(/&version=[0-9]*/g, "");
+        let headers = doc.querySelectorAll("h1, h2, h3");
 
         let tableOfContent = document.createElement("ul")
         tableOfContent.id = "tableOfContent";
@@ -992,20 +994,20 @@ switch (jumbotronValue) {
             linkElement.innerText = headerText;
             linkElement.className = "nav-link";
             let navItem = document.createElement("li");
-            if (headerLevel === "H1" || headerLevel === "H2" || headerLevel === "H3") {
+            if (headerLevel === "H1") {
                 navItem.className = "nav-item";
                 if (headers[i + 1] !== undefined) {
-                    if (headers[i + 1].tagName === "H1" || headers[i + 1].tagName === "H2" || headers[i + 1].tagName === "H3") {
+                    if (headers[i + 1].tagName === "H1") {
                         tableOfContent.appendChild(linkElement);
-                    } else if (headers[i + 1].tagName === "H4" || headers[i + 1].tagName === "H5" || headers[i + 1].tagName === "H6") {
+                    } else if (headers[i + 1].tagName === "H2" || headers[i + 1].tagName === "H3") {
                         let divContainer = document.createElement("div");
                         divContainer.style = "display: flex; flex-direction: row; spacing: 5px;";
                         divContainer.appendChild(linkElement);
                         navItem.appendChild(divContainer);
                         tableOfContent.appendChild(navItem);
-                        let icon = document.createElement("i");
+                        let icon = document.createElement("span");
                         icon.className = "fa fa-chevron-left";
-                        icon.style = "padding: 5px;";
+                        icon.style = "padding: 5px; btn btn-tertiary btn-sm";
                         divContainer.appendChild(icon);
                         let subLinkContainer = document.createElement("ul");
                         subLinkContainer.className = "subLinkContainer";
@@ -1016,7 +1018,7 @@ switch (jumbotronValue) {
                     }
                 }
             }
-            if (headerLevel === "H4" || headerLevel === "H5" || headerLevel === "H6") {
+            if (headerLevel === "H2" || headerLevel === "H2") {
                 // get the last div with class subLinkContainer
                 let subLinkContainers = tableOfContent.getElementsByClassName("subLinkContainer");
                 let subLinkContainer = subLinkContainers[subLinkContainers.length - 1];
@@ -1031,7 +1033,7 @@ switch (jumbotronValue) {
     window.addEventListener("load", (event) => {
         if( parseInt(document.getElementById('topic_version').value)  !== 0 && window.localStorage.getItem('autoSaveMode') === null){
             window.localStorage.setItem('autoSaveMode', 'true');
-                 document.getElementById('autoSaveMode').checked = true;
+            document.getElementById('autoSaveMode').checked = true;
         }
         else if (parseInt(document.getElementById('topic_version').value)  !== 0 ) {
             window.localStorage.getItem('autoSaveMode') === 'true'
@@ -1043,19 +1045,19 @@ switch (jumbotronValue) {
 
     function toggleAutosave(){
 
-       if(parseInt(document.getElementById('topic_version').value)  === 0){
-           alert('In order to save automatically the content, you must manually save a first version');
-              document.getElementById('autoSaveMode').checked = false;
-       }
-       else if (parseInt(document.getElementById('topic_version').value)  !== 0){
-           if (document.getElementById('autoSaveMode').checked) {
-               document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is activated';
-               window.localStorage.setItem('autoSaveMode', 'true');
-           } else {
-               document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is deactivated';
-               window.localStorage.setItem('autoSaveMode', 'false');
-           }
-       }
+        if(parseInt(document.getElementById('topic_version').value)  === 0){
+            alert('In order to save automatically the content, you must manually save a first version');
+            document.getElementById('autoSaveMode').checked = false;
+        }
+        else if (parseInt(document.getElementById('topic_version').value)  !== 0){
+            if (document.getElementById('autoSaveMode').checked) {
+                document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is activated';
+                window.localStorage.setItem('autoSaveMode', 'true');
+            } else {
+                document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is deactivated';
+                window.localStorage.setItem('autoSaveMode', 'false');
+            }
+        }
     }
     function displayAutoSave(autoSaveResult){
         if(autoSaveResult){
@@ -1174,7 +1176,7 @@ switch (jumbotronValue) {
         content = replaceAll("'", '[simpleQuote;', content)
         document.getElementById( id ).value = content;
     }
-    
+
     function escapeSpecialCharsFromContent( content )
     {
         content = replaceAll( '<' , '[lt;' , content );

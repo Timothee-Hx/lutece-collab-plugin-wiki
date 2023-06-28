@@ -127,29 +127,54 @@
     });
 </script>
 
+
 <script defer>
-    let spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-right');
+    let spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-left');
+
     for (let i = 0; i < spanIconMoreLink.length; i++) {
         spanIconMoreLink[i].addEventListener('click', function () {
-            let parent = document.getElementsByClassName('fa fa-chevron-right')[i].parentNode
-            spanIconMoreLink[i].style.display = 'none';
-            spanIconMoreLink[i].class = 'fa fa-chevron-down';
-            spanIconMoreLink[i].style.display = 'block';
+
+            let sublist = document.getElementsByClassName('fa fa-chevron-left')[i].parentNode.parentNode.nextSibling
+            sublist.style.display = 'block';
+            spanIconMoreLink[i].classList.add('fa-chevron-down');
+            spanIconMoreLink[i].classList.remove('fa-chevron-left')
 
         });
     }
     let spanIconLessLink = document.getElementsByClassName('fa fa-chevron-down');
+
     for (let i = 0; i < spanIconLessLink.length; i++) {
         spanIconLessLink[i].addEventListener('click', function () {
-            let parent = document.getElementsByClassName('fa fa-chevron-down')[i].parentNode
+            let parent = document.getElementsByClassName('fa fa-chevron-down')[i].parentNode.parentNode
             spanIconLessLink[i].class = 'fa fa-chevron-right';
 
-            let SubLinks = parent.nextSibling;
-            for(let i = 0; i < SubLinks.childNodes.length; i++){
-                SubLinks.childNodes[i].style.display = 'none';
-            }
+            let SubLinksGroup = parent.nextSibling;
+            SubLinksGroup.style.display = 'none';
+
+            spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-left');
+            spanIconLessLink =  document.getElementsByClassName('fa fa-chevron-down');
         });
     }
+
+
+    window.addEventListener("load", (event) => {
+        if(document.getElementsByClassName('darkModeClassOn').length > 0){
+            document.getElementById('darkModeSwitch').style.display = 'block';
+        }
+        let darkMode = localStorage.getItem('darkMode');
+        let darkModeId = document.getElementById('darkModeId');
+        let darkModeLabel = document.getElementById('darkModeLabel');
+        if (darkMode === 'true') {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+        } else {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+        }
+    });
+
 
     window.addEventListener("load", (event) => {
         if(document.getElementsByClassName('darkModeClassOn').length > 0){
