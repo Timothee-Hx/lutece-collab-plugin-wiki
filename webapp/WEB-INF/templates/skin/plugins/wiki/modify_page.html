@@ -244,6 +244,27 @@
             </select>
         </div>
     </div>
+    <!------------ modal to select a jumbotron ----------------->
+    <div id="selectJumbotronModal"  class="toastui-editor-popup" style="display: none;" >
+        <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+        <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+            <span class="fa fa-times"></span>
+        </button>
+        <div class="toastui-editor-popup-header">
+            <div class="toastui-editor-popup-header-title">Select a Jumbotron</div>
+            <select id="jumbotronType" class="form-control" onchange="selectJumbotron(this.value)" >
+                <option selected disabled>Select a jumbotron</option>
+                <option value="bg-primary text-white" class="p-3 mb-2 bg-primary text-white">.bg-primary</option>
+                <option value="bg-body-tertiary text-dark" class="p-3 mb-2 bg-body-tertiary text-dark">.bg-body-tertiary</option>
+                <option value="bg-success text-white" class="p-3 mb-2 bg-success text-white">.bg-success</option>
+                <option value="bg-danger text-white" class="p-3 mb-2 bg-danger text-white">.bg-danger</option>
+                <option value="bg-warning text-dark" class="p-3 mb-2 bg-warning text-dark">.bg-warning</option>
+                <option value="bg-dark text-white" class="p-3 mb-2 bg-dark text-white">.bg-dark</option>
+                <option value="bg-white text-dark" class="p-3 mb-2 bg-white text-dark">.bg-white</option>
+            </select>
+        </div>
+    </div>
+
     <!------------ modal  select a badge ----------------->
     <div id="selectBadge" class="toastui-editor-popup" style="display: none;" >
         <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
@@ -805,17 +826,68 @@
     /* -------------- jumbotron -------------- */
     const addJumbotronButton = document.getElementsByClassName("jumbotron editor")[0];
     addJumbotronButton.addEventListener('click', function() {
-        insertJumbotron();
+       document.getElementById("selectJumbotronModal").style.display = "block";
     });
-    function insertJumbotron() {
+
+    function selectJumbotron(jumbotronValue) {
+        let jumbotronBgDivClass = 'h-100 p-5 text-bg-dark rounded-3';
+        let jumbotronH2Class = '';
+        let jumbotronPClass = '';
+        let buttonClass = '';
+switch (jumbotronValue) {
+    case "bg-primary text-white":
+        jumbotronBgDivClass += " bg-primary text-white";
+        jumbotronH2Class = "text-white";
+        jumbotronPClass = "text-light";
+        buttonClass = "btn btn-lg btn-secondary text-white";
+        break;
+        case "bg-body-tertiary text-dark":
+        jumbotronBgDivClass += " bg-body-tertiary text-dark";
+        jumbotronH2Class = "text-dark";
+        jumbotronPClass = "text-dark";
+        buttonClass = "btn btn-outline-secondary text-dark";
+        break;
+         case "bg-success text-white":
+        jumbotronBgDivClass += " bg-success text-white";
+        jumbotronH2Class = "text-white";
+        jumbotronPClass = "text-light";
+             buttonClass = "btn btn-lg btn-secondary text-white";
+        break;
+         case "bg-danger text-white":
+             jumbotronBgDivClass += " bg-danger text-white";
+                jumbotronH2Class = "text-white";
+                jumbotronPClass = "text-light";
+             buttonClass = "btn btn-lg btn-secondary text-white";
+        break;
+            case "bg-warning text-dark":
+                jumbotronBgDivClass += " bg-warning text-dark";
+                    jumbotronH2Class = "text-dark";
+                    jumbotronPClass = "text-dark";
+                buttonClass = "btn btn-lg btn-secondary text-white";
+        break;
+    case "bg-dark text-white":
+        jumbotronBgDivClass += " bg-dark";
+        jumbotronH2Class = "text-white";
+        jumbotronPClass = "text-light";
+        buttonClass = "btn btn-outline-light text-white";
+        break;
+            case "bg-white text-dark":
+                jumbotronBgDivClass += " bg-white text-dark";
+                    jumbotronH2Class = "text-dark";
+                    jumbotronPClass = "text-dark";
+                    buttonClass = "btn btn-lg btn-primary text-white";
+        break;
+
+}
         const jumbotronTitle = "My jumbotron title";
         const jumbotronText = "My jumbotron text, it can be long or short !";
-        let bootStrap5Jumbotron = '<div class="h-100 p-5 text-bg-dark rounded-3">\n' +
-            '          <h2 class="text-white">' + jumbotronTitle + '</h2>\n' +
-            '          <p class="text-light">' + jumbotronText + '</p>\n' +
+        let bootStrap5Jumbotron = '<div class="h-100 p-5 rounded-3 '+ jumbotronBgDivClass + '">\n' +
+            '          <h2 class="'+ jumbotronH2Class + '">' + jumbotronTitle + '</h2>\n' +
+            '          <p class="'+ jumbotronPClass + '">' + jumbotronText + '</p>\n' +
+        '<a href="https://lutece.paris.fr/fr/" class="' + buttonClass +'" style="text-decoration: none">Learn more</a>\n' +
             '        </div>';
         editor.insertText("$$span\n"+bootStrap5Jumbotron+ "\n$$");
-        document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+        closeToastUiModal();
     }
 
     /* -------------- DARK MODE -------------- */
