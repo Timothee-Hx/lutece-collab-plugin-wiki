@@ -981,10 +981,17 @@
         thisPageurl = thisPageurl.replace(/&locale=[0-9]*/g, "");
         thisPageurl = thisPageurl.replace(/&version=[0-9]*/g, "");
         let headers = doc.querySelectorAll("h1, h2, h3");
-
-        let tableOfContent = document.createElement("ul")
+        let title = document.getElementById("page_title_" + localeJs).value;
+        let titleElement = document.createElement("a");
+        titleElement.innerText = title;
+        titleElement.style.fontWeight = "bold";
+        titleElement.style.fontSize = "1.5rem";
+        titleElement.className = "nav-link";
+        titleElement.href = thisPageurl;
+        let tableOfContent = document.createElement("ul");
         tableOfContent.id = "tableOfContent";
         tableOfContent.className = "nav flex-column wiki-topic-nav";
+        tableOfContent.appendChild(titleElement);
         for (let i = 0; i < headers.length; i++) {
             let header = headers[i];
             let headerText = header.innerText;
@@ -1228,6 +1235,33 @@
                     saveLastUserOnModifyPage();}
                 , 4000);
         }
+    }
+
+    /*_________________________ SHOW/HIDE LINKS OF TABLE OF CONTENT ___________________________*/
+
+    let spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-right');
+    for (let i = 0; i < spanIconMoreLink.length; i++) {
+        spanIconMoreLink[i].addEventListener('click', function () {
+            let parent = document.getElementsByClassName('fa fa-chevron-right')[i].parentNode
+            spanIconMoreLink[i].class = 'fa fa-chevron-down';
+
+            let SubLinks = parent.nextSibling;
+            for(let i = 0; i < SubLinks.childNodes.length; i++){
+                SubLinks.childNodes[i].style.display = 'block';
+            }
+        });
+    }
+    let spanIconLessLink = document.getElementsByClassName('fa fa-chevron-down');
+    for (let i = 0; i < spanIconLessLink.length; i++) {
+        spanIconLessLink[i].addEventListener('click', function () {
+            let parent = document.getElementsByClassName('fa fa-chevron-down')[i].parentNode
+            spanIconLessLink[i].class = 'fa fa-chevron-right';
+
+            let SubLinks = parent.nextSibling;
+            for(let i = 0; i < SubLinks.childNodes.length; i++){
+                SubLinks.childNodes[i].style.display = 'none';
+            }
+        });
     }
 
     /*_________________________ ON LOAD REMOVE UNDERLINE ADDED BY THE HTML TO MARKDOWN CONVERTION ___________________________*/
