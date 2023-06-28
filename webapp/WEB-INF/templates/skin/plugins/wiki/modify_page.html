@@ -831,49 +831,49 @@
 
     function selectJumbotron(jumbotronValue) {
         let jumbotronBgDivClass = 'h-100 p-5 text-bg-dark rounded-3';
-        let jumbotronH2Class = '';
+        let jumbotronH1Class = '';
         let jumbotronPClass = '';
         let buttonClass = '';
 switch (jumbotronValue) {
     case "bg-primary text-white":
         jumbotronBgDivClass += " bg-primary text-white";
-        jumbotronH2Class = "text-white";
+        jumbotronH1Class = "text-white";
         jumbotronPClass = "text-light";
         buttonClass = "btn btn-lg btn-secondary text-white";
         break;
         case "bg-body-tertiary text-dark":
         jumbotronBgDivClass += " bg-body-tertiary text-dark";
-        jumbotronH2Class = "text-dark";
+        jumbotronH1Class = "text-dark";
         jumbotronPClass = "text-dark";
         buttonClass = "btn btn-outline-secondary text-dark";
         break;
          case "bg-success text-white":
         jumbotronBgDivClass += " bg-success text-white";
-        jumbotronH2Class = "text-white";
+        jumbotronH1Class = "text-white";
         jumbotronPClass = "text-light";
              buttonClass = "btn btn-lg btn-secondary text-white";
         break;
          case "bg-danger text-white":
              jumbotronBgDivClass += " bg-danger text-white";
-                jumbotronH2Class = "text-white";
+                jumbotronH1Class = "text-white";
                 jumbotronPClass = "text-light";
              buttonClass = "btn btn-lg btn-secondary text-white";
         break;
             case "bg-warning text-dark":
                 jumbotronBgDivClass += " bg-warning text-dark";
-                    jumbotronH2Class = "text-dark";
+                    jumbotronH1Class = "text-dark";
                     jumbotronPClass = "text-dark";
                 buttonClass = "btn btn-lg btn-secondary text-white";
         break;
     case "bg-dark text-white":
         jumbotronBgDivClass += " bg-dark";
-        jumbotronH2Class = "text-white";
+        jumbotronH1Class = "text-white";
         jumbotronPClass = "text-light";
         buttonClass = "btn btn-outline-light text-white";
         break;
             case "bg-white text-dark":
                 jumbotronBgDivClass += " bg-white text-dark";
-                    jumbotronH2Class = "text-dark";
+                    jumbotronH1Class = "text-dark";
                     jumbotronPClass = "text-dark";
                     buttonClass = "btn btn-lg btn-primary text-white";
         break;
@@ -882,7 +882,7 @@ switch (jumbotronValue) {
         const jumbotronTitle = "My jumbotron title";
         const jumbotronText = "My jumbotron text, it can be long or short !";
         let bootStrap5Jumbotron = '<div class="h-100 p-5 rounded-3 '+ jumbotronBgDivClass + '">\n' +
-            '          <h2 class="'+ jumbotronH2Class + '">' + jumbotronTitle + '</h2>\n' +
+            '          <h1 class="'+ jumbotronH1Class + '">' + jumbotronTitle + '</h1>\n' +
             '          <p class="'+ jumbotronPClass + '">' + jumbotronText + '</p>\n' +
         '<a href="https://lutece.paris.fr/fr/" class="' + buttonClass +'" style="text-decoration: none">Learn more</a>\n' +
             '        </div>';
