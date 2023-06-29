@@ -66,15 +66,15 @@ span.diff-html-conflict {
     width: 275px;
     color: #2d2d2d;
 }
-.wiki-align-content-left {
+.wiki-align-content-val-l {
     text-align: left;
 }
-.wiki-align-content-right {
+.wiki-align-content-val-r {
     text-align: right;
 }
-.wiki-align-content-center {
+.wiki-align-content-val-c {
     text-align: center;
 }
-.wiki-align-content-justify {
+.wiki-align-content-val-j {
     text-align: justify;
 }

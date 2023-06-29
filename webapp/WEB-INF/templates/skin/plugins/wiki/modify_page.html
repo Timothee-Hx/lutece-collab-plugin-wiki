@@ -213,19 +213,19 @@
             <div class="toastui-editor-popup-body">
                 <div class="toastui-editor-popup-content-body">
                     <div class="btn-group" role="group" aria-label="...">
-                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-left')">
+                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-val-l')">
                             <div>Left</div>
                             <span class="fa fa-align-left"></span>
                         </button>
-                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-center')">
+                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-val-c')">
                             <div>Center</div>
                             <span class="fa fa-align-center"></span>
                         </button>
-                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-right')">
+                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-val-r')">
                             <div>Right</div>
                             <span class="fa fa-align-right"></span>
                         </button>
-                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-justify')">
+                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-val-j')">
                             <div>Justify</div>
                             <span class="fa fa-align-justify"></span>
                         </button>
@@ -755,12 +755,20 @@
         document.getElementById("selectTextAlignmentModal").style.display = "block";
     });
     function selectTextAlignment(alignmentValue) {
-      // .toastui-editor-md-container .toastui-editor-md-preview
         document.getElementsByClassName("toastui-editor-md-container")[0].classList.add(alignmentValue);
         const contentToInsert = '<span class="' + alignmentValue + '"></span>';
         editor.insertText("$$span\n"+contentToInsert+ "\n$$");
         closeToastUiModal();
     }
+
+
+    window.addEventListener("load", (event) => {
+        if(document.getElementsByClassName('ProseMirror')[0].innerText.indexOf("wiki-align-content-val-") > -1){
+            // grab the next letter
+            const alignmentValue = document.getElementsByClassName('ProseMirror')[0].innerText.split("wiki-align-content-val-")[1].substring(0,1);
+            document.getElementsByClassName("toastui-editor-md-container")[0].classList.add("wiki-align-content-val-"+alignmentValue);
+        }
+    });
 
     /* -------------- INTERNAL LINK  -------------- */
     const addInternalLinkButton = document.getElementsByClassName("fa fa-link editor")[0];
@@ -1029,10 +1037,13 @@
                 preElements[i].style.backgroundColor = "#2f3241";
             }
         }
-
         doc.querySelectorAll(".toastui-editor-md-preview-highlight").forEach(function (element) {
             element.classList.remove("toastui-editor-md-preview-highlight");
-        });        // check for white spaces and replace them with -
+        });
+        if(document.getElementsByClassName('ProseMirror')[0].innerText.indexOf("wiki-align-content-val-") > -1){
+            const alignmentValue = document.getElementsByClassName('ProseMirror')[0].innerText.split("wiki-align-content-val-")[1].substring(0,1);
+            doc.getElementsByClassName('toastui-editor-contents')[0].classList.add("wiki-align-content-val-"+alignmentValue);
+        }
         let toc = doc.getElementsByClassName('toc')[0];
         if(toc !== undefined){
             let tableOfContent = createTableOfContent(doc);
@@ -1046,6 +1057,7 @@
             flexDiv.classList.add("flex-basis-auto");
             flexDiv.classList.add("overflow-auto");
             flexDiv.appendChild(tableOfContent);
+
             flexDiv.appendChild(doc.getElementsByClassName('toastui-editor-contents')[0]);
             doc = flexDiv.outerHTML;
             return doc;
