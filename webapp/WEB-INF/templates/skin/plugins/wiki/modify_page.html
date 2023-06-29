@@ -940,9 +940,6 @@
         }
     }
 
-    document.onload = (function() {
-        editorHasToc();
-    });
     function checkforTOC(wikiHtmlContent){
         // parse the html content
         let parser = new DOMParser();
@@ -1046,15 +1043,20 @@
     /*___________________________ AUTO_SAVE  ___________________________*/
     window.addEventListener("load", (event) => {
         if( parseInt(document.getElementById('topic_version').value)  !== 0 && window.localStorage.getItem('autoSaveMode') === null){
-            window.localStorage.setItem('autoSaveMode', 'true');
-            document.getElementById('autoSaveMode').checked = true;
+            if(confirm('Do you want to activate auto-save mode ? \n\n'+ 'Note: If you activate this mode, the content will be saved when you are typing, updating this topic version.')){
+                window.localStorage.setItem('autoSaveMode', 'true');
+                document.getElementById('autoSaveMode').checked = true;
+            }
+            else{
+                window.localStorage.setItem('autoSaveMode', 'false');
+                document.getElementById('autoSaveMode').checked = false;
+            }
         }
         else if (parseInt(document.getElementById('topic_version').value)  !== 0 ) {
             window.localStorage.getItem('autoSaveMode') === 'true'
                 ? document.getElementById('autoSaveMode').checked = true
                 : document.getElementById('autoSaveMode').checked = false;
         }
-
     });
 
     function toggleAutosave(){
