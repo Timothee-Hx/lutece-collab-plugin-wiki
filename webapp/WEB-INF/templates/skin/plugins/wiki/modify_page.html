@@ -755,7 +755,14 @@
         document.getElementById("selectTextAlignmentModal").style.display = "block";
     });
     function selectTextAlignment(alignmentValue) {
+        let el = document.getElementsByClassName("toastui-editor-md-container")[0];
+        for(let i = 0; i < el.classList.length; i++){
+            if(el.classList[i].indexOf("wiki-align-content-val-") > -1){
+                el.classList.remove(el.classList[i]);
+            }
+        }
         document.getElementsByClassName("toastui-editor-md-container")[0].classList.add(alignmentValue);
+
         const contentToInsert = '<span class="' + alignmentValue + '"></span>';
         editor.insertText("$$span\n"+contentToInsert+ "\n$$");
         closeToastUiModal();
@@ -764,7 +771,6 @@
 
     window.addEventListener("load", (event) => {
         if(document.getElementsByClassName('ProseMirror')[0].innerText.indexOf("wiki-align-content-val-") > -1){
-            // grab the next letter
             const alignmentValue = document.getElementsByClassName('ProseMirror')[0].innerText.split("wiki-align-content-val-")[1].substring(0,1);
             document.getElementsByClassName("toastui-editor-md-container")[0].classList.add("wiki-align-content-val-"+alignmentValue);
         }
