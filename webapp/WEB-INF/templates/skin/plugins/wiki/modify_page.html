@@ -194,7 +194,46 @@
                 </div>
             </div>
         </div>
+        <!------------ modal to select a link to the same plugin ----------------->
+        <!--    <select id="parent_page_name" name="parent_page_name" class="form-control" onchange="autoSave()">
+                <#list reflist_topic as topic>
+                <option value="${topic.name}" selected>${topic.name}</option>
+               </#list>
+              </select>
+              -->
 
+        <div id="selectTextAlignmentModal" class="toastui-editor-popup" style="display: none;" >
+            <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
+            <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+                <span class="fa fa-times"></span>
+            </button>
+            <div class="toastui-editor-popup-header">
+                <div class="toastui-editor-popup-header-title">Select Text Alignment</div>
+            </div>
+            <div class="toastui-editor-popup-body">
+                <div class="toastui-editor-popup-content-body">
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-left')">
+                            <div>Left</div>
+                            <span class="fa fa-align-left"></span>
+                        </button>
+                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-center')">
+                            <div>Center</div>
+                            <span class="fa fa-align-center"></span>
+                        </button>
+                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-right')">
+                            <div>Right</div>
+                            <span class="fa fa-align-right"></span>
+                        </button>
+                        <button type="button" class="btn btn-default" onclick="selectTextAlignment('wiki-align-content-justify')">
+                            <div>Justify</div>
+                            <span class="fa fa-align-justify"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
         <!------------ modal to select an alert box ----------------->
         <div id="selectAlertType" class="toastui-editor-popup" style="display: none;" >
             <div style="position: absolute; top: 50%; left: 50%; z-index: -1;"></div>
@@ -274,15 +313,14 @@
                 </div>
             </div>
         </div>
+
         <!-- wiki content that goes in the editor-->
         <input id="wiki_content" class="form-control" name="content_${locale}" rows="20"
                value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
                data type="hidden"/>
-
         <!-- here is the editor -->
         <div class="form-group">
             <div class="code-html tui-doc-contents">
-                <h2>Editor</h2>
                 <div id="editor"></div>
             </div>
         </div>
@@ -615,7 +653,7 @@
             },
         },
         previewStyle: 'vertical',
-        height: '500px',
+        height: '800px',
         initialValue: wikiContent,
         scrollSync: false,
         plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
@@ -684,9 +722,23 @@
         className: 'fa fa-video editor',
         style: { backgroundImage: 'none' },
     });
-
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 7 }, {
+        name: 'textAlignment',
+        tooltip: 'Text Alignment',
+        text: 'TA',
+        className: 'fa fa-align-left editor',
+        style: { backgroundImage: 'none' },
+    });
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 8 }, {
+        name: 'InternalLink',
+        tooltip: 'Internal Link',
+        text: 'IL',
+        className: 'fa fa-link editor',
+        style: { backgroundImage: 'none' },
+    });
 
     document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
+
 
 
     /* -------------- CLOSE MODALES -------------- */
@@ -696,6 +748,25 @@
             document.getElementsByClassName("toastui-editor-popup")[i].style.display = "none";
         }
     }
+
+    /* -------------- Text Alignment -------------- */
+    const textAlignmentButton = document.getElementsByClassName("fa fa-align-left editor")[0];
+    textAlignmentButton.addEventListener('click', function() {
+        document.getElementById("selectTextAlignmentModal").style.display = "block";
+    });
+    function selectTextAlignment(alignmentValue) {
+      // .toastui-editor-md-container .toastui-editor-md-preview
+        document.getElementsByClassName("toastui-editor-md-container")[0].classList.add(alignmentValue);
+        const contentToInsert = '<span class="' + alignmentValue + '"></span>';
+        editor.insertText("$$span\n"+contentToInsert+ "\n$$");
+        closeToastUiModal();
+    }
+
+    /* -------------- INTERNAL LINK  -------------- */
+    const addInternalLinkButton = document.getElementsByClassName("fa fa-link editor")[0];
+    addInternalLinkButton.addEventListener('click', function() {
+        //    document.getElementById("selectInternalLink").style.display = "block";
+    });
 
 
     /* -------------- ALERT  -------------- */
@@ -727,10 +798,10 @@
         editor.insertText("$$span\n"+alertHtml+ "\n$$");
         closeToastUiModal();
     }
-/* -------------- VIDEO  -------------- */
- let addVideoButton = document.getElementsByClassName("fa fa-video editor")[0];
+    /* -------------- VIDEO  -------------- */
+    let addVideoButton = document.getElementsByClassName("fa fa-video editor")[0];
     addVideoButton.addEventListener('click', function() {
-   alert("You can insert a video or an iframe, for example on youtube, click on share and then embed, copy the embed code and paste it in the editor");
+        alert("You can insert a video or an iframe, for example on youtube, click on share and then embed, copy the embed code and paste it in the editor");
     });
 
 
@@ -954,8 +1025,11 @@
         }
         let preElements = doc.querySelectorAll('pre');
         for(let i = 0; i < preElements.length; i++) {
-            preElements[i].style.backgroundColor = "#282a36";
+            if(preElements[i].classList[0].startsWith("lang-")){
+                preElements[i].style.backgroundColor = "#2f3241";
+            }
         }
+
         doc.querySelectorAll(".toastui-editor-md-preview-highlight").forEach(function (element) {
             element.classList.remove("toastui-editor-md-preview-highlight");
         });        // check for white spaces and replace them with -
@@ -1034,7 +1108,6 @@
                 subLinkContainer.appendChild(linkElement);
             }
         }
-
         return tableOfContent;
     }
 

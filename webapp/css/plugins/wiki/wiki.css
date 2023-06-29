@@ -66,8 +66,15 @@ span.diff-html-conflict {
     width: 275px;
     color: #2d2d2d;
 }
-.wiki-topic-nav .subLinkContainer {
-    list-style-type: none;
-    padding-left: 15px;
-    font-size: medium;
+.wiki-align-content-left {
+    text-align: left;
+}
+.wiki-align-content-right {
+    text-align: right;
+}
+.wiki-align-content-center {
+    text-align: center;
+}
+.wiki-align-content-justify {
+    text-align: justify;
 }
