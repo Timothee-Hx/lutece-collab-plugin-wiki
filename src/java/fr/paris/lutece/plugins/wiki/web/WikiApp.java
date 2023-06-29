@@ -372,12 +372,19 @@ public class WikiApp extends MVCApplication
         String strWikiPage = null;
         if ( version == null )
         {
+            TopicVersion olderVersion = TopicVersionHome.getPreviousPluginVersionLastPublished( topic.getIdTopic( ) );
+            if ( olderVersion != null )
+            {
+                version = olderVersion;
+                fillUserData(version);
+                strWikiPage = WikiService.instance().getWikiPage(strPageName, version, getPageUrl(request), getLanguage(request));
+            } else {
             strWikiPage = I18nService.getLocalizedString( MESSAGE_NO_PUBLISHED_VERSION, getLocale( request ) );
+            }
         } else {
             fillUserData(version);
             strWikiPage = WikiService.instance().getWikiPage(strPageName, version, getPageUrl(request), getLanguage(request));
         }
-        System.out.println("strWikiPage = " + strWikiPage);
         Map<String, Object> model = getModel( );
         model.put( MARK_RESULT, strWikiPage );
         model.put( MARK_TOPIC, topic );

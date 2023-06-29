@@ -113,6 +113,8 @@ public interface ITopicVersionDAO
 
     TopicVersion getPublishedVersion(int nTopicId, Plugin plugin);
 
+    TopicVersion getPreviousPluginVersionLastPublished(int nTopicId, Plugin plugin);
+
     /**
      * Load all versions
      *

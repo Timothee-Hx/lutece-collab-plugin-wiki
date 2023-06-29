@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.wiki.business;
 
-import fr.paris.lutece.plugins.wiki.service.parser.WikiCreoleToMarkdown;
 import fr.paris.lutece.plugins.wiki.web.Constants;
 
 /**
