@@ -20,6 +20,8 @@ public class ContentDeserializer {
 
     public String wikiHtmlContent;
 
+    public String wikiPageUrl;
+
     /**
      * Returns the content of the file
      *
@@ -54,6 +56,8 @@ public class ContentDeserializer {
     public String getWikiHtmlContent() {
         return wikiHtmlContent;
     }
+
+    public String getWikiPageUrl() {return wikiPageUrl;}
 
 
     public static ContentDeserializer deserializeWikiContent(String requestBody){

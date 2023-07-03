@@ -40,12 +40,11 @@ import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.wiki.business.*;
 import fr.paris.lutece.plugins.wiki.service.ContentDeserializer;
 import fr.paris.lutece.plugins.wiki.service.RoleService;
-import fr.paris.lutece.plugins.wiki.service.WikiLocaleService;
 import fr.paris.lutece.plugins.wiki.utils.auth.WikiAnonymousUser;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.util.AppLogService;
-
+import fr.paris.lutece.plugins.wiki.service.parser.LuteceHtmlParser;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -92,7 +91,9 @@ public class WikiDynamicInputs {
                 content.setPageTitle( newContent.getTopicTitle());
                 content.setWikiContent( newContent.getTopicContent());
                 content.setContentLabellingMarkdownLanguage( newContent.getTopicContent());
-                content.setHtmlWikiContent(newContent.getWikiHtmlContent());
+                String wikiPageUrl = newContent.getWikiPageUrl();
+                String htmlContent = LuteceHtmlParser.parseHtml(newContent.getTopicContent(),wikiPageUrl, newContent.getTopicTitle());
+                content.setHtmlWikiContent(htmlContent);
                 topicVersion.addLocalizedWikiContent(newContent.getLanguage(), content);
 
 

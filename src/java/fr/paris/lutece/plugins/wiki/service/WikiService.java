@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.wiki.service;
 
 import fr.paris.lutece.plugins.wiki.business.TopicVersion;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
+import fr.paris.lutece.plugins.wiki.service.parser.SpecialChar;
 import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -105,12 +106,12 @@ public final class WikiService extends AbstractCacheableService
             {
                 // html from here is also used in viewDiff
                 try   {
-                    strPageContent = WikiService.renderWiki(version.getWikiContent(strLanguage).getHtmlWikiContent());
+                    strPageContent = SpecialChar.renderWiki(version.getWikiContent(strLanguage).getHtmlWikiContent());
                     // strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
                     putInCache(sbKey.toString(), strPageContent);
                 }
                 catch(NullPointerException e)   {
-                    String strContent = WikiService.renderWiki(version.getWikiContent(strLanguage).getWikiContent());
+                    String strContent = SpecialChar.renderWiki(version.getWikiContent(strLanguage).getWikiContent());
                     strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
                     putInCache(sbKey.toString(), strPageContent);
                 }
@@ -159,29 +160,7 @@ public final class WikiService extends AbstractCacheableService
         return getWikiPage( strPageName, version, null, strLanguage );
     }
 
-    /**
-     * Render specific entities
-     *
-     * @param strSource
-     *            The source
-     * @return The source transformed
-     */
-    public static String renderWiki( String strSource )
-    {
-        String strRender = strSource;
-        strRender = strRender.replaceAll("\\[@MarkdownLanguage;", "");
-        strRender = strRender.replaceAll( "\\[lt;", "<" );
-        strRender = strRender.replaceAll( "\\[gt;", ">" );
-        strRender = strRender.replaceAll( "\\[nbsp;", "&nbsp;" );
-        strRender = strRender.replaceAll( "\\[quot;", "'" );
-        strRender = strRender.replaceAll( "\\[amp;", "&" );
-        strRender = strRender.replaceAll( "\\[hashmark;", "#" );
-        strRender = strRender.replaceAll("\\[codeQuote;", "`");
-        strRender = strRender.replaceAll("\\[simpleQuote;", "'");
 
-
-        return strRender;
-    }
 
     /**
      * Render the wiki source content
@@ -192,7 +171,7 @@ public final class WikiService extends AbstractCacheableService
      */
     public static String renderSource( String strContent )
     {
-        return LuteceWikiParser.renderSource( strContent );
+        return SpecialChar.renderWiki( strContent );
     }
 
 

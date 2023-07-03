@@ -42,7 +42,9 @@ import fr.paris.lutece.plugins.wiki.business.TopicVersion;
 import fr.paris.lutece.plugins.wiki.business.TopicVersionHome;
 import fr.paris.lutece.plugins.wiki.business.WikiContent;
 import fr.paris.lutece.plugins.wiki.service.*;
+import fr.paris.lutece.plugins.wiki.service.parser.LuteceHtmlParser;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
+import fr.paris.lutece.plugins.wiki.service.parser.SpecialChar;
 import fr.paris.lutece.plugins.wiki.service.parser.WikiCreoleToMarkdown;
 import fr.paris.lutece.plugins.wiki.utils.auth.WikiAnonymousUser;
 import fr.paris.lutece.portal.business.page.Page;
@@ -546,9 +548,9 @@ public class WikiApp extends MVCApplication
                     String newMarkdown =  WikiCreoleToMarkdown.wikiCreoleToMd( markupContent, strPageName, url,  strLocale  );
                     content.setWikiContent(newMarkdown);
                 } else {
-                    content.setWikiContent(WikiService.renderWiki(markupContent));
+                    content.setWikiContent(SpecialChar.renderWiki(markupContent));
                 }
-                content.setPageTitle(WikiService.renderWiki(content.getPageTitle()));
+                content.setPageTitle(SpecialChar.renderWiki(content.getPageTitle()));
                 topicVersion.addLocalizedWikiContent(strLocale, content);
             }
         }
@@ -646,6 +648,7 @@ public class WikiApp extends MVCApplication
             String strParentPageName = request.getParameter(Constants.PARAMETER_PARENT_PAGE_NAME);
             Boolean publish = Boolean.parseBoolean(request.getParameter(Constants.PARAMETER_PUBLISH));
             Boolean newVersion = Boolean.parseBoolean(request.getParameter(Constants.PARAMETER_CREATE_NEW_VERSION));
+            String wikiPageUrl =  request.getParameter("wiki_page_url");
             TopicVersion topicVersion = new TopicVersion();
             if(nVersionId == 0) {
                 newVersion = true;
@@ -660,7 +663,9 @@ public class WikiApp extends MVCApplication
                 String strPageTitle = request.getParameter(Constants.PARAMETER_PAGE_TITLE + "_" + strLocale);
                 String strContent = request.getParameter(Constants.PARAMETER_CONTENT + "_" + strLocale);
                 String htmlContent = request.getParameter(Constants.PARAMETER_HTML_CONTENT);
-                WikiContent content = new WikiContent();
+             htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl,strPageTitle);
+
+            WikiContent content = new WikiContent();
                 if(nVersionId == 0) {
                     for (String locale : WikiLocaleService.getLanguages()) {
                         content.setPageTitle(request.getParameter(Constants.PARAMETER_PAGE_TITLE + "_" + locale));
@@ -798,7 +803,7 @@ public class WikiApp extends MVCApplication
         for ( String strLanguage : WikiLocaleService.getLanguages( ) )
         {
             String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
-            String strContentHtml = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
+            String strContentHtml = SpecialChar.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
             WikiContent content = new WikiContent( );
             content.setPageTitle( strPageTitle );
             content.setHtmlWikiContent(strContentHtml);
@@ -815,7 +820,7 @@ public class WikiApp extends MVCApplication
         request.getSession( ).setAttribute( MARK_LATEST_VERSION, topicVersion );
 
         String strLanguage = getLanguage( request );
-        String strContentHtml = WikiService.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
+        String strContentHtml = SpecialChar.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
 
         String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
 

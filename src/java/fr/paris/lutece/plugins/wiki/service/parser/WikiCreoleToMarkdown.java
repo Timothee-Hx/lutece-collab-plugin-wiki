@@ -2,12 +2,9 @@ package fr.paris.lutece.plugins.wiki.service.parser;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-//import an html parser
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,7 +34,6 @@ public class WikiCreoleToMarkdown {
         return str;
     }
 
-
     public static String wikiCreoleToMd(String strWikiText, String strPageName, String strPageUrl, String strLanguage ) {
 
         String htmlContent = new LuteceWikiParser(  strWikiText,  strPageName,  strPageUrl,  strLanguage  ).toString( );
@@ -49,7 +45,7 @@ public class WikiCreoleToMarkdown {
             Element element = elements.get(i);
             if(element.className().equals("well")){
                 String toc = "$$span"+" "+"<span class='toc'></span>"+ " "+ "$$";
-                toc = LuteceWikiParser.reverseRender(toc);
+                toc = SpecialChar.reverseRender(toc);
                 docBody.prepend(toc);
 
             } else if (element.className().equals("jumbotron")) {
@@ -69,7 +65,7 @@ public class WikiCreoleToMarkdown {
                 container.appendChild(new Element("h1").attr("class", "text-dark").text(jumbotronTitle));
                 container.appendChild(new Element("p").attr("class", "text-muted").text(jumbotronText));
                 String bootStrap5Jumbotron = "$$span\n" + container.toString() + "\n$$";
-                bootStrap5Jumbotron = LuteceWikiParser.reverseRender(bootStrap5Jumbotron);
+                bootStrap5Jumbotron = SpecialChar.reverseRender(bootStrap5Jumbotron);
                 Element p = new Element("p");
                 p.text(bootStrap5Jumbotron);
                 jumbotron.replaceWith(p);
@@ -81,18 +77,16 @@ public class WikiCreoleToMarkdown {
                 }
                else {
                     if(element.parent().tagName().equals("p")){
-                        System.out.println(i);
                         int subDivClassToSkip =  element.parent().children().size();
-                        System.out.println("elements.size() " + elements.size());
                         String parent = element.parent().outerHtml();
-                        String customElement = LuteceWikiParser.reverseRender(parent.toString());
+                        String customElement = SpecialChar.reverseRender(parent.toString());
                         customElement = "$$span" + customElement + "$$";
                         Element p = new Element("p");
                         p.text(customElement);
                         element.parent().replaceWith(p);
                         i = i + subDivClassToSkip-1;
             } else {
-                        String customElement =  LuteceWikiParser.reverseRender(element.outerHtml().toString());
+                        String customElement =  SpecialChar.reverseRender(element.outerHtml().toString());
                         customElement = "$$span" + customElement + "$$";
                         Element p = new Element("p");
                         p.text(customElement);
@@ -101,20 +95,19 @@ public class WikiCreoleToMarkdown {
 
                     }
             } else if (element.tagName().equals("img")) {
-                //class=""  width="200"  height=""  align="right"
                 Boolean imgContainsAttributes = element.hasAttr("class") && !element.className().isEmpty()
                         || element.hasAttr("width") && element.getElementsByAttribute("width").size() > 0
                         || element.hasAttr("height") && element.getElementsByAttribute("height").size() > 0
                         || element.hasAttr("align") && element.getElementsByAttribute("align").size() > 0;
                 if(element.parent().tagName().equals("p")){
                     String parent = element.parent().outerHtml();
-                    String customElement = LuteceWikiParser.reverseRender(parent.toString());
+                    String customElement = SpecialChar.reverseRender(parent.toString());
                     customElement = "$$span" + customElement + "$$";
                     Element p = new Element("p");
                     p.text(customElement);
                     element.parent().replaceWith(p);
                 } else if (imgContainsAttributes) {
-                    String customElement = LuteceWikiParser.reverseRender(element.outerHtml().toString());
+                    String customElement = SpecialChar.reverseRender(element.outerHtml().toString());
                     customElement = "$$span" + customElement + "$$";
                     Element p = new Element("p");
                     p.text(customElement);
@@ -123,43 +116,26 @@ public class WikiCreoleToMarkdown {
             }
         }
 
-
-
-        // remove tags <html> <head> and <body> and keep the inner of the body
-       htmlContent = docBody.toString();
-
-
         MutableDataSet options = new MutableDataSet();
-
 
         options.set(HtmlRenderer.HARD_BREAK, "<br />\n");
         options.set(FlexmarkHtmlConverter.BR_AS_PARA_BREAKS, false);
         options.set(FlexmarkHtmlConverter.OUTPUT_ATTRIBUTES_ID, false);
         options.set(FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false);
-        String markdown = FlexmarkHtmlConverter.builder(options).build().convert(htmlContent);
+        String markdown = FlexmarkHtmlConverter.builder(options).build().convert(docBody.toString());
         markdown = renderCustomContent(markdown);
        String newMarkdown = "";
 
-
        for(String line : markdown.split(System.lineSeparator())) {
                   if (line.contains("$$span")) {
-                      // remove "$$" adn "$$span" in the line
                       line = line.replace("$$span", "");
                       line = line.replace("$$", "");
-
                       String reFormatedLine =  System.lineSeparator() + "$$span" + System.lineSeparator() + line + System.lineSeparator() + "$$" + System.lineSeparator();
                       newMarkdown += reFormatedLine;
-
-                      // add a new line after before and after line
                   } else {
                       newMarkdown += line + System.lineSeparator();
                   }
               }
-
-
-        System.out.println("________________________MARKDOWN_________________\n" + newMarkdown);
-
-
         return newMarkdown;
     }
 

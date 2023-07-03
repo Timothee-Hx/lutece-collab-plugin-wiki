@@ -17,11 +17,6 @@
     <link rel="stylesheet" href="css/plugins/wiki/toastui/toastui-editor-dark.css" />
     <link rel="stylesheet" href="css/plugins/wiki/toastui/toastui-editor.css" />
 </head>
-<#assign baseUrl = url />
-<script>
-    const baseUrl = "${baseUrl}";
-</script>
-
 <div class="row">
     <div class="container panel panel-default">
         <form method="post" id="form_wiki" action="jsp/site/Portal.jsp">
@@ -116,6 +111,7 @@
 
         <!--  Context variables -->
         <#assign locale=strLocale />
+        <input type="hidden" id="wiki_page_url" name="wiki_page_url" />
         <input type="hidden" name="language" value="${locale}" />
         <script type="text/javascript">
             const localeJs = "${locale}";
@@ -818,10 +814,7 @@
         alert("You can insert a video or an iframe, for example on youtube, click on share and then embed, copy the embed code and paste it in the editor");
     });
 
-
     /* -------------- ICONS -------------- */
-
-
     let addIconButton = document.getElementsByClassName("fa fa-search")[0];
     addIconButton.addEventListener('click', function() {
         document.getElementsByClassName("toastui-editor-popup")[0].style.display = "block";
@@ -830,7 +823,6 @@
                 option.style.display = "none";
             }
         });
-
 
         document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
             document.getElementsByClassName("ss-option").forEach(function(option) {
@@ -1012,122 +1004,8 @@
         editor.insertText("$$span\n"+tocHtml+ "\n$$");
 
     });
-    function editorHasToc (){
-        const wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(wikiHtmlContent, 'text/html');
 
-        let toc = doc.getElementsByClassName('toc');
-        if(toc !== undefined && toc.length > 0){
-            document.getElementById("tableOfContentCheckBox").checked = true;
-        } else {
-            document.getElementById("tableOfContentCheckBox").checked = false;
-        }
-    }
 
-    function checkforTOC(wikiHtmlContent){
-        // parse the html content
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(wikiHtmlContent, 'text/html');
-        // parse headers and add them an id
-        let headers = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        for(let i = 0; i < headers.length; i++) {
-            let headerText = headers[i].innerText;
-            // replace white spaces with _
-            headerText = replaceAll( ' ' , '_' , headerText );
-            headers[i].setAttribute('id', headerText);
-        }
-        let preElements = doc.querySelectorAll('pre');
-        for(let i = 0; i < preElements.length; i++) {
-            if(preElements[i].classList[0].startsWith("lang-")){
-                preElements[i].style.backgroundColor = "#2f3241";
-            }
-        }
-        doc.querySelectorAll(".toastui-editor-md-preview-highlight").forEach(function (element) {
-            element.classList.remove("toastui-editor-md-preview-highlight");
-        });
-        if(document.getElementsByClassName('ProseMirror')[0].innerText.indexOf("wiki-align-content-val-") > -1){
-            const alignmentValue = document.getElementsByClassName('ProseMirror')[0].innerText.split("wiki-align-content-val-")[1].substring(0,1);
-            doc.getElementsByClassName('toastui-editor-contents')[0].classList.add("wiki-align-content-val-"+alignmentValue);
-        }
-        let toc = doc.getElementsByClassName('toc')[0];
-        if(toc !== undefined){
-            let tableOfContent = createTableOfContent(doc);
-            doc.getElementsByClassName('toc')[0].replaceWith('')
-            // add parent element to the class below
-            let flexDiv = document.createElement("div");
-            flexDiv.classList.add("flex");
-            flexDiv.classList.add("flex-column");
-            flexDiv.classList.add("flex-grow-1");
-            flexDiv.classList.add("flex-shrink-1");
-            flexDiv.classList.add("flex-basis-auto");
-            flexDiv.classList.add("overflow-auto");
-            flexDiv.appendChild(tableOfContent);
-
-            flexDiv.appendChild(doc.getElementsByClassName('toastui-editor-contents')[0]);
-            doc = flexDiv.outerHTML;
-            return doc;
-        } else {
-            wikiHtmlContent = doc.documentElement.innerHTML;
-            return wikiHtmlContent;
-        }
-    }
-
-    function createTableOfContent(doc) {
-        let thisPageurl = window.location.href;
-        thisPageurl = "jsp/"+ thisPageurl.split("jsp/")[1];
-        thisPageurl = thisPageurl.replace("view=modifyPage", "view=page");
-        thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
-        thisPageurl = thisPageurl.replace(/&locale=[0-9]*/g, "");
-        thisPageurl = thisPageurl.replace(/&version=[0-9]*/g, "");
-        let headers = doc.querySelectorAll("h1, h2, h3");
-        let title = document.getElementById("page_title_" + localeJs).value;
-        let titleElement = document.createElement("a");
-        titleElement.innerText = title;
-        titleElement.style.fontWeight = "bold";
-        titleElement.style.fontSize = "1.5rem";
-        titleElement.className = "nav-link";
-        titleElement.href = thisPageurl;
-        let tableOfContent = document.createElement("ul");
-        tableOfContent.id = "tableOfContent";
-        tableOfContent.className = "nav flex-column wiki-topic-nav";
-        tableOfContent.appendChild(titleElement);
-        for (let i = 0; i < headers.length; i++) {
-            let header = headers[i];
-            let headerText = header.innerText;
-            let headerLevel = header.tagName;
-            let linkElement = document.createElement("a");
-            linkElement.href = thisPageurl + '#' + header.id;
-            linkElement.innerText = headerText;
-            linkElement.className = "nav-link";
-            let navItem = document.createElement("li");
-            if (headerLevel === "H1") {
-                navItem.className = "nav-item";
-                if (headers[i + 1] !== undefined) {
-                    if (headers[i + 1].tagName === "H1") {
-                        tableOfContent.appendChild(linkElement);
-                    } else if (headers[i + 1].tagName === "H2" || headers[i + 1].tagName === "H3") {
-                        let divContainer = document.createElement("div");
-                        divContainer.style = "display: flex; flex-direction: row; spacing: 5px;";
-                        divContainer.appendChild(linkElement);
-                        navItem.appendChild(divContainer);
-                        tableOfContent.appendChild(navItem);
-                        let subLinkContainer = document.createElement("ul");
-                        subLinkContainer.className = "subLinkContainer";
-                        tableOfContent.appendChild(subLinkContainer);
-                    } else {
-                        tableOfContent.appendChild(linkElement);
-                    }
-                }
-            }
-            if (headerLevel === "H2" || headerLevel === "H3") {
-                let subLinkContainers = tableOfContent.getElementsByClassName("subLinkContainer");
-                let subLinkContainer = subLinkContainers[subLinkContainers.length - 1];
-                subLinkContainer.appendChild(linkElement);
-            }
-        }
-        return tableOfContent;
-    }
 
     /*___________________________ AUTO_SAVE  ___________________________*/
     window.addEventListener("load", (event) => {
@@ -1193,7 +1071,7 @@
         }
     }
 
-    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
+    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl) {
         let autoSaveResponse = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
             headers: {
@@ -1201,7 +1079,7 @@
                 'Content-Type': 'application/json',
                 credentials: "same-origin"
             },
-            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
+            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent, wikiPageUrl: wikiPageUrl})
         });
         let autoSaveResult = await autoSaveResponse;
         displayAutoSave(autoSaveResult);
@@ -1216,7 +1094,6 @@
         } else {
             url = url + "&locale=" + locale;
         }
-        console.log(url);
         if (document.getElementById('autoSaveMode').checked) {
             callInputs(saveType);
             window.location.replace(url)
@@ -1254,31 +1131,6 @@
         return str.replace(new RegExp(find, 'g'), replace);
     };
 
-    function validate()
-    {
-        let htmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-        //  htmlContent = removeCustomInputsDiv(htmlContent);
-        htmlContent = escapeSpecialCharsFromContent(htmlContent);
-        document.getElementById('wiki_html_content').value = htmlContent;
-        escapeSpecialChars( 'wiki_content' );
-        return true;
-    };
-
-
-    function escapeSpecialChars( id )
-    {
-        let content = document.getElementById( id ).value;
-        content = replaceAll( '<' , '[lt;' , content );
-        content = replaceAll( '>' , '[gt;' , content );
-        content = replaceAll( '"' , '[quot;' , content );
-        content = replaceAll( '&nbsp;' , '[nbsp;' , content );
-        content = replaceAll( '&' , '[amp;' , content );
-        content = replaceAll( '#' , '[hashmark;' , content );
-        content = replaceAll('`', '[codeQuote;', content)
-        content = replaceAll("'", '[simpleQuote;', content)
-        document.getElementById( id ).value = content;
-    }
-
     function escapeSpecialCharsFromContent( content )
     {
         content = replaceAll( '<' , '[lt;' , content );
@@ -1300,11 +1152,11 @@
         const title = document.getElementById("page_title_" + localeJs).value;
         let topicTitle = escapeSpecialCharsFromContent(title);
         let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-        wikiHtmlContent = checkforTOC(wikiHtmlContent);
         wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
+        const wikiPageUrl = document.getElementById("wiki_page_url").value;
         if(saveType === "autoSave") {
             if (version !== undefined && version !== null && version !== "") {
-                saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent)
+                saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl);
             }
         } else if (saveType === "saveNewVersion" || saveType === "publish" || saveType === "preview") {
             document.getElementById('wiki_content').value = topicContent;
@@ -1362,6 +1214,16 @@
             }
         });
     }
+    window.addEventListener("load", (event) => {
+        let thisPageurl = window.location.href;
+        thisPageurl = "jsp/" + thisPageurl.split("jsp/")[1];
+        thisPageurl = thisPageurl.replace("view=modifyPage", "view=page");
+        thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
+        thisPageurl = thisPageurl.replace(/&locale=[0-9]*/g, "");
+        thisPageurl = thisPageurl.replace(/&version=[0-9]*/g, "");
+        thisPageurl = escapeSpecialCharsFromContent(thisPageurl);
+        document.getElementById("wiki_page_url").value = thisPageurl;
+    });
 
     /*_________________________ ON LOAD REMOVE UNDERLINE ADDED BY THE HTML TO MARKDOWN CONVERTION ___________________________*/
     function removeUnderLineHeadings (underLineWithEqual){
@@ -1380,6 +1242,7 @@
             underLineWithEqual[i].remove();
         }
     }
+
     window.addEventListener("load", (event) => {
         let underLineWithEqual = document.getElementsByClassName("toastui-editor-md-heading toastui-editor-md-heading1 toastui-editor-md-delimiter toastui-editor-md-setext");
         removeUnderLineHeadings(underLineWithEqual);
