@@ -45,14 +45,17 @@ public class LuteceHtmlParser {
             flexDiv.addClass("overflow-auto");
             flexDiv.appendChild(tableOfContent);
             Element contentDiv = new Element("div");
-            contentDiv.addClass("toastui-editor-contents");
+            contentDiv.addClass("wiki_content");
             contentDiv.append(parser.body().outerHtml());
             flexDiv.appendChild(contentDiv);
             doc = flexDiv;
 
             return SpecialChar.reverseRender(doc.outerHtml());
         } else {
-            return SpecialChar.reverseRender(doc.outerHtml());
+            Element contentDiv = new Element("div");
+            contentDiv.addClass("wiki_content");
+            contentDiv.append(parser.body().outerHtml());
+            return SpecialChar.reverseRender(contentDiv.outerHtml());
         }
     }
   public static Element createTableOfContent(Element doc, String wikiPageUrl,String pageTitle) {

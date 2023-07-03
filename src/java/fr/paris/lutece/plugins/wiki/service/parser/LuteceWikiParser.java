@@ -138,7 +138,7 @@ public class LuteceWikiParser extends WikiParser
 
             int nImageId = Integer.parseInt( link [0].trim( ) );
 
-            Topic topic = TopicHome.findByPrimaryKey( _strPageName );
+            Topic topic = TopicHome.findByPageName( _strPageName );
             Image image = ImageHome.findByPrimaryKey( nImageId );
 
             if ( image == null || image.getTopicId( ) != topic.getIdTopic( ) )
@@ -223,7 +223,7 @@ public class LuteceWikiParser extends WikiParser
         }
         else
         {
-            Topic topic = TopicHome.findByPrimaryKey( escapeHTML( escapeURL( link [0] ) ) );
+            Topic topic = TopicHome.findByPageName( escapeHTML( escapeURL( link [0] ) ) );
             String strAction;
             String strAdditionalParameter = "";
             String strColorBegin = "";
@@ -278,7 +278,7 @@ public class LuteceWikiParser extends WikiParser
                 {
                     sb.append( "<p>" );
 
-                    Topic topic = TopicHome.findByPrimaryKey( _strPageName );
+                    Topic topic = TopicHome.findByPageName( _strPageName );
 
                     List<Topic> topicList = PathService.getParentTopics( topic );
                     for ( Topic item : topicList )
