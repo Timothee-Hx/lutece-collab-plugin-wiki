@@ -1,3 +1,4 @@
+
 /* -------------- EDITOR -------------- */
 
 const { Editor } = toastui;
@@ -44,7 +45,7 @@ const editor = new Editor({
         },
     },
     previewStyle: 'vertical',
-    height: '500px',
+    height: '800px',
     initialValue: wikiContent,
     scrollSync: false,
     plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
@@ -74,41 +75,62 @@ editor.insertToolbarItem({ groupIndex: 0, itemIndex: 0 }, {
 editor.insertToolbarItem({ groupIndex: 0, itemIndex: 1 }, {
     name: 'Alert',
     tooltip: 'Alert Boxes',
-    text: 'alert',
-    className: 'alert alert-danger editor',
+    text: 'Al',
+    className: 'fa-solid fa-triangle-exclamation editor',
     style: { backgroundImage: 'none' },
 });
 editor.insertToolbarItem({ groupIndex: 0, itemIndex: 2 }, {
     name: 'BadgeButton',
     tooltip: 'Badges',
-    text: 'Badge',
+    text: 'Ba',
     className: 'badge badge-primary editor',
     style: { backgroundImage: 'none' },
 });
 editor.insertToolbarItem({ groupIndex: 0, itemIndex: 3 }, {
     name: 'toc',
     tooltip: 'Table of Contents',
-    text: 'TOC',
+    text: 'TC',
     className: 'fa fa-list editor',
     style: { backgroundImage: 'none' },
 });
 editor.insertToolbarItem({ groupIndex: 0, itemIndex: 4 }, {
     name: 'Jumbotron',
     tooltip: 'Jumbotron',
-    text: 'Jum',
+    text: 'Ju',
     className: 'jumbotron editor',
     style: { backgroundImage: 'none' },
 });
 editor.insertToolbarItem({ groupIndex: 0, itemIndex: 5 }, {
     name: 'DarkMode',
     tooltip: 'Dark Mode',
-    text: 'Dark',
+    text: 'Da',
     className: 'fa fa-moon editor',
     style: { backgroundImage: 'none' },
 });
-
+editor.insertToolbarItem({ groupIndex: 0, itemIndex: 6 }, {
+    name: 'iframe',
+    tooltip: 'insert video or iframe',
+    text: 'Vi',
+    className: 'fa fa-video editor',
+    style: { backgroundImage: 'none' },
+});
+editor.insertToolbarItem({ groupIndex: 0, itemIndex: 7 }, {
+    name: 'textAlignment',
+    tooltip: 'Text Alignment',
+    text: 'TA',
+    className: 'fa fa-align-left editor',
+    style: { backgroundImage: 'none' },
+});
+editor.insertToolbarItem({ groupIndex: 0, itemIndex: 8 }, {
+    name: 'InternalLink',
+    tooltip: 'Internal Link',
+    text: 'IL',
+    className: 'fa fa-link editor',
+    style: { backgroundImage: 'none' },
+});
 
 document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
+
 
 
 /* -------------- CLOSE MODALES -------------- */
@@ -119,9 +141,98 @@ function closeToastUiModal() {
     }
 }
 
+/* -------------- Text Alignment -------------- */
+const textAlignmentButton = document.getElementsByClassName("fa fa-align-left editor")[0];
+textAlignmentButton.addEventListener('click', function() {
+    document.getElementById("selectTextAlignmentModal").style.display = "block";
+});
+function selectTextAlignment(alignmentValue) {
+    let el = document.getElementsByClassName("toastui-editor-md-container")[0];
+    for(let i = 0; i < el.classList.length; i++){
+        if(el.classList[i].indexOf("wiki-align-content-val-") > -1){
+            el.classList.remove(el.classList[i]);
+        }
+    }
+    document.getElementsByClassName("toastui-editor-md-container")[0].classList.add(alignmentValue);
+
+    const contentToInsert = '<span class="' + alignmentValue + '"></span>';
+    editor.insertText("$$span\n"+contentToInsert+ "\n$$");
+    closeToastUiModal();
+}
+
+
+window.addEventListener("load", (event) => {
+    if(document.getElementsByClassName('ProseMirror')[0].innerText.indexOf("wiki-align-content-val-") > -1){
+        const alignmentValue = document.getElementsByClassName('ProseMirror')[0].innerText.split("wiki-align-content-val-")[1].substring(0,1);
+        document.getElementsByClassName("toastui-editor-md-container")[0].classList.add("wiki-align-content-val-"+alignmentValue);
+    }
+});
+
+/* -------------- INTERNAL LINK  -------------- */
+const addInternalLinkButton = document.getElementsByClassName("fa fa-link editor")[0];
+addInternalLinkButton.addEventListener('click', function() {
+    document.getElementById("selectInnerLinkModal").style.display = "block";
+});
+let pageValueInnerLink = "";
+function loadInnerLinksHeadings(pageValue){
+    pageValueInnerLink = pageValue;
+    const queryParam = "?actionName=getPageHeadings&pageName=" + pageValue + "&locale=" + localeJs;
+    const urlHeadings = 'jsp/site/plugins/wiki/WikiDynamicInputs.jsp' + queryParam;
+    fetch( urlHeadings, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            credentials: "same-origin",
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if(data.length === 0){
+                alert("No headings found in this page");
+                return;
+            } else {
+                let selectHeadingLink = document.getElementById("selectPageHeadingLink");
+                selectHeadingLink.innerHTML = "";
+                let opt1 = document.createElement('option');
+                opt1.value = "";
+                opt1.innerText = "Select a heading";
+                opt1.selected = true;
+                opt1.disabled = true;
+                selectHeadingLink.appendChild(opt1);
+                for (let i = 0; i < data.length; i++) {
+                    let opt = document.createElement('option');
+                    opt.value = JSON.stringify(data[i]);
+                    opt.innerText = data[i].header_text;
+                    document.getElementById("selectPageHeadingLink").appendChild(opt);
+                }
+                document.getElementById("pageIsSelected").style.display = "block";
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
+}
+
+function insertInnerLink (linkValue){
+    let linkValueJson = JSON.parse(linkValue);
+    let pageDestinationUrl = window.location.href;
+    pageDestinationUrl = "jsp/" + pageDestinationUrl.split("jsp/")[1];
+    pageDestinationUrl = pageDestinationUrl.replace("view=modifyPage", "view=page");
+    pageDestinationUrl = pageDestinationUrl.replace(/&id_topic_version=[0-9]*/g, "");
+    pageDestinationUrl = pageDestinationUrl.replace(/&locale=[0-9]*/g, "");
+    pageDestinationUrl = pageDestinationUrl.replace(/&version=[0-9]*/g, "");
+    pageDestinationUrl = pageDestinationUrl.replace(/&page_name=[0-9]*/g, pageValueInnerLink);
+    pageDestinationUrl += "#" + linkValueJson.header_id;
+    editor.insertText("[" + linkValueJson.header_text + "](" + pageDestinationUrl + ")");
+    document.getElementById("pageIsSelected").style.display = "none";
+    closeToastUiModal();
+}
+
 
 /* -------------- ALERT  -------------- */
-const addAlertButton = document.getElementsByClassName("alert alert-danger editor")[0];
+const addAlertButton = document.getElementsByClassName("fa-solid fa-triangle-exclamation editor")[0];
 addAlertButton.addEventListener('click', function() {
     document.getElementById("selectAlertType").style.display = "block";
 });
@@ -149,11 +260,13 @@ function selectAlertBoxType(alertValue) {
     editor.insertText("$$span\n"+alertHtml+ "\n$$");
     closeToastUiModal();
 }
-
+/* -------------- VIDEO  -------------- */
+let addVideoButton = document.getElementsByClassName("fa fa-video editor")[0];
+addVideoButton.addEventListener('click', function() {
+    alert("You can insert a video or an iframe, for example on youtube, click on share and then embed, copy the embed code and paste it in the editor");
+});
 
 /* -------------- ICONS -------------- */
-
-
 let addIconButton = document.getElementsByClassName("fa fa-search")[0];
 addIconButton.addEventListener('click', function() {
     document.getElementsByClassName("toastui-editor-popup")[0].style.display = "block";
@@ -162,7 +275,6 @@ addIconButton.addEventListener('click', function() {
             option.style.display = "none";
         }
     });
-
 
     document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
         document.getElementsByClassName("ss-option").forEach(function(option) {
@@ -173,8 +285,6 @@ addIconButton.addEventListener('click', function() {
     });
 
 });
-
-
 function changeIconSize() {
     const icon = document.getElementById("selectIcon").value;
     const iconSize = document.getElementById("iconSize").value;
@@ -222,18 +332,119 @@ function insertBadge() {
 /* -------------- jumbotron -------------- */
 const addJumbotronButton = document.getElementsByClassName("jumbotron editor")[0];
 addJumbotronButton.addEventListener('click', function() {
-    insertJumbotron();
+    document.getElementById("selectJumbotronModal").style.display = "block";
 });
-function insertJumbotron() {
+
+function selectJumbotron(jumbotronValue) {
+    let jumbotronBgDivClass = 'h-100 p-5 text-bg-dark rounded-3';
+    let jumbotronH1Class = '';
+    let jumbotronPClass = '';
+    let buttonClass = '';
+    switch (jumbotronValue) {
+        case "bg-primary text-white":
+            jumbotronBgDivClass += " bg-primary text-white";
+            jumbotronH1Class = "text-white";
+            jumbotronPClass = "text-light";
+            buttonClass = "btn btn-lg btn-secondary text-white";
+            break;
+        case "bg-body-tertiary text-dark":
+            jumbotronBgDivClass += " bg-body-tertiary text-dark";
+            jumbotronH1Class = "text-dark";
+            jumbotronPClass = "text-dark";
+            buttonClass = "btn btn-outline-secondary text-dark";
+            break;
+        case "bg-success text-white":
+            jumbotronBgDivClass += " bg-success text-white";
+            jumbotronH1Class = "text-white";
+            jumbotronPClass = "text-light";
+            buttonClass = "btn btn-lg btn-secondary text-white";
+            break;
+        case "bg-danger text-white":
+            jumbotronBgDivClass += " bg-danger text-white";
+            jumbotronH1Class = "text-white";
+            jumbotronPClass = "text-light";
+            buttonClass = "btn btn-lg btn-secondary text-white";
+            break;
+        case "bg-warning text-dark":
+            jumbotronBgDivClass += " bg-warning text-dark";
+            jumbotronH1Class = "text-dark";
+            jumbotronPClass = "text-dark";
+            buttonClass = "btn btn-lg btn-secondary text-white";
+            break;
+        case "bg-dark text-white":
+            jumbotronBgDivClass += " bg-dark";
+            jumbotronH1Class = "text-white";
+            jumbotronPClass = "text-light";
+            buttonClass = "btn btn-outline-light text-white";
+            break;
+        case "bg-white text-dark":
+            jumbotronBgDivClass += " bg-white text-dark";
+            jumbotronH1Class = "text-dark";
+            jumbotronPClass = "text-dark";
+            buttonClass = "btn btn-lg btn-primary text-white";
+            break;
+
+    }
     const jumbotronTitle = "My jumbotron title";
     const jumbotronText = "My jumbotron text, it can be long or short !";
-    let bootStrap5Jumbotron = '<div class="h-100 p-5 text-bg-dark rounded-3">\n' +
-        '          <h2 class="text-white">' + jumbotronTitle + '</h2>\n' +
-        '          <p class="text-light">' + jumbotronText + '</p>\n' +
+    let bootStrap5Jumbotron = '<div class="h-100 p-5 rounded-3 '+ jumbotronBgDivClass + '">\n' +
+        '          <h1 class="'+ jumbotronH1Class + '">' + jumbotronTitle + '</h1>\n' +
+        '          <p class="'+ jumbotronPClass + '">' + jumbotronText + '</p>\n' +
+        '<a href="https://lutece.paris.fr/fr/" class="' + buttonClass +'" style="text-decoration: none">Learn more</a>\n' +
         '        </div>';
     editor.insertText("$$span\n"+bootStrap5Jumbotron+ "\n$$");
-    document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+    closeToastUiModal();
 }
+
+/* -------------- DARK MODE -------------- */
+const darkModeButton = document.getElementsByClassName("fa fa-moon editor")[0];
+darkModeButton.addEventListener('click', function() {
+    document.getElementById("darkModeSwitch").style.display = "block";
+    const htmlToInsert = '<span class="darkModeClassOn"></span>';
+    editor.insertText("$$span\n"+htmlToInsert+ "\n$$");
+});
+
+function toggleDarkMode() {
+    let darkMode = localStorage.getItem('darkMode');
+    let darkModeId = document.getElementById('darkModeId');
+    let darkModeLabel = document.getElementById('darkModeLabel');
+    if (darkMode === 'true') {
+        darkModeId.checked = false;
+        darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+        document.body.classList.remove('darkmode');
+        document.getElementById('editor').classList.remove('toastui-editor-dark');
+
+        localStorage.setItem('darkMode', 'false');
+    } else {
+        darkModeId.checked = true;
+        darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+        document.body.classList.add('darkmode');
+        document.getElementById('editor').classList.add('toastui-editor-dark');
+        localStorage.setItem('darkMode', 'true');
+    }
+}
+
+window.addEventListener("load", (event) => {
+    if(document.getElementsByClassName('ProseMirror')[0].innerText.indexOf("darkModeClassOn") > -1){
+        document.getElementById("darkModeSwitch").style.display = "block";
+    }
+    let darkMode = localStorage.getItem('darkMode');
+    let darkModeId = document.getElementById('darkModeId');
+    let darkModeLabel = document.getElementById('darkModeLabel');
+    if (darkMode === 'true') {
+        darkModeId.checked = true;
+        darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+        document.body.classList.add('darkmode');
+        document.getElementById('editor').classList.add('toastui-editor-dark');
+
+    } else {
+        darkModeId.checked = false;
+        darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+        document.body.classList.remove('darkmode');
+        document.getElementById('editor').classList.remove('toastui-editor-dark');
+    }
+});
+
 
 /* -------------- TABLE OF CONTENT -------------- */
 
@@ -243,225 +454,46 @@ tableOfContentButton.addEventListener('click', function() {
     editor.insertText("$$span\n"+tocHtml+ "\n$$");
 
 });
-/* -------------- DARK MODE -------------- */
-const darkModeButton = document.getElementsByClassName("fa fa-moon editor")[0];
-darkModeButton.addEventListener('click', function() {
-    const el = document.getElementById("editor");
-    if(el.classList.contains("toastui-editor-dark")){
-        el.classList.remove("toastui-editor-dark");}
-    else{ el.classList.add("toastui-editor-dark");}
+
+/*___________________________ AUTO_SAVE  ___________________________*/
+
+
+window.addEventListener("load", (event) => {
+    if( parseInt(document.getElementById('topic_version').value)  !== 0 && window.localStorage.getItem('autoSaveMode') === null){
+        if(confirm('Do you want to activate auto-save mode ? \n\n'+ 'Note: If you activate this mode, the content will be saved when you are typing, updating this topic version.')){
+            window.localStorage.setItem('autoSaveMode', 'true');
+            document.getElementById('autoSaveMode').checked = true;
+        }
+        else{
+            window.localStorage.setItem('autoSaveMode', 'false');
+            document.getElementById('autoSaveMode').checked = false;
+        }
+    }
+    else if (parseInt(document.getElementById('topic_version').value)  !== 0 ) {
+        window.localStorage.getItem('autoSaveMode') === 'true'
+            ? document.getElementById('autoSaveMode').checked = true
+            : document.getElementById('autoSaveMode').checked = false;
+    }
 });
-
-function checkForDarkMode(html){
-    const el = document.getElementById("editor");
-
-    if(el.classList.contains('toastui-editor-dark')){
-        // add class on first element
-        // take the first element
-        html.classList.add('toastui-editor-dark');
-        alert(html)
-        setTimeout(function(){
-            // remove class on first element
-
-        }, 30000);
-    }
-    return html;
-}
-function editorHasToc (){
-    const wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(wikiHtmlContent, 'text/html');
-
-    let toc = doc.getElementsByClassName('toc');
-    if(toc !== undefined && toc.length > 0){
-        document.getElementById("tableOfContentCheckBox").checked = true;
-    } else {
-        document.getElementById("tableOfContentCheckBox").checked = false;
-    }
-}
-
-document.onload = (function() {
-    editorHasToc();
-});
-function checkforTOC(wikiHtmlContent){
-    // parse the html content
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(wikiHtmlContent, 'text/html');
-    // parse headers and add them an id
-    let headers = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    for(let i = 0; i < headers.length; i++) {
-        let headerText = headers[i].innerText;
-        // replace white spaces with _
-        headerText = replaceAll( ' ' , '_' , headerText );
-        headers[i].setAttribute('id', headerText);
-    }
-    let preElements = doc.querySelectorAll('pre');
-    for(let i = 0; i < preElements.length; i++) {
-        preElements[i].style.backgroundColor = "#282a36";
-    }
-    doc.querySelectorAll(".toastui-editor-md-preview-highlight").forEach(function (element) {
-        element.classList.remove("toastui-editor-md-preview-highlight");
-    });        // check for white spaces and replace them with -
-    let toc = doc.getElementsByClassName('toc')[0];
-    if(toc !== undefined){
-        let tableOfContent = createTableOfContent(doc);
-        doc.getElementsByClassName('toc')[0].replaceWith('')
-        // add parent element to the class below
-        let flexDiv = document.createElement("div");
-        flexDiv.classList.add("flex");
-        flexDiv.classList.add("flex-column");
-        flexDiv.classList.add("flex-grow-1");
-        flexDiv.classList.add("flex-shrink-1");
-        flexDiv.classList.add("flex-basis-auto");
-        flexDiv.classList.add("overflow-auto");
-        flexDiv.appendChild(tableOfContent);
-        flexDiv.appendChild(doc.getElementsByClassName('toastui-editor-contents')[0]);
-        doc = flexDiv.outerHTML;
-        return doc;
-    } else {
-        wikiHtmlContent = doc.documentElement.innerHTML;
-        return wikiHtmlContent;
-    }
-}
-
-function createTableOfContent(doc) {
-    let thisPageurl = window.location.href;
-    thisPageurl = "jsp/"+ thisPageurl.split("jsp/")[1];
-    thisPageurl = thisPageurl.replace("view=modifyPage", "view=viewPage");
-    thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
-    let headers = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
-
-    let tableOfContent = document.createElement("ul")
-    tableOfContent.id = "tableOfContent";
-    tableOfContent.className = "nav flex-column";
-    for (let i = 0; i < headers.length; i++) {
-        let header = headers[i];
-        let headerText = header.innerText;
-        let headerLevel = header.tagName;
-        let linkElement = document.createElement("a");
-        linkElement.href = thisPageurl + '#' + header.id;
-        linkElement.innerText = headerText;
-        linkElement.style = "color: black; text-decoration: none;";
-        linkElement.className = "nav-link";
-        let navItem = document.createElement("li");
-        if (headerLevel === "H1" || headerLevel === "H2" || headerLevel === "H3") {
-            navItem.className = "nav-item";
-            if (headers[i + 1] !== undefined) {
-                if (headers[i + 1].tagName === "H1" || headers[i + 1].tagName === "H2" || headers[i + 1].tagName === "H3") {
-                    tableOfContent.appendChild(linkElement);
-                } else if (headers[i + 1].tagName === "H4" || headers[i + 1].tagName === "H5" || headers[i + 1].tagName === "H6") {
-                    let divContainer = document.createElement("div");
-                    divContainer.style = "display: flex; flex-direction: row; spacing: 5px;";
-                    divContainer.appendChild(linkElement);
-                    navItem.appendChild(divContainer);
-                    tableOfContent.appendChild(navItem);
-                    let icon = document.createElement("i");
-                    icon.className = "fa fa-chevron-left";
-                    icon.style = "padding: 5px;";
-                    divContainer.appendChild(icon);
-                    let subLinkContainer = document.createElement("ul");
-                    subLinkContainer.className = "subLinkContainer";
-                    subLinkContainer.style = "margin-left: 20px; display: none;";
-                    tableOfContent.appendChild(subLinkContainer);
-                } else {
-                    tableOfContent.appendChild(linkElement);
-                }
-            }
-        }
-        if (headerLevel === "H4" || headerLevel === "H5" || headerLevel === "H6") {
-            // get the last div with class subLinkContainer
-            let subLinkContainers = tableOfContent.getElementsByClassName("subLinkContainer");
-            let subLinkContainer = subLinkContainers[subLinkContainers.length - 1];
-            subLinkContainer.appendChild(linkElement);
-        }
-    }
-    let tocContainer = document.createElement("span");
-    tocContainer.appendChild(tableOfContent);
-    tocContainer.style = "position: fixed; left:15px; width: 40px ";
-    return tocContainer;
-}
-
-
-/*___________________________ ON POST  ___________________________*/
-
-function replaceAll(find, replace, str)
-{
-    return str.replace(new RegExp(find, 'g'), replace);
-};
-
-function validate()
-{
-    let htmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-    //  htmlContent = removeCustomInputsDiv(htmlContent);
-    htmlContent = escapeSpecialCharsFromContent(htmlContent);
-    document.getElementById('wiki_html_content').value = htmlContent;
-    escapeSpecialChars( 'wiki_content' );
-    return true;
-};
-/*
-    function removeCustomInputsDiv(htmlContent) {
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(htmlContent, 'text/html');
-        for (let i = 0; i < doc.body.children.length; i++) {
-            if (doc.body.children[i].className === "toastui-editor-custom-block") {
-                let keep = doc.body.children[i].children[1].children[0];
-                doc.body.children[i].replaceWith(keep);
-            }
-        }
-        return doc.body.innerHTML;
-    }
- */
-
-function escapeSpecialChars( id )
-{
-    let content = document.getElementById( id ).value;
-    content = replaceAll( '<' , '[lt;' , content );
-    content = replaceAll( '>' , '[gt;' , content );
-    content = replaceAll( '"' , '[quot;' , content );
-    content = replaceAll( '&nbsp;' , '[nbsp;' , content );
-    content = replaceAll( '&' , '[amp;' , content );
-    content = replaceAll( '#' , '[hashmark;' , content );
-    content = replaceAll('`', '[codeQuote;', content)
-    content = replaceAll("'", '[simpleQuote;', content)
-    document.getElementById( id ).value = content;
-}
-
-
-
-function publishVersion()
-{
-    const saveType = "publish";
-    document.getElementById('publish_version').value = 'true';
-    callInputs(saveType);
-}
-
-function createVersion()
-{  const saveType = "saveNewVersion";
-    document.getElementById('create_version').value = 'true';
-    callInputs(saveType);
-}
 
 function toggleAutosave(){
-    if(document.getElementById('autoSaveMode').checked){
-        document.getElementById('autoSaveLabel').innerText =  'Auto-save mode is activated';
-    } else{
-        document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is deactivated';
+
+    if(parseInt(document.getElementById('topic_version').value)  === 0){
+        alert('In order to save automatically the content, you must manually save a first version');
+        document.getElementById('autoSaveMode').checked = false;
+    }
+    else if (parseInt(document.getElementById('topic_version').value)  !== 0){
+        if (document.getElementById('autoSaveMode').checked) {
+            document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is activated';
+            window.localStorage.setItem('autoSaveMode', 'true');
+        } else {
+            document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is deactivated';
+            window.localStorage.setItem('autoSaveMode', 'false');
+        }
     }
 }
-function escapeSpecialCharsFromContent( content )
-{
-    content = replaceAll( '<' , '[lt;' , content );
-    content = replaceAll( '>' , '[gt;' , content );
-    content = replaceAll( '"' , '[quot;' , content );
-    content = replaceAll( '&nbsp;' , '[nbsp;' , content );
-    content = replaceAll( '&' , '[amp;' , content );
-    content = replaceAll( '#' , '[hashmark;' , content );
-    content = replaceAll('`', '[codeQuote;', content)
-    content = replaceAll("'", '[simpleQuote;', content)
-    return content
-}
-function displayAutoSave(result){
-    if(result){
+function displayAutoSave(autoSaveResult){
+    if(autoSaveResult){
         document.getElementById('autoSave').style.display = 'block';
         document.getElementById('autoSaveSucess').style.display = 'block';
     } else{
@@ -473,43 +505,6 @@ function displayAutoSave(result){
         document.getElementById('autoSaveSucess').style.display = 'none';
         document.getElementById('autoSaveFailed').style.display = 'none';
     }, 3000);
-}
-// auto save
-async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent) {
-    let response = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            credentials: "same-origin"
-        },
-        body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent})
-    });
-    let result = await response;
-    displayAutoSave(result);
-}
-
-
-function callInputs(saveType) {
-    const version = document.getElementById("topic_version").value;
-    const topic_id = document.getElementById("topic_id").value;
-    const topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
-    const parentPage = document.getElementById("parent_page_name").value;
-    const title = document.getElementById("page_title_" + localeJs).value;
-    let topicTitle = escapeSpecialCharsFromContent(title);
-    let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
-    wikiHtmlContent = checkforTOC(wikiHtmlContent);
-    wikiHtmlContent = checkForDarkMode(wikiHtmlContent);
-    wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
-    if(saveType === "autoSave") {
-        if (version !== undefined && version !== null && version !== "") {
-            saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent)
-        }
-    } else if (saveType === "saveNewVersion" || saveType === "publish") {
-        document.getElementById('wiki_content').value = topicContent;
-        document.getElementById('wiki_html_content').value = wikiHtmlContent;
-
-    }
 }
 // if auto save mode is activated and auto is done
 let hasToWait = false;
@@ -526,7 +521,101 @@ function autoSave() {
     }
 }
 
-// register last user on modify page
+async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl) {
+    let autoSaveResponse = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            credentials: "same-origin"
+        },
+        body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent, wikiPageUrl: wikiPageUrl})
+    });
+    let autoSaveResult = await autoSaveResponse;
+    displayAutoSave(autoSaveResult);
+}
+
+/*___________________________ ON LANGUAGE CHANGE  ___________________________*/
+function changeLanguage(locale) {
+    const saveType = "autoSave";
+    let url = window.location.href;
+    if(url.includes("locale=")){
+        url = url.replace(/locale=[a-z]*/g, "locale=" + locale);
+    } else {
+        url = url + "&locale=" + locale;
+    }
+    if (document.getElementById('autoSaveMode').checked) {
+        callInputs(saveType);
+        window.location.replace(url)
+    }   else {
+        if (window.confirm("Auto save is disabled. Do you want to save the content?")){
+            callInputs(saveType)
+            // redirect to the url
+            window.location.replace(url)
+        } else {
+            window.location.replace(url)
+        }
+    }
+}
+/*___________________________ ON POST  ___________________________*/
+function publishVersion()
+{
+    const saveType = "publish";
+    document.getElementById('publish_version').value = 'true';
+    callInputs(saveType);
+}
+
+function createVersion()
+{  const saveType = "saveNewVersion";
+    document.getElementById('create_version').value = 'true';
+    callInputs(saveType);
+}
+function preview()
+{
+    const saveType = "preview";
+    callInputs(saveType);
+}
+
+function replaceAll(find, replace, str)
+{
+    return str.replace(new RegExp(find, 'g'), replace);
+};
+
+function escapeSpecialCharsFromContent( content )
+{
+    content = replaceAll( '<' , '[lt;' , content );
+    content = replaceAll( '>' , '[gt;' , content );
+    content = replaceAll( '"' , '[quot;' , content );
+    content = replaceAll( '&nbsp;' , '[nbsp;' , content );
+    content = replaceAll( '&' , '[amp;' , content );
+    content = replaceAll( '#' , '[hashmark;' , content );
+    content = replaceAll('`', '[codeQuote;', content)
+    content = replaceAll("'", '[simpleQuote;', content)
+    return content
+}
+
+function callInputs(saveType) {
+    const version = document.getElementById("topic_version").value;
+    const topic_id = document.getElementById("topic_id").value;
+    const topicContent = escapeSpecialCharsFromContent(document.getElementById("wiki_content").value);
+    const parentPage = document.getElementById("parent_page_name").value;
+    const title = document.getElementById("page_title_" + localeJs).value;
+    let topicTitle = escapeSpecialCharsFromContent(title);
+    let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
+    wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
+    const wikiPageUrl = document.getElementById("wiki_page_url").value;
+    if(saveType === "autoSave") {
+        if (version !== undefined && version !== null && version !== "") {
+            saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl);
+        }
+    } else if (saveType === "saveNewVersion" || saveType === "publish" || saveType === "preview") {
+        document.getElementById('wiki_content').value = topicContent;
+        document.getElementById('wiki_html_content').value = wikiHtmlContent;
+
+    }
+}
+
+/*_________________________ REGISTER LAST USER ON THIS PAGE ___________________________*/
 function saveLastUserOnModifyPage(){
     const topic_id = document.getElementById("topic_id").value;
 
@@ -575,6 +664,18 @@ for (let i = 0; i < spanIconLessLink.length; i++) {
         }
     });
 }
+window.addEventListener("load", (event) => {
+    let thisPageurl = window.location.href;
+    thisPageurl = "jsp/" + thisPageurl.split("jsp/")[1];
+    thisPageurl = thisPageurl.replace("view=modifyPage", "view=page");
+    thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
+    thisPageurl = thisPageurl.replace(/&locale=[0-9]*/g, "");
+    thisPageurl = thisPageurl.replace(/&version=[0-9]*/g, "");
+    thisPageurl = escapeSpecialCharsFromContent(thisPageurl);
+    document.getElementById("wiki_page_url").value = thisPageurl;
+});
+
+/*_________________________ ON LOAD REMOVE UNDERLINE ADDED BY THE HTML TO MARKDOWN CONVERTION ___________________________*/
 function removeUnderLineHeadings (underLineWithEqual){
     for(let i = 0; i < underLineWithEqual.length; i++){
         let previousElement = underLineWithEqual[i].parentElement.previousElementSibling.firstElementChild;
@@ -591,12 +692,12 @@ function removeUnderLineHeadings (underLineWithEqual){
         underLineWithEqual[i].remove();
     }
 }
+
 window.addEventListener("load", (event) => {
     let underLineWithEqual = document.getElementsByClassName("toastui-editor-md-heading toastui-editor-md-heading1 toastui-editor-md-delimiter toastui-editor-md-setext");
     removeUnderLineHeadings(underLineWithEqual);
     underLineWithEqual = document.getElementsByClassName("toastui-editor-md-heading toastui-editor-md-heading1 toastui-editor-md-delimiter toastui-editor-md-setext");
     removeUnderLineHeadings(underLineWithEqual);
 });
-
 
 
