@@ -28,8 +28,7 @@ VALUES (1,'LUTECE logo','image/png',0x89504E470D0A1A0A0000000D494844520000010300
 --
 -- Dumping data for table `wiki_topic_version_content`
 --
-INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'en','wiki : Home','
-{{{ jumbotron | Welcome to the Wiki | powered by Lutece | This Wiki aims to be a very simple collaborative tool fully integrated to your Lutece site }}}
+INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'en','wiki : Home','{{{ jumbotron | Welcome to the Wiki | powered by Lutece | This Wiki aims to be a very simple collaborative tool fully integrated to your Lutece site }}}
 
 = Key features =
 
@@ -96,8 +95,7 @@ A fixed size internal image aligned to the right :
 
  Some awesome icons with different size {{{ icon | check-circle }}} {{{ icon | cloud fa-3x }}} {{{ icon | cog fa-5x }}}
 ');
-INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'fr','wiki : Accueil','
-{{{ jumbotron | Welcome to the Wiki | powered by Lutece | This Wiki aims to be a very simple collaborative tool fully integrated to your Lutece site }}}
+INSERT INTO wiki_topic_version_content (id_topic_version, locale, page_title, wiki_content) VALUES (1,'fr','wiki : Accueil','{{{ jumbotron | Welcome to the Wiki | powered by Lutece | This Wiki aims to be a very simple collaborative tool fully integrated to your Lutece site }}}
 
 = Key features =
 
