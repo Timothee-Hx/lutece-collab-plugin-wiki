@@ -631,7 +631,6 @@ public class WikiApp extends MVCApplication
     @Action( ACTION_MODIFY_PAGE )
     public XPage doModifyTopic( HttpServletRequest request ) throws UserNotSignedException
     {
-
         LuteceUser user = WikiAnonymousUser.checkUser( request);
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
         Topic topic = TopicHome.findByPageName( strPageName );
@@ -668,7 +667,8 @@ public class WikiApp extends MVCApplication
                     for (String locale : WikiLocaleService.getLanguages()) {
                         content.setPageTitle(request.getParameter(Constants.PARAMETER_PAGE_TITLE + "_" + locale));
                         content.setContentLabellingMarkdownLanguage(request.getParameter(Constants.PARAMETER_CONTENT + "_" + locale));
-                        content.setHtmlWikiContent(request.getParameter(Constants.PARAMETER_HTML_CONTENT));
+                        htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl,strPageTitle);
+                        content.setHtmlWikiContent(request.getParameter(htmlContent));
                         topicVersion.addLocalizedWikiContent(locale, content);
                     }
                 }
@@ -790,6 +790,8 @@ public class WikiApp extends MVCApplication
         String strViewRole = request.getParameter( Constants.PARAMETER_VIEW_ROLE );
         String strEditRole = request.getParameter( Constants.PARAMETER_EDIT_ROLE );
         String strParentPageName = request.getParameter( Constants.PARAMETER_PARENT_PAGE_NAME );
+        String wikiPageUrl =  request.getParameter("wiki_page_url");
+
         int nPreviousVersionId = Integer.parseInt( strPreviousVersionId );
         int nTopicId = Integer.parseInt( strTopicId );
 
@@ -801,7 +803,9 @@ public class WikiApp extends MVCApplication
         for ( String strLanguage : WikiLocaleService.getLanguages( ) )
         {
             String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
-            String strContentHtml = SpecialChar.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
+            String htmlContent = request.getParameter(Constants.PARAMETER_HTML_CONTENT);
+            htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl,strPageTitle);
+            String strContentHtml = SpecialChar.renderWiki(htmlContent);
             WikiContent content = new WikiContent( );
             content.setPageTitle( strPageTitle );
             content.setHtmlWikiContent(strContentHtml);
@@ -997,29 +1001,6 @@ public class WikiApp extends MVCApplication
         return redirect( request, VIEW_MODIFY_PAGE, mapParameters );
     }
 
-    /**
-     * Manages the removal form of a image whose identifier is in the http request
-     *
-     * @param request
-     *            The Http request
-     * @return the html code to confirm
-     * @throws SiteMessageException
-     *             A site message
-     */
-    @Action( ACTION_CONFIRM_REMOVE_IMAGE )
-    public XPage getConfirmRemoveImage( HttpServletRequest request ) throws SiteMessageException
-    {
-        int nId = Integer.parseInt( request.getParameter( Constants.PARAMETER_IMAGE_ID ) );
-        UrlItem url = new UrlItem( AppPathService.getPortalUrl( ) );
-        url.addParameter( Constants.PARAMETER_PAGE, Constants.PLUGIN_NAME );
-        url.addParameter( Constants.PARAMETER_PAGE_NAME, request.getParameter( Constants.PARAMETER_PAGE_NAME ) );
-        url.addParameter( Constants.PARAMETER_ACTION, ACTION_REMOVE_IMAGE );
-        url.addParameter( Constants.PARAMETER_IMAGE_ID, nId );
-
-        SiteMessageService.setMessage( request, MESSAGE_CONFIRM_REMOVE_IMAGE, SiteMessage.TYPE_CONFIRMATION, url.getUrl( ) );
-
-        return null;
-    }
 
     /**
      * Handles the removal form of an image
@@ -1033,15 +1014,15 @@ public class WikiApp extends MVCApplication
     @Action( ACTION_REMOVE_IMAGE )
     public XPage doRemoveImage( HttpServletRequest request ) throws UserNotSignedException
     {
-        LuteceUser user = WikiAnonymousUser.checkUser( request);
         int nId = Integer.parseInt( request.getParameter( Constants.PARAMETER_IMAGE_ID ) );
-        ImageHome.remove( nId );
-        addInfo( MESSAGE_IMAGE_REMOVED, getLocale( request ) );
+        int nTopicId = Integer.parseInt( request.getParameter( Constants.PARAMETER_TOPIC_ID ) );
+        Topic topic = TopicHome.findByPrimaryKey(nTopicId);
+        if ( RoleService.hasEditRole( request, topic ) ) {
+            ImageHome.remove(nId);
+            addInfo(MESSAGE_IMAGE_REMOVED, getLocale(request));
 
-        Map<String, String> mapParameters = new ConcurrentHashMap<>( );
-        mapParameters.put( Constants.PARAMETER_PAGE_NAME, request.getParameter( Constants.PARAMETER_PAGE_NAME ) + ANCHOR_IMAGES );
-
-        return redirect( request, VIEW_MODIFY_PAGE, mapParameters );
+        }
+        return null;
     }
 
     /**

@@ -100,8 +100,10 @@ public class LuteceHtmlParser {
             }
             if (headerLevel.equals("h2") || headerLevel.equals("h3")) {
                 List<Element> subLinkContainers = tableOfContent.getElementsByClass("subLinkContainer");
-                Element subLinkContainer = subLinkContainers.get(subLinkContainers.size() - 1);
-                subLinkContainer.appendChild(linkElement);
+                if(subLinkContainers.size() != 0) {
+                    Element subLinkContainer = subLinkContainers.get(subLinkContainers.size() - 1);
+                    subLinkContainer.appendChild(linkElement);
+                }
             }
         }
         return tableOfContent;

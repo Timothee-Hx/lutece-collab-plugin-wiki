@@ -45,58 +45,89 @@
 
             <h1>${topic_title}</h1>
             <hr>
-            <div  class="tui-editor-contents">
+            <div  >
                 ${result}
             </div>
         </div>
     </div>
 </div>
 
-    <script type="text/javascript" src="js/plugins/wiki/jquery/jquery.form.js"></script>
-    <!-- Tui Editor integration -->
-    <!-- Added to check demo page in Internet Explorer -->
-    <script type="text/javascript" type="text/babel" class="code-js"  src="js/plugins/wiki/tui_editor/data/md-plugins.js"></script>
-    <!-- Editor -->
-    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-viewer.js"></script>
-
-    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/cdn/toastui-editor-all.min.js"></script>
-    <!-- Chart -->
-    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_chart/toastui-chart.js"></script>
-
-    <!-- Color Picker -->
-    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_color_picker/tui-color-picker.min.js"></script>
-    <!-- Editor's Plugin -->
-    <script type="text/javascript"   class="code-js"  src="js/plugins/wiki/tui_editor/plugins/editor-plugin-chart/cdn/toastui-editor-plugin-chart.min.js"></script>
-
-    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
-
-    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.js"></script>
-
-    <script type="text/javascript"  class="code-js"   src="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.js"></script>
-
-    <script type="text/javascript" class="code-js">
-
-        const { Editor } = toastui;
-        const { chart, codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
-
-        let wikiContent = document.getElementById('result').value;
-
-        const chartOptions = {
-            minWidth: 100,
-            maxWidth: 600,
-            minHeight: 100,
-            maxHeight: 300
-        };
-
-
-        const viewer = Editor.factory({
-            el: document.querySelector('#viewer'),
-            viewer: true,
-            initialValue: wikiContent,
-            plugins: [[chart, chartOptions], [codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
-        });
-
-    </script>
 <script defer>
+    window.addEventListener("load", (event) => {
+        if(document.getElementsByClassName('darkModeClassOn').length > 0){
+            document.getElementById('darkModeSwitch').style.display = 'block';
+        }
+        let darkMode = localStorage.getItem('darkMode');
+        let darkModeId = document.getElementById('darkModeId');
+        let darkModeLabel = document.getElementById('darkModeLabel');
+        if (darkMode === 'true') {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+        } else {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+        }
+    });
 
+
+    window.addEventListener("load", (event) => {
+        if(document.getElementsByClassName('darkModeClassOn').length > 0){
+            document.getElementById('darkModeSwitch').style.display = 'block';
+        }
+        let darkMode = localStorage.getItem('darkMode');
+        let darkModeId = document.getElementById('darkModeId');
+        let darkModeLabel = document.getElementById('darkModeLabel');
+        if (darkMode === 'true') {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+        } else {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+        }
+    });
+    function toggleDarkMode() {
+        let darkMode = localStorage.getItem('darkMode');
+        let darkModeId = document.getElementById('darkModeId');
+        let darkModeLabel = document.getElementById('darkModeLabel');
+        if (darkMode === 'true') {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+            localStorage.setItem('darkMode', 'true');
+        }
+    }
+    window.addEventListener("load", (event) => {
+        // on every tagName "PRE" add a copy button on the top right corner
+        var pre = document.getElementsByTagName('pre');
+        for (var i = 0; i < pre.length; i++) {
+            var button = document.createElement('button');
+            button.className = 'btn btn-primary btn-xs';
+            button.style.float = 'right';
+            button.style.marginTop = '10px';
+            button.style.marginRight = '10px';
+            button.textContent = 'Copy';
+            button.onclick = function() {
+                copyToClipboard(this.nextElementSibling.textContent);
+            };
+            pre[i].insertAdjacentElement('beforebegin', button)
+        }
+    });
+
+    function copyToClipboard(text) {
+        var dummy = document.createElement('textarea');
+        document.body.appendChild(dummy);
+        dummy.value = text;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+    }
 </script>

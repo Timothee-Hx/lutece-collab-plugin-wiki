@@ -101,7 +101,10 @@ public class WikiDynamicInputs {
                 content.setWikiContent(newContent.getTopicContent());
                 content.setContentLabellingMarkdownLanguage(newContent.getTopicContent());
                 String wikiPageUrl = newContent.getWikiPageUrl();
+
                 String htmlContent = LuteceHtmlParser.parseHtml(newContent.getTopicContent(), wikiPageUrl, newContent.getTopicTitle());
+               // in modify page : htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl,strPageTitle);
+
                 content.setHtmlWikiContent(htmlContent);
                 topicVersion.addLocalizedWikiContent(newContent.getLanguage(), content);
                 TopicVersionHome.updateTopicVersion(topicVersion);
@@ -160,20 +163,6 @@ public class WikiDynamicInputs {
                 TopicVersion topicVersion = TopicVersionHome.getPublishedVersion(topic.getIdTopic());
                 WikiContent wikiContent = topicVersion.getWikiContent(locale);
                 String htmlContent = SpecialChar.renderWiki(wikiContent.getHtmlWikiContent());
-                // find class="wiki_content' and if it exists, get the headings
-                if (htmlContent.contains("class=\"wiki_content\"")) {
-                    Document htmlDocument = Jsoup.parse(htmlContent);
-                    System.out.println(htmlDocument);
-                    Element docBody = htmlDocument.body();
-                    Element wikiContentElement = docBody.getElementsByClass("wiki_content").first();
-                    for (Element element : wikiContentElement.select("h1, h2, h3, h4, h5, h6")) {
-                        HashMap < String, String > heading = new HashMap < String, String > ();
-                        heading.put("header_id", element.id());
-                        heading.put("header_text", element.text());
-                        headings.add(heading);
-                    }
-                } else {
-                    // this means the page is from a previous version and the wiki_content class is not present
                     Document htmlDocument = Jsoup.parse(htmlContent);
                     Element docBody = htmlDocument.body();
                     for (Element element : docBody.select("h1, h2, h3, h4, h5, h6")) {
@@ -182,7 +171,6 @@ public class WikiDynamicInputs {
                         heading.put("header_text", element.text());
                         headings.add(heading);
                     }
-                }
             } else {
                 throw new UserNotSignedException();
             }

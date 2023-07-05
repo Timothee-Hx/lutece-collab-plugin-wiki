@@ -78,3 +78,36 @@ span.diff-html-conflict {
 .wiki-align-content-val-j {
     text-align: justify;
 }
+
+.image-editor-display {
+    position: relative;
+    width: 100%;
+}
+/* Make the image responsive */
+.image-editor-display img {
+    height: 100%;
+}
+
+/* Style the button and place it in the middle of the container/image */
+.image-editor-display .button-container {
+    position: absolute;
+    top: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.image-editor-display .button-container button{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+    justify-items: center;
+    align-items: center;
+    overflow: auto;
+    height: 100%;
+}
+
+
