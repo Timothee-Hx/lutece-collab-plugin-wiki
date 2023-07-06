@@ -81,7 +81,7 @@ public class LuteceHtmlParser {
             Element navItem = new Element("li");
             if (headerLevel.equals("h1")) {
                 navItem.addClass("nav-item");
-                if (headers.get(i + 1) != null) {
+                if(i + 1 < headers.size()) {
                     if (headers.get(i + 1).tagName().equals("h1")) {
                         tableOfContent.appendChild(linkElement);
                     } else if (headers.get(i + 1).tagName().equals("h2") || headers.get(i + 1).tagName().equals("h3")) {
