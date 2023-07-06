@@ -251,35 +251,32 @@
 
 
 <div class="container panel panel-default">
-    <form method="post" id="form_wiki" action="jsp/site/Portal.jsp">
-        <div class="row">
-            <input type="hidden" id="page" name="page" value="wiki" />
-            <input type="hidden" id="page_name" name="page_name" value="${topic.pageName}" />
-            <input type="hidden" id="topic_id" name="topic_id" value="${topic.idTopic}" />
-            <input id="publish_version" type="hidden" name="publish_version" value="false" />
-            <input id="create_version" type="hidden" name="create_version" value="false">
-            <#if version??>
-            <input id="topic_version" type="hidden" name="id_topic_version" value="${version.idTopicVersion}" />
-            <#else>
-            <input id="topic_version"  type="hidden" name="id_topic_version" value="0" />
-        </#if>
-        <div class="col-sm-12">
-            <div class="btn-group btn-group-xs pull-right">
-                <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
-                    <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
-                </a>
-                <button name="view_preview" class="btn btn-default" type="submit" title="#i18n{wiki.menu.preview}" onclick="preview()">
-                    <span class="glyphicon glyphicon-eye-open"></span> #i18n{wiki.menu.preview}
-                </button>
-                <#if has_admin_role >
-                <a data-toggle="modal" data-target="#confirm-delete-page"  class="btn btn-danger" class="btn btn-danger" title="#i18n{portal.util.labelDelete}">
-                    <span class="glyphicon glyphicon-trash"></span> #i18n{portal.util.labelDelete}
-                </a>
-            </#if>
-            <button id="btn-help" class="btn btn-default" type="button" title="#i18n{wiki.menu.help}">
-                <span class="glyphicon glyphicon-question-sign"></span> #i18n{wiki.menu.help}
+    <div class="row">
+        <input type="hidden" id="page" name="page" value="wiki" />
+        <input type="hidden" id="page_name" name="page_name" value="${topic.pageName}" />
+        <input type="hidden" id="topic_id" name="topic_id" value="${topic.idTopic}" />
+        <#if version??>
+        <input id="topic_version" type="hidden" name="id_topic_version" value="${version.idTopicVersion}" />
+        <#else>
+        <input id="topic_version"  type="hidden" name="id_topic_version" value="0" />
+    </#if>
+    <div class="col-sm-12">
+        <div class="btn-group btn-group-xs pull-right">
+            <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
+                <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
+            </a>
+            <button name="view_preview" class="btn btn-default" type="submit" title="#i18n{wiki.menu.preview}" onclick="preview()">
+                <span class="glyphicon glyphicon-eye-open"></span> #i18n{wiki.menu.preview}
             </button>
-        </div>
+            <#if has_admin_role >
+            <a data-toggle="modal" data-target="#confirm-delete-page"  class="btn btn-danger" class="btn btn-danger" title="#i18n{portal.util.labelDelete}">
+                <span class="glyphicon glyphicon-trash"></span> #i18n{portal.util.labelDelete}
+            </a>
+        </#if>
+        <button id="btn-help" class="btn btn-default" type="button" title="#i18n{wiki.menu.help}">
+            <span class="glyphicon glyphicon-question-sign"></span> #i18n{wiki.menu.help}
+        </button>
+    </div>
 </div>
 <div style="display: flex; justify-content: end;  flex-direction: row;">
 
@@ -392,12 +389,12 @@
     <div class="col-sm-6">
         <div class="form-group">
             <label for="modification_comment"><span class="glyphicon glyphicon-comment"></span> &nbsp; #i18n{wiki.modify_page.labelComment} :</label>
-            <input class="form-control" type="text" name="modification_comment" maxlength="50"/>
+            <input class="form-control" type="text" id="modification_comment" name="modification_comment" maxlength="50"/>
         </div>
-        <button name="action_modifyPage" class="btn btn-primary" type="submit" title="#i18n{wiki.modify_page.buttonModify}" onclick="createVersion()">
+        <button name="action_modifyPage" class="btn btn-primary"  title="#i18n{wiki.modify_page.buttonModify}" onclick="createVersion()">
             <span class="glyphicon glyphicon-save"></span> &nbsp;#i18n{wiki.modify_page.buttonModify}
         </button>
-        <button name="action_modifyPage" class="btn btn-primary" type="submit" title="#i18n{wiki.modify_page.buttonModify}" onclick="publishVersion()">
+        <button name="action_modifyPage" class="btn btn-primary"  title="#i18n{wiki.modify_page.buttonModify}" onclick="publishVersion()">
             <span class="glyphicon glyphicon-save"></span> &nbsp;#i18n{wiki.modify_page.SaveAndPublish}
         </button>
     </div>
@@ -407,20 +404,19 @@
             <div class="form-group row">
                 <label class="col-sm-5 col-form-label" for="view_role">#i18n{wiki.modify_page.labelViewRole} :</label>
                 <div class="col-sm-7">
-                    <@select name="view_role" default_value="${topic.viewRole}" items=page_roles_list sort=true />
+                    <@select name="view_role" id="view_role" default_value="${topic.viewRole}" items=page_roles_list sort=true />
                 </div>
             </div>
 
             <div class="form-group row">
                 <label class="col-sm-5 col-form-label" for="edit_role">#i18n{wiki.modify_page.labelEditRole} :</label>
                 <div class="col-sm-7">
-                    <@select name="edit_role" default_value="${topic.editRole}" items=page_roles_list sort=true />
+                    <@select name="edit_role" id="edit_role" default_value="${topic.editRole}" items=page_roles_list sort=true />
                 </div>
             </div>
         </div>
     </div>
 </div>
-</form>
 
 </div>
 </div>
@@ -1088,13 +1084,11 @@
     function publishVersion()
     {
         const saveType = "publish";
-        document.getElementById('publish_version').value = 'true';
         callInputs(saveType);
     }
 
     function createVersion()
     {  const saveType = "saveNewVersion";
-        document.getElementById('create_version').value = 'true';
         callInputs(saveType);
     }
     function preview()
@@ -1120,6 +1114,21 @@
         content = replaceAll("'", '[simpleQuote;', content)
         return content
     }
+    function postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName) {
+
+       let resquest =  fetch('jsp/site/Portal.jsp?page=wiki&action=modifyPage',{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                credentials: "same-origin"
+            },
+            body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent, wikiPageUrl: wikiPageUrl, editComment: editComment, viewRole: viewRole, editRole: editRole,  publishVersion: publishVersion, createVersion: createVersion, topicPageName: topicPageName})
+        })
+       console.log(resquest)
+        // redirect to the url or display the saving icon
+
+    }
 
     function callInputs(saveType) {
         const version = document.getElementById("topic_version").value;
@@ -1131,16 +1140,34 @@
         let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
         wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
         const wikiPageUrl = document.getElementById("wiki_page_url").value;
+        const editComment = document.getElementById("modification_comment").value;
+        const viewRole = document.getElementById("view_role").value;
+        const editRole = document.getElementById("edit_role").value;
+        const topicPageName = document.getElementById("page_name").value;
         if(saveType === "autoSave") {
             if (version !== undefined && version !== null && version !== "") {
-                saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl);
+                const publishVersion = false;
+                const createVersion = false;
+                postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
             }
-        } else if (saveType === "saveNewVersion" || saveType === "publish" || saveType === "preview") {
-            document.getElementById('wiki_content').value = topicContent;
-            document.getElementById('wiki_html_content').value = wikiHtmlContent;
+        } else if (saveType === "saveNewVersion" ){
+            const publishVersion = false;
+            const createVersion = true;
+            postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
 
+        } else if( saveType === "publish") {
+            const publishVersion = true;
+            const createVersion = true;
+            postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
+
+        } else if( saveType === "preview" ){
+            const publishVersion = false;
+            const createVersion = false;
+            postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
         }
     }
+
+
 
     /*_________________________ REGISTER LAST USER ON THIS PAGE ___________________________*/
     function saveLastUserOnModifyPage(){

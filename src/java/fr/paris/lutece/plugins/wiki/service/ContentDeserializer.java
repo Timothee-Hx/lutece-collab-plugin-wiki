@@ -22,6 +22,18 @@ public class ContentDeserializer {
 
     public String wikiPageUrl;
 
+    public String createVersion;
+
+    public String publishVersion;
+
+    public String editComment;
+
+    public String viewRole;
+
+    public String editRole;
+
+    public String topicPageName;
+
     /**
      * Returns the content of the file
      *
@@ -58,6 +70,26 @@ public class ContentDeserializer {
     }
 
     public String getWikiPageUrl() {return wikiPageUrl;}
+
+    public Boolean getIsCreateVersion() {
+        return Boolean.parseBoolean(createVersion);
+    }
+    public Boolean getIsPublishVersion() {
+        return Boolean.parseBoolean(publishVersion);
+    }
+    public String getEditComment() {
+        return editComment;
+    }
+    public String getViewRole() {
+        return viewRole;
+    }
+    public String getEditRole() {
+        return editRole;
+    }
+    public String getTopicPageName() {
+        return topicPageName;
+    }
+
 
 
     public static ContentDeserializer deserializeWikiContent(String requestBody){

@@ -84,7 +84,6 @@ public class WikiDynamicInputs {
             Topic topic = TopicHome.findByPrimaryKey(newContent.getTopicId());
             if (RoleService.hasEditRole(request, topic)) {
                 int topicVersionId = newContent.getTopicVersion();
-
                 int nTopicId = topic.getIdTopic();
                 TopicVersion topicVersion = TopicVersionHome.findByPrimaryKey(topicVersionId);
                 topicVersion.setIdTopic(nTopicId);
@@ -102,7 +101,7 @@ public class WikiDynamicInputs {
                 content.setContentLabellingMarkdownLanguage(newContent.getTopicContent());
                 String wikiPageUrl = newContent.getWikiPageUrl();
 
-                String htmlContent = LuteceHtmlParser.parseHtml(newContent.getTopicContent(), wikiPageUrl, newContent.getTopicTitle());
+                String htmlContent = LuteceHtmlParser.parseHtml(newContent.getWikiHtmlContent(), wikiPageUrl, newContent.getTopicTitle());
                // in modify page : htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl,strPageTitle);
 
                 content.setHtmlWikiContent(htmlContent);
