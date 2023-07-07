@@ -59,13 +59,7 @@ span.diff-html-conflict {
 .wiki_underline {
     text-decoration: underline;
 }
-.wiki-topic-nav {
-    position: fixed;
-    left: 15px;
-    font-size: large;
-    width: 275px;
-    color: #2d2d2d;
-}
+
 .wiki-align-content-val-l {
     text-align: left;
 }
@@ -78,6 +72,29 @@ span.diff-html-conflict {
 .wiki-align-content-val-j {
     text-align: justify;
 }
+
+.wiki-topic-nav {
+    position: fixed;
+    left: 15px;
+    font-size: large;
+    width: 275px;
+    color: #2d2d2d;
+}
+@media (max-width: 768px) {
+    .wiki-topic-nav {
+        display: none;
+    }
+}
+
+.wiki-nav-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    overflow: auto;
+}
+
 
 .image-editor-display {
     position: relative;

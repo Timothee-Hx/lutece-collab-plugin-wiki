@@ -76,6 +76,7 @@ public final class Constants
     public static final String PARENT_PAGE_NAME_IS_NULL = "none";
     public static final String MARKDOWN_TAG = "[@MarkdownLanguage;";
     public static final String PARAMETER_USER_NAME = "user_name";
+    public static final String MESSAGE_CANCELED_BY = "wiki.message.cancelBy";
 
 
     /** Private constructor */

@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.wiki.web;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import fr.paris.lutece.plugins.avatar.service.AvatarService;
 import fr.paris.lutece.plugins.wiki.business.Image;
 import fr.paris.lutece.plugins.wiki.business.ImageHome;
@@ -189,7 +191,6 @@ public class WikiApp extends MVCApplication
     private static final String MESSAGE_AUTHENTICATION_REQUIRED = "wiki.message.authenticationRequired";
     private static final String MESSAGE_PATH_HIDDEN = "wiki.message.path.hidden";
     private static final String MESSAGE_NO_PUBLISHED_VERSION = "wiki.view_page.noPublishedVersion";
-    private static final String MESSAGE_CANCELED_BY = "wiki.message.cancelBy";
     private static final String ANCHOR_IMAGES = "#images";
 
     private static final String DSKEY_WIKI_ROOT_LABEL = "wiki.site_property.path.rootLabel";
@@ -351,6 +352,8 @@ public class WikiApp extends MVCApplication
 
         return page;
     }
+
+
 
     /**
      * Gets a wiki page
@@ -577,6 +580,9 @@ public class WikiApp extends MVCApplication
             return page;
     }
 
+
+
+
     @View( VIEW_SOMEBODY_IS_EDITING )
     public XPage getSomebodyIsEditing( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
     {
@@ -620,119 +626,8 @@ public class WikiApp extends MVCApplication
         page.setExtendedPathLabel(getPageExtendedPath(topic, request));
         return page;
     }
-    /**
-     * Process the modification of a wiki page
-     *
-     * @param request
-     *            The HTTP request
-     * @return The XPage
-     * @throws UserNotSignedException
-     *             if the user is not signed
-     */
-    @Action( ACTION_MODIFY_PAGE )
-    public String doModifyTopic( HttpServletRequest request ) throws IOException, UserNotSignedException
-    {
-
-        Boolean saveSuccess = false;
-        StringBuilder sb = new StringBuilder();
-        BufferedReader reader = request.getReader();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-        }
-        String requestBody = sb.toString();
-        Boolean publish = false;
-        Boolean newVersion = false;
-        String getTopicPageName = "";
-        try {
-            ContentDeserializer newContent = ContentDeserializer.deserializeWikiContent(requestBody);
-            Topic topic = TopicHome.findByPrimaryKey(newContent.getTopicId());
-        LuteceUser user = WikiAnonymousUser.checkUser( request);
-
-        if ( RoleService.hasEditRole( request, topic ) ) {
-            int topicVersionId = newContent.getTopicVersion();
-            int nTopicId = topic.getIdTopic();
-            TopicVersion topicVersion = TopicVersionHome.findByPrimaryKey(topicVersionId);
-            topicVersion.setIdTopic(nTopicId);
-            topicVersion.setIdTopicVersion(topicVersionId);
-            topicVersion.setUserName(user.getName());
-            getTopicPageName = topic.getPageName();
-            Integer nVersionId = newContent.getTopicVersion();
-             newVersion = newContent.getIsCreateVersion();
-             publish = newContent.getIsPublishVersion();
-            String strComment = newContent.getEditComment();
-            String strLocale = newContent.getLanguage();
-            String wikiPageUrl = newContent.getWikiPageUrl();
-         String strPageName = newContent.getTopicTitle();
-             String strParentPageName = newContent.getParentPageName();
-            String strViewRole = newContent.getViewRole();
-            String strEditRole = newContent.getEditRole();
 
 
-            if(nVersionId == 0) {
-                newVersion = true;
-            } else {
-                topicVersion = TopicVersionHome.findByPrimaryKey(nVersionId);
-                topicVersion.setIdTopicVersionPrevious(nVersionId);
-            }
-            topicVersion.setIdTopic(nTopicId);
-            topicVersion.setUserName(user.getName());
-            topicVersion.setEditComment(strComment);
-            topicVersion.setIsPublished(publish);
-                String strPageTitle = newContent.getTopicTitle();
-                String strContent = newContent.getTopicContent();
-                String htmlContent = newContent.getWikiHtmlContent();
-             htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl,strPageTitle);
-
-            WikiContent content = new WikiContent();
-                if(nVersionId == 0) {
-                    for (String locale : WikiLocaleService.getLanguages()) {
-                        content.setPageTitle(strPageTitle + "_" + locale);
-                        content.setContentLabellingMarkdownLanguage(strContent);
-                        content.setHtmlWikiContent(htmlContent);
-                        topicVersion.addLocalizedWikiContent(locale, content);
-                    }
-                }
-                content.setPageTitle(strPageTitle);
-                content.setContentLabellingMarkdownLanguage(strContent);
-                content.setHtmlWikiContent(htmlContent);
-                topicVersion.addLocalizedWikiContent(strLocale, content);
-            // if publish is true, cancel publication of previous version
-            if(publish.equals(true)) {
-                String messageCanceledBy = I18nService.getLocalizedString( MESSAGE_CANCELED_BY, getLocale( request ) );
-                String comment = messageCanceledBy +" "+ user.getName();
-                TopicVersionHome.cancelPublication(nTopicId, comment);
-            }
-
-            // if newVersion is false and publish is false, overwrite this version
-            if(!newVersion && publish.equals(false)){
-                if (topicVersion.getEditComment() == null || topicVersion.getEditComment().isEmpty()) {
-                    topicVersion.setEditComment("AutoSave");
-                }
-                topicVersion.addLocalizedWikiContent(newContent.getLanguage(), content);
-                TopicVersionHome.updateTopicVersion(topicVersion);
-                topic.setViewRole(strViewRole);
-                topic.setEditRole(strEditRole);
-                topic.setParentPageName(newContent.getParentPageName());
-                TopicHome.update(topic);
-            }
-            // if newVersion is true or publish is true, create a new version
-            if(newVersion || publish.equals(true)){
-                TopicVersionHome.addTopicVersion( topicVersion );
-                topic.setViewRole(strViewRole);
-                topic.setEditRole(strEditRole);
-                topic.setParentPageName(strParentPageName);
-                TopicHome.update(topic);
-            }
-
-        }
-
-
-        }  catch (Exception e) {
-            AppLogService.error("Error saving topic version automatically", e);
-        }
-        return "OK";
-    }
 
 
     /**
@@ -786,12 +681,9 @@ public class WikiApp extends MVCApplication
         TopicVersion publishedVersion = TopicVersionHome.getPublishedVersion( topic.getIdTopic() );
 
         if ( RoleService.hasEditRole( request, topic ) ) {
-            String messageCanceledBy = I18nService.getLocalizedString( MESSAGE_CANCELED_BY, getLocale( request ) );
+            String messageCanceledBy = I18nService.getLocalizedString( Constants.MESSAGE_CANCELED_BY, getLocale( request ) );
             String comment = messageCanceledBy +" "+ user.getName();
             TopicVersionHome.cancelPublication(topic.getIdTopic(), comment);
-
-
-
         }
         Integer topicVersionId = publishedVersion.getIdTopicVersion();
         Map<String, String> mapParameters = new ConcurrentHashMap<>();
@@ -809,64 +701,42 @@ public class WikiApp extends MVCApplication
      *             if an exception occurs
      */
     @View( VIEW_PREVIEW )
-    public XPage getPreviewTopic( HttpServletRequest request ) throws SiteMessageException, UserNotSignedException
+    public XPage getPreviewTopic( HttpServletRequest request ) throws IOException,  SiteMessageException, UserNotSignedException
     {
-        LuteceUser user = WikiAnonymousUser.checkUser( request );
-
-        String strPreviousVersionId = request.getParameter( Constants.PARAMETER_TOPIC_VERSION_ID );
-        String strTopicId = request.getParameter( Constants.PARAMETER_TOPIC_ID );
-        String strComment = request.getParameter( Constants.PARAMETER_MODIFICATION_COMMENT );
-        String strViewRole = request.getParameter( Constants.PARAMETER_VIEW_ROLE );
-        String strEditRole = request.getParameter( Constants.PARAMETER_EDIT_ROLE );
-        String strParentPageName = request.getParameter( Constants.PARAMETER_PARENT_PAGE_NAME );
-        String wikiPageUrl =  request.getParameter("wiki_page_url");
-
-        int nPreviousVersionId = Integer.parseInt( strPreviousVersionId );
-        int nTopicId = Integer.parseInt( strTopicId );
-
-        TopicVersion topicVersion = new TopicVersion( );
-        topicVersion.setIdTopic( nTopicId );
-        topicVersion.setUserName( user.getName( ) );
-        topicVersion.setEditComment( strComment );
-        topicVersion.setIdTopicVersionPrevious( nPreviousVersionId );
-        for ( String strLanguage : WikiLocaleService.getLanguages( ) )
-        {
-            String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
-            String htmlContent = request.getParameter(Constants.PARAMETER_HTML_CONTENT);
-            htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl,strPageTitle);
-            String strContentHtml = SpecialChar.renderWiki(htmlContent);
-            WikiContent content = new WikiContent( );
-            content.setPageTitle( strPageTitle );
-            content.setHtmlWikiContent(strContentHtml);
-            topicVersion.addLocalizedWikiContent( strLanguage, content );
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = request.getReader();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        String requestBody = sb.toString();
+        String wikiPageUrl = "";
+        String pageName = "";
+        String pageTitle = "";
+        String htmlContent = "";
+        JSONObject json = new JSONObject();
+        try {
+            ContentDeserializer newContent = ContentDeserializer.deserializeWikiContent(requestBody);
+            Topic topic = TopicHome.findByPrimaryKey( newContent.getTopicId() );
+            LuteceUser user = WikiAnonymousUser.checkUser(request);
+            if ( RoleService.hasEditRole( request, topic ) ) {
+               wikiPageUrl = newContent.getWikiPageUrl();
+               pageTitle = newContent.getTopicTitle();
+               pageName = newContent.getTopicPageName();
+               htmlContent = newContent.getWikiHtmlContent();
+               htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl, pageTitle);
+               htmlContent = SpecialChar.renderWiki(htmlContent);
+               json.put("htmlContent", htmlContent);
+               System.out.println(htmlContent);
+           }
+        } catch ( Exception e ) {
+            AppLogService.error( e.getMessage( ), e );
         }
 
-        String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
-        Topic topic = TopicHome.findByPageName( strPageName );
-        topic.setViewRole( strViewRole );
-        topic.setEditRole( strEditRole );
-        topic.setParentPageName( strParentPageName );
+        return responseJSON( json.toString() );
 
-        request.getSession( ).setAttribute( MARK_TOPIC, topic );
-        request.getSession( ).setAttribute( MARK_LATEST_VERSION, topicVersion );
-
-        String strLanguage = getLanguage( request );
-        String strContentHtml = SpecialChar.renderWiki(request.getParameter( Constants.PARAMETER_HTML_CONTENT ));
-
-        String strPageTitle = request.getParameter( Constants.PARAMETER_PAGE_TITLE + "_" + strLanguage );
-
-        Map<String, Object> model = getModel( );
-        model.put( MARK_RESULT, strContentHtml );
-        model.put( MARK_TOPIC, topic );
-        model.put( MARK_LATEST_VERSION, topicVersion );
-        model.put( MARK_TOPIC_TITLE, strPageTitle );
-
-        XPage page = getXPage( TEMPLATE_PREVIEW_WIKI, request.getLocale( ), model );
-        page.setTitle( getPageTitle( getTopicTitle( request, topic ) ) );
-        page.setExtendedPathLabel( getPageExtendedPath( topic, request ) );
-
-        return page;
     }
+
 
     /**
      * Displays the history page

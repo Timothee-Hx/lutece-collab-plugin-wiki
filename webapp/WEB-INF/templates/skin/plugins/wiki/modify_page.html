@@ -3,8 +3,6 @@
     <meta charset="UTF-8" />
     <title>12. Editor with All Plugins</title>
     <!-- Editor -->
-    <!-- Chart -->
-    <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
     <!-- Color syntax -->
     <link rel="stylesheet" href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"/>
     <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"/>
@@ -18,11 +16,6 @@
     <link rel="stylesheet" href="css/plugins/wiki/toastui/toastui-editor.css" />
 </head>
 <div class="row">
-    <!--  Context variables -->
-    <#assign locale=strLocale />
-    <input type="hidden" id="wiki_page_url" name="wiki_page_url" />
-    <input type="hidden" name="language" value="${locale}" />
-
 
 
 
@@ -242,7 +235,19 @@
     </div>
 </div>
 
-
+<!-- wiki page preview -->
+<div id="previewModal" class="toastui-editor-popup" style="display: none;" >
+    <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+        <span class="fa fa-times"></span>
+    </button>
+</div>
+<div class="toastui-editor-popup-header">
+    <div class="toastui-editor-popup-header-title">Preview</div>
+    <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+        <div id="previewContentInModal"></div>
+    </div>
+</div>
+</div>
 
 
 <!---------------------------------------------->
@@ -252,6 +257,9 @@
 
 <div class="container panel panel-default">
     <div class="row">
+        <!--  Context variables -->
+        <#assign locale=strLocale />
+        <input type="hidden" id="locale" name="language" value="${locale}" />
         <input type="hidden" id="page" name="page" value="wiki" />
         <input type="hidden" id="page_name" name="page_name" value="${topic.pageName}" />
         <input type="hidden" id="topic_id" name="topic_id" value="${topic.idTopic}" />
@@ -265,7 +273,7 @@
             <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
                 <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
             </a>
-            <button name="view_preview" class="btn btn-default" type="submit" title="#i18n{wiki.menu.preview}" onclick="preview()">
+            <button name="view_preview" class="btn btn-default" title="#i18n{wiki.menu.preview}" onclick="preview()">
                 <span class="glyphicon glyphicon-eye-open"></span> #i18n{wiki.menu.preview}
             </button>
             <#if has_admin_role >
@@ -369,6 +377,7 @@
        value="<#if version??>${version.getWikiContent(locale).wikiContent?html}<#else>hello</#if>"
        data type="hidden"/>
 <!-- here is the editor -->
+
 <div class="form-group">
     <div class="code-html tui-doc-contents">
         <div id="editor"></div>
@@ -418,6 +427,7 @@
     </div>
 </div>
 
+</div>
 </div>
 </div>
 <div class="row" >
@@ -1004,6 +1014,7 @@
         if(parseInt(document.getElementById('topic_version').value)  === 0){
             alert('In order to save automatically the content, you must manually save a first version');
             document.getElementById('autoSaveMode').checked = false;
+            document.getElementById('autoSaveLabel').innerText = 'Auto-save mode is deactivated';
         }
         else if (parseInt(document.getElementById('topic_version').value)  !== 0){
             if (document.getElementById('autoSaveMode').checked) {
@@ -1044,7 +1055,7 @@
         }
     }
 
-    async function saveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl) {
+    async function autoSaveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl) {
         let autoSaveResponse = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
             method: 'POST',
             headers: {
@@ -1115,8 +1126,7 @@
         return content
     }
     function postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName) {
-
-       let resquest =  fetch('jsp/site/Portal.jsp?page=wiki&action=modifyPage',{
+        fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=modifyPage',{
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -1125,9 +1135,39 @@
             },
             body: JSON.stringify({topicVersion:version, parentPageName:parentPage, topicId:topic_id, topicTitle: topicTitle, topicContent: topicContent, language: localeJs, wikiHtmlContent: wikiHtmlContent, wikiPageUrl: wikiPageUrl, editComment: editComment, viewRole: viewRole, editRole: editRole,  publishVersion: publishVersion, createVersion: createVersion, topicPageName: topicPageName})
         })
-       console.log(resquest)
-        // redirect to the url or display the saving icon
+            .then(response => response.json())
+            .then(data => {
+                if (data.action === "publish") {
+                    window.location.replace(data.url);
+                } else if (data.action === "saveNewVersion") {
+                    let wikiPageUrl = window.location.href;
+                    // replace version in url by nothing
+                    wikiPageUrl = wikiPageUrl.replace(/&version=[0-9]*/g, "");
+                    window.location.replace(wikiPageUrl);
+                }
+            })
 
+    }
+    function viewPreview(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName) {
+        fetch('jsp/site/Portal.jsp?page=wiki&view=preview',{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                credentials: "same-origin"
+            },
+            body: JSON.stringify({topicVersion:version, topicId:topic_id, topicTitle: topicTitle, language: localeJs, wikiHtmlContent: wikiHtmlContent, wikiPageUrl: wikiPageUrl, topicPageName: topicPageName})
+        })
+            .then(response => response.json())
+            .then(data => {
+                // html parser
+                let parser = new DOMParser();
+                let htmlDoc = parser.parseFromString(data.htmlContent, 'text/html');
+                let preview = htmlDoc.body;
+                document.getElementById("previewContentInModal").innerHTML = preview.outerHTML;
+                document.getElementById("previewModal").ariaHidden = "false";
+
+            })
     }
 
     function callInputs(saveType) {
@@ -1139,18 +1179,21 @@
         let topicTitle = escapeSpecialCharsFromContent(title);
         let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
         wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
-        const wikiPageUrl = document.getElementById("wiki_page_url").value;
+        let wikiPageUrl = window.location.href;
+        // replace locale parameter in url with empty string
+        wikiPageUrl = wikiPageUrl.replace(/&locale=[a-z]*/g, "");
+        // replace version parameter in url with empty string
+        wikiPageUrl = wikiPageUrl.replace(/&version=[0-9]*/g, "");
+        // replace view parameter in url by page
+        wikiPageUrl = wikiPageUrl.replace(/&view=[a-z]*/g, "&view=page");
         const editComment = document.getElementById("modification_comment").value;
         const viewRole = document.getElementById("view_role").value;
         const editRole = document.getElementById("edit_role").value;
         const topicPageName = document.getElementById("page_name").value;
-        if(saveType === "autoSave") {
-            if (version !== undefined && version !== null && version !== "") {
-                const publishVersion = false;
-                const createVersion = false;
-                postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
-            }
-        } else if (saveType === "saveNewVersion" ){
+        if(saveType === "autoSave"){
+            autoSaveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, topicPageName);
+        }
+        else if (saveType === "saveNewVersion" ){
             const publishVersion = false;
             const createVersion = true;
             postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
@@ -1160,10 +1203,9 @@
             const createVersion = true;
             postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
 
-        } else if( saveType === "preview" ){
-            const publishVersion = false;
-            const createVersion = false;
-            postModification(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
+        } else if("preview"){
+            viewPreview(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl, editComment, viewRole, editRole, publishVersion, createVersion, topicPageName);
+
         }
     }
 
@@ -1192,42 +1234,6 @@
         }
     }
 
-    /*_________________________ SHOW/HIDE LINKS OF TABLE OF CONTENT ___________________________*/
-
-    let spanIconMoreLink = document.getElementsByClassName('fa fa-chevron-right');
-    for (let i = 0; i < spanIconMoreLink.length; i++) {
-        spanIconMoreLink[i].addEventListener('click', function () {
-            let parent = document.getElementsByClassName('fa fa-chevron-right')[i].parentNode
-            spanIconMoreLink[i].class = 'fa fa-chevron-down';
-
-            let SubLinks = parent.nextSibling;
-            for(let i = 0; i < SubLinks.childNodes.length; i++){
-                SubLinks.childNodes[i].style.display = 'block';
-            }
-        });
-    }
-    let spanIconLessLink = document.getElementsByClassName('fa fa-chevron-down');
-    for (let i = 0; i < spanIconLessLink.length; i++) {
-        spanIconLessLink[i].addEventListener('click', function () {
-            let parent = document.getElementsByClassName('fa fa-chevron-down')[i].parentNode
-            spanIconLessLink[i].class = 'fa fa-chevron-right';
-
-            let SubLinks = parent.nextSibling;
-            for(let i = 0; i < SubLinks.childNodes.length; i++){
-                SubLinks.childNodes[i].style.display = 'none';
-            }
-        });
-    }
-    window.addEventListener("load", (event) => {
-        let thisPageurl = window.location.href;
-        thisPageurl = "jsp/" + thisPageurl.split("jsp/")[1];
-        thisPageurl = thisPageurl.replace("view=modifyPage", "view=page");
-        thisPageurl = thisPageurl.replace(/&id_topic_version=[0-9]*/g, "");
-        thisPageurl = thisPageurl.replace(/&locale=[0-9]*/g, "");
-        thisPageurl = thisPageurl.replace(/&version=[0-9]*/g, "");
-        thisPageurl = escapeSpecialCharsFromContent(thisPageurl);
-        document.getElementById("wiki_page_url").value = thisPageurl;
-    });
 
     /*_________________________ ON LOAD REMOVE UNDERLINE ADDED BY THE HTML TO MARKDOWN CONVERTION ___________________________*/
     function removeUnderLineHeadings (underLineWithEqual){
@@ -1255,8 +1261,8 @@
     });
 
     /* -------------- Images -------------- */
-    let imageInserButton = document.getElementsByClassName("fa fa-image editor")[0];
-    imageInserButton.addEventListener('click', function() {
+    const imageInsertButton = document.getElementsByClassName("fa fa-image editor")[0];
+    imageInsertButton.addEventListener('click', function() {
         document.getElementById("imageModal").style.display = "block";
     });
 

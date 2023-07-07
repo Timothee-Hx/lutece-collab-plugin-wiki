@@ -1,13 +1,6 @@
 <head lang="en">
 
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/data/tuidoc-example-style.css" />
-    <!-- Editor -->
-    <!-- Viewer -->
-    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/cdn/toastui-editor-viewer.css" />
-
-    <!-- Chart -->
-    <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
 
     <!-- Color syntax -->
     <link
@@ -34,10 +27,10 @@
         <div class="container panel panel-default">
             <div class="panel-body">
                 <div class="btn-group btn-group-xs pull-right">
-                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
+                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${page_name}" title="#i18n{wiki.button.backToPage}">
                         <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
                     </a>
-                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=modifyPage&page_name=${topic.pageName}" title="#i18n{wiki.button.backToEdit}">
+                    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=modifyPage&page_name=${page_name}" title="#i18n{wiki.button.backToEdit}">
                         <span class="glyphicon glyphicon-edit"></span> #i18n{wiki.button.backToEdit}
                     </a>
                 </div>

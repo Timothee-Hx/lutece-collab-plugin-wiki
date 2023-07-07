@@ -22,9 +22,7 @@ public class LuteceHtmlParser {
         }
         List<Element> preElements = doc.select("pre");
         for (Element preElement : preElements) {
-            if (preElement.className().startsWith("lang-")) {
                 preElement.attr("style", "background-color: #2f3241");
-            }
         }
         doc.select(".toastui-editor-md-preview-highlight").forEach(element -> element.removeClass("toastui-editor-md-preview-highlight"));
         if (doc.select(".ProseMirror").text().contains("wiki-align-content-val-")) {
@@ -37,15 +35,9 @@ public class LuteceHtmlParser {
             doc.select(".toc").remove();
 
             Element flexDiv = new Element("div");
-            flexDiv.addClass("flex");
-            flexDiv.addClass("flex-column");
-            flexDiv.addClass("flex-grow-1");
-            flexDiv.addClass("flex-shrink-1");
-            flexDiv.addClass("flex-basis-auto");
-            flexDiv.addClass("overflow-auto");
+            flexDiv.addClass("wiki-nav-content-wrapper");
             flexDiv.appendChild(tableOfContent);
             Element contentDiv = new Element("div");
-            contentDiv.addClass("wiki_content");
             contentDiv.append(parser.body().outerHtml());
             flexDiv.appendChild(contentDiv);
             doc = flexDiv;
@@ -53,7 +45,6 @@ public class LuteceHtmlParser {
             return SpecialChar.reverseRender(doc.outerHtml());
         } else {
             Element contentDiv = new Element("div");
-            contentDiv.addClass("wiki_content");
             contentDiv.append(parser.body().outerHtml());
             return SpecialChar.reverseRender(contentDiv.outerHtml());
         }

@@ -15,6 +15,10 @@
     else if("lastOpenModify".equals(request.getParameter("actionName")))
     {
         WikiDynamicInputs.updateLastOpenModifyTopicPage( request );
+
+    } else if("modifyPage".equals(request.getParameter("actionName")))
+    {
+         WikiDynamicInputs.modifyPage( request, response );
     }
 
     %>
