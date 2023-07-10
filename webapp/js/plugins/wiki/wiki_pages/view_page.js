@@ -33,21 +33,26 @@ function toggleDarkMode() {
         localStorage.setItem('darkMode', 'true');
     }
 }
+
 window.addEventListener("load", (event) => {
     // add copy button to pre blocks
-
-    let pre = document.getElementsByTagName('pre');
-    for (let i = 0; i < pre.length; i++) {
-        let button = document.createElement('button');
-        button.className = 'btn btn-primary btn-xs';
-        button.style.float = 'right';
-        button.style.marginTop = '10px';
-        button.style.marginRight = '10px';
-        button.textContent = 'Copy';
-        button.onclick = function() {
-            copyToClipboard(this.nextElementSibling.textContent);
-        };
-        pre[i].insertAdjacentElement('beforebegin', button)
+    let url = window.location.href;
+    if(url.includes("view=page")) {
+        let pre = document.getElementsByTagName('pre');
+        for (let i = 0; i < pre.length; i++) {
+            if (pre[i].previousElementSibling.tagName != "BUTTON") {
+                let button = document.createElement('button');
+                button.className = 'btn btn-primary btn-xs';
+                button.style.float = 'right';
+                button.style.marginTop = '10px';
+                button.style.marginRight = '10px';
+                button.textContent = 'Copy';
+                button.onclick = function () {
+                    copyToClipboard(this.nextElementSibling.textContent);
+                };
+                pre[i].insertAdjacentElement('beforebegin', button)
+            }
+        }
     }
 });
 
