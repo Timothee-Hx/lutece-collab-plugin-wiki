@@ -135,7 +135,7 @@ public class WikiApp extends MVCApplication
     private static final String MARK_MAP_TOPIC_TITLE = "map_topic_title";
     private static final String MARK_MAP_TOPIC_CHILDREN = "map_topic_children";
     private static final String MARK_WIKI_ROOT_PAGE_NAME = "wiki_root_page_name";
-    private static final String MARK_PAGE_NAME = "page_name";
+    private static final String MARK_PAGE_TITLE = "page_title";
     private static final String MARK_VERSION = "version";
     private static final String MARK_LATEST_VERSION = "lastVersion";
     private static final String MARK_DIFF_HTML = "diff_html";
@@ -372,11 +372,14 @@ public class WikiApp extends MVCApplication
             SiteMessageService.setMessage( request, MESSAGE_AUTHENTICATION_REQUIRED, SiteMessage.TYPE_ERROR );
         }
         String strPageName = request.getParameter( Constants.PARAMETER_PAGE_NAME );
+        System.out.println("strPageName: " + strPageName);
         Topic topic = getTopic( request, strPageName, MODE_VIEW );
         TopicVersion version = TopicVersionHome.getPublishedVersion( topic.getIdTopic( ) );
         String strWikiPage = null;
+        String pageTitle = null;
         if ( version == null )
         {
+            // check if there is a version that has been published before the 3.0.2 update
             TopicVersion olderVersion = TopicVersionHome.getPreviousPluginVersionLastPublished( topic.getIdTopic( ) );
             if ( olderVersion != null )
             {
@@ -389,6 +392,7 @@ public class WikiApp extends MVCApplication
         } else {
             fillUserData(version);
             strWikiPage = WikiService.instance().getWikiPage(strPageName, version, getPageUrl(request), getLanguage(request));
+            pageTitle = version.getWikiContent(getLanguage(request)).getPageTitle();
         }
         Map<String, Object> model = getModel( );
         model.put( MARK_RESULT, strWikiPage );
@@ -400,6 +404,7 @@ public class WikiApp extends MVCApplication
         model.put( MARK_EXTEND, isExtend( ) );
         model.put( MARK_LANGUAGES_LIST, WikiLocaleService.getLanguages( ) );
         model.put( MARK_CURRENT_LANGUAGE, getLanguage( request ) );
+        model.put( MARK_PAGE_TITLE, pageTitle );
         XPage page = getXPage( TEMPLATE_VIEW_WIKI, getLocale( request ), model );
         page.setTitle( getPageTitle( getTopicTitle( request, topic ) ) );
         page.setExtendedPathLabel( getPageExtendedPath( topic, request ) );
