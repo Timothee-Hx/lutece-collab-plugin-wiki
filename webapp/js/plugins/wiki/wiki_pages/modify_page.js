@@ -799,7 +799,7 @@ function updateImages() {
                 buttonCustomCopy.className = "image-editor-display btn btn-light btn-sm";
                 buttonCustomCopy.innerText = "Insert Custom";
                 buttonCustomCopy.addEventListener("click", function () {
-                    let htmlimageToInsert = "<span style='display: flex; align-items: center;'><p>My text is on my left and the image on my right</p><><img src='" + imageUrl + "' alt='" + image.name + "' title='" + image.name + "' class='' width='200' height='' align=''><figcaption>" + image.name + "</figcaption></figure></span>";
+                    let htmlimageToInsert = "<span style='display: flex; justify-content: space-between;'><p>My text is on my left and the image on my right</p><><img src='" + imageUrl + "' alt='" + image.name + "' title='" + image.name + "' class='' width='600' height='' align=''><figcaption>" + image.name + "</figcaption></figure></span>";
                     navigator.clipboard.writeText("\n" + "$$span\n" + htmlimageToInsert + "\n$$\n");
                 });
 
@@ -860,8 +860,109 @@ function insertCustomImageUrl() {
         alert("Please enter a valid url");
         return;
     }
-    const htmlImage = "<span style='display: flex; align-items: center;'><p>My text is on my left and the image on my right</p><figure><img src='" + url + "' alt='' title='' className='' width='200' height='' align=''><figcaption>"+ desc +"</figcaption></figure></span>";
+    const htmlImage = "<span style='display: flex; justify-content: space-between;'><p>My text is on my left and the image on my right</p><figure><img src='" + url + "' alt='' title='' className='' width='600' height='' align=''><figcaption>"+ desc +"</figcaption></figure></span>";
     const mdImage = "\n" + "$$span\n" + htmlImage + "\n$$\n";
     editor.insertText(mdImage);
     closeToastUiModal();
+}
+
+const defaultContent = {
+    fr:"$$span\n" +
+        "<div class='h-100 p-5 rounded-3 h-100 p-5 text-bg-dark rounded-3 bg-dark'>\n" +
+        "          <h2 class='text-white'>Bienvenue dans le Wiki powered by Lutece</h2>\n" +
+        "          <p class='text-light'>Cet outil se veut être un outil collaboratif très simple pour votre site Lutece</p>\n" +
+        "<a href='https://lutece.paris.fr/fr/' class='btn btn-outline-light text-white' style='text-decoration: none'>Learn more</a>\n" +
+        "        </div>\n" +
+        "$$\n" +
+        "\n" +
+        "\n" +
+        "# Fonctionnalités principales \n" +
+        "\n" +
+        "\n" +
+        "* Utilisation de la syntaxe standard **Markdown** 🚀\n" +
+        "\n" +
+        " Possibilité de personnaliser directement en html pour obtenir des rendus spécifiques. Les éléments html autorisés sont : les classes, des paragraphes, les Headings, les ancres, les images et les div, figure, figcaption. Toujours à l'intérieur des balises custom : \n" +
+        "\n" +
+        "$$span\n" +
+        "<span style='display: flex;justify-content: space-between; '><p>My text is on my left and the image on my right</p><figure><img src='image?resource_type=wiki_image&id=1' alt='LUTECE logo' title='LUTECE logo' class='' width='200' height='' align=''><figcaption>LUTECE logo</figcaption></figure></span>\n" +
+        "$$\n" +
+        "\n" +
+        "- [x] Entièrement intégré à la plate-forme Lutece :\n" +
+        " - [x] Authentification MyLutece et gestion des rôles \n" +
+        "- [x]  Support des avatars et des pseudos Lutece\n" +
+        "\n" +
+        "## Quelques exemples de rendu graphique\n" +
+        "\n" +
+        "*Vous pouvez cliquer sur le bouton Edition pour voir le code source Wiki de tous ces exemples. Toute la syntaxe est disponible via le bouton d'aide situé en haut à droite.*\n" +
+        "\n" +
+        "\n" +
+        "$$span\n" +
+        "<p>De nombreux types de label peuvent être créés, ex : <span class='badge badge-badge bg-info'>Note</span> <span class='badge badge-badge bg-warning'>Caution</span> <span class='badge badge-badge bg-success'>Awesome</span> ... et aussi des badges : <span class='badge'>256</span></p>\n" +
+        "$$\n" +
+        "\n" +
+        "\n" +
+        "## Color Syntax Plugin\n" +
+        "\n" +
+        "<span style='color:#86c1b9'>Click the color picker button on the toolbar!</span>\n" +
+        "\n" +
+        "## Table Merged Cell Plugin\n" +
+        "\n" +
+        "| @cols=2:merged |\n" +
+        "| --- | --- |\n" +
+        "| table | table2 |\n" +
+        "\n" +
+        "\n" +
+        "\n" +
+        "## Code Syntax Highlighting Plugin\n" +
+        "\n" +
+        "```javascript\n" +
+        "console.log('foo')\n" +
+        "```\n" +
+        "```html\n" +
+        "<div id='editor'><span>baz</span></div>\n" +
+        "```\n" +
+        "\n" +
+        "$$span\n" +
+        "<div class='alert alert-info'> <span class='fa fa-info-circle'></span> This is an info alert </div>\n" +
+        "$$\n" +
+        "\n" +
+        "\n" +
+        "$$span\n" +
+        "<div class='alert alert-danger'> <span class='fa fa-exclamation-triangle'></span> This is an warning alert </div>\n" +
+        "$$\n" +
+        "\n" +
+        "Une table des matières :\n" +
+        "\n" +
+        "* [Fonctionnalités principales](http://localhost:8080/lutece/jsp/site/Portal.jsp#H1_Fonctionnalitys_principales)\n" +
+        "  * [Premiers pas](http://localhost:8080/lutece/jsp/site/Portal.jsp#H2_Premiers_pas)\n" +
+        "\n" +
+        "## Une table des matières :\n" +
+        "\n" +
+        "$$span\n" +
+        "<span class='toc'></span>\n" +
+        "$$\n" +
+        "\n" +
+        "## Un Dark mode\n" +
+        "\n" +
+        "\n" +
+        "$$span\n" +
+        "<span class='darkModeClassOn'></span>\n" +
+        "$$\n" +
+        "\n" +
+        "## Intégration d'Iframe\n" +
+        "<iframe width='1200' height='720' src='https://www.youtube.com/embed/fWrI1NYG6Eo' title='Lutece Platform' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>\n" +
+        "\n" +
+        "\n" +
+        "## Intégration de Latex.js\n" +
+        "$$latex\n" +
+        "\\documentclass{article}\n" +
+        "\\begin{document}\n" +
+        "\n" +
+        "$\n" +
+        "f(x) = \\int_{-\\infty}^\\infty \\hat f(\\xi),e^{2 \\pi i \\xi x} , d\\xi\n" +
+        "$\n" +
+        "\\end{document}\n" +
+        "$$\n" +
+        "\n" +
+        "\n"
 }
