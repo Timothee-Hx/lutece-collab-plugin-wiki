@@ -265,6 +265,7 @@
         <#if version??>
         <input id="topic_version" type="hidden" name="id_topic_version" value="${version.idTopicVersion}" />
         <#else>
+
         <input id="topic_version"  type="hidden" name="id_topic_version" value="0" />
     </#if>
     <div class="col-sm-12">
@@ -1077,18 +1078,7 @@
         } else {
             url = url + "&locale=" + locale;
         }
-        if (document.getElementById('autoSaveMode').checked) {
-            callInputs(saveType);
-            window.location.replace(url)
-        }   else {
-            if (window.confirm("Auto save is disabled. Do you want to save the content?")){
-                callInputs(saveType)
-                // redirect to the url
-                window.location.replace(url)
-            } else {
-                window.location.replace(url)
-            }
-        }
+        window.location.replace(url);
     }
     /*___________________________ ON POST  ___________________________*/
     function publishVersion()
@@ -1138,11 +1128,12 @@
             .then(data => {
                 if (data.action === "publish") {
                     window.location.replace(data.url);
-                } else if (data.action === "saveNewVersion") {
-                    let wikiPageUrl = window.location.href;
-                    // replace version in url by nothing
+                } else if (data.action === "savedInNewVersion") {
+                    let wikiPageUrl = data.url;
                     wikiPageUrl = wikiPageUrl.replace(/&version=[0-9]*/g, "");
+                    wikiPageUrl = wikiPageUrl.replace(/&view=[a-zA-Z]*/g, "&view=modifyPage");
                     window.location.replace(wikiPageUrl);
+                    window.location.reload();
                 }
             })
 
@@ -1184,7 +1175,7 @@
         // replace version parameter in url with empty string
         wikiPageUrl = wikiPageUrl.replace(/&version=[0-9]*/g, "");
         // replace view parameter in url by page
-        wikiPageUrl = wikiPageUrl.replace(/&view=[a-z]*/g, "&view=page");
+        wikiPageUrl = wikiPageUrl.replace(/&view=[a-zA-Z]*/g, "&view=page");
         const editComment = document.getElementById("modification_comment").value;
         const viewRole = document.getElementById("view_role").value;
         const editRole = document.getElementById("edit_role").value;

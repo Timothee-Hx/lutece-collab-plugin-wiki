@@ -198,39 +198,37 @@ public class WikiDynamicInputs {
 
         try {
             ContentDeserializer newContent = ContentDeserializer.deserializeWikiContent(requestBody);
-            Topic topic = TopicHome.findByPrimaryKey(newContent.getTopicId());
+            Topic topic = TopicHome.findByPageName(newContent.getTopicPageName());
             LuteceUser user = WikiAnonymousUser.checkUser(request);
 
+
             if (RoleService.hasEditRole(request, topic)) {
-                int topicVersionId = newContent.getTopicVersion();
-                int nTopicId = topic.getIdTopic();
-                TopicVersion topicVersion = TopicVersionHome.findByPrimaryKey(topicVersionId);
-                topicVersion.setIdTopic(nTopicId);
-                topicVersion.setIdTopicVersion(topicVersionId);
-                topicVersion.setUserName(user.getName());
+
                 Integer nVersionId = newContent.getTopicVersion();
                 newVersion = newContent.getIsCreateVersion();
                 publish = newContent.getIsPublishVersion();
+
+                int nTopicId = topic.getIdTopic();
                 String strComment = newContent.getEditComment();
                 String strLocale = newContent.getLanguage();
                 wikiPageUrl = newContent.getWikiPageUrl();
-                String strPageName = newContent.getTopicTitle();
                 String strParentPageName = newContent.getParentPageName();
                 String strViewRole = newContent.getViewRole();
                 String strEditRole = newContent.getEditRole();
-                if (nVersionId == 0) {
-                    newVersion = true;
-                } else {
+                String strPageTitle = newContent.getTopicTitle();
+                String strContent = newContent.getTopicContent();
+                String htmlContent = newContent.getWikiHtmlContent();
+                TopicVersion topicVersion = new TopicVersion();
+
+                if(nVersionId != 0){
                     topicVersion = TopicVersionHome.findByPrimaryKey(nVersionId);
-                    topicVersion.setIdTopicVersionPrevious(nVersionId);
                 }
+                topicVersion.setUserName(user.getName());
                 topicVersion.setIdTopic(nTopicId);
                 topicVersion.setUserName(user.getName());
                 topicVersion.setEditComment(strComment);
                 topicVersion.setIsPublished(publish);
-                String strPageTitle = newContent.getTopicTitle();
-                String strContent = newContent.getTopicContent();
-                String htmlContent = newContent.getWikiHtmlContent();
+
                 htmlContent = LuteceHtmlParser.parseHtml(htmlContent, wikiPageUrl, strPageTitle);
 
                 WikiContent content = new WikiContent();
@@ -250,18 +248,6 @@ public class WikiDynamicInputs {
                 if (publish.equals(true)) {
                     String comment = "publication canceled by" + " " + user.getName();
                     TopicVersionHome.cancelPublication(nTopicId, comment);
-                }
-                // if newVersion is false and publish is false, overwrite this version
-                if (!newVersion && publish.equals(false)) {
-                    if (topicVersion.getEditComment() == null || topicVersion.getEditComment().isEmpty()) {
-                        topicVersion.setEditComment("AutoSave");
-                    }
-                    topicVersion.addLocalizedWikiContent(newContent.getLanguage(), content);
-                    TopicVersionHome.updateTopicVersion(topicVersion);
-                    topic.setViewRole(strViewRole);
-                    topic.setEditRole(strEditRole);
-                    topic.setParentPageName(newContent.getParentPageName());
-                    TopicHome.update(topic);
                 }
                 // if newVersion is true or publish is true, create a new version
                 if (newVersion || publish.equals(true)) {
@@ -284,11 +270,8 @@ public class WikiDynamicInputs {
             String res = resToJson.toJson(result).toString();
             response.getWriter().write(res);
         } else if (newVersion && !publish.equals(true)) {
-            result.put("action", "newVersion");
-            String res = resToJson.toJson(result).toString();
-            response.getWriter().write(res);
-        } else {
-            result.put("action", "autoSave");
+            result.put("action", "savedInNewVersion");
+            result.put("url", SpecialChar.renderWiki(wikiPageUrl));
             String res = resToJson.toJson(result).toString();
             response.getWriter().write(res);
         }
