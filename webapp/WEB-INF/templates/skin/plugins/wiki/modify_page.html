@@ -198,6 +198,20 @@
         </div>
     </div>
 </div>
+<!------------------ COPY AN EMOJI -------------------------->
+<div id="selectEmojiModal" class="toastui-editor-popup" style="display: none;" >
+    <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
+        <span class="fa fa-times"></span>
+    </button>
+    <div class="toastui-editor-popup-header">
+        <div class="toastui-editor-popup-header-title">Copy an Emoji</div>
+    </div>
+    <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+        <div id="emojiList"></div>
+    </div>
+</div>
+</div>
+
 <!------------------- DARK MODE -------------------------->
 <div id="darkModeSwitch" style="display: none">
     <div  style="display: flex; justify-content: end;  flex-direction: row; margin-top: 15px" >
@@ -430,13 +444,11 @@
 </div>
 </div>
 </div>
-<div class="row" >
+<div class="row col-sm-12" >
     <div class="container panel panel-default">
         <h3><span class="glyphicon glyphicon-picture"></span> &nbsp; #i18n{wiki.modify_page.titleImages}</h3>
-        <div class="row" >
+        <div class="row " >
             <div class="col-sm-6">
-                <@messages infos=infos />
-
                 <div  id="table-images" class="image-grid "></div>
             </div>
             <div class="col-sm-6">
@@ -478,26 +490,15 @@
     </div>
 </div>
 
-<div class="modal fade" id="confirm-delete-page" tabindex="-1" role="dialog" aria-labelledby="DeletePageConfirmation" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>#i18n{wiki.message.confirmTitle}</h3>
-            </div>
-            <div class="modal-body">
-                #i18n{wiki.message.confirmDelete}
-            </div>
-            <div class="modal-footer">
-                <form id="form-page-delete" action="jsp/site/Portal.jsp" method="post" >
-                    <input type="hidden" name="page" value="wiki" />
-                    <input type="hidden" name="page_name" value="${topic.pageName}" />
-                    <input type="hidden" name="action" value="deletePage" />
-                    <button type="button" class="btn btn-default" data-dismiss="modal">#i18n{portal.util.labelCancel}</button>
-                    <button id="btn-page-delete" type="submit" class="btn btn-danger" >#i18n{portal.util.labelDelete}</button>
-                </form>
-            </div>
-        </div>
-    </div>
+
+<div class="modal-footer">
+    <form id="form-page-delete" action="jsp/site/Portal.jsp" method="post" >
+        <input type="hidden" name="page" value="wiki" />
+        <input type="hidden" name="page_name" value="${topic.pageName}" />
+        <input type="hidden" name="action" value="deletePage" />
+    </form>
+    <button id="btn-page-delete" class="btn btn-danger" onclick="confirmDeleteTopic()" >#i18n{portal.util.labelDelete}</button>
+
 </div>
 
 
@@ -527,6 +528,11 @@
     const localeJs = "${locale}";
 </script>
 <script type="text/javascript"  defer>
+    function confirmDeleteTopic() {
+        if (confirm("Are you sure you want to delete this topic ?")) {
+            document.getElementById("form-page-delete").submit();
+        }
+    }
 
     /* -------------- EDITOR -------------- */
 
@@ -659,8 +665,13 @@
         className: 'fa fa-image editor',
         style: { backgroundImage: 'none' },
     });
-    /*["😀", "😂", "😍", "🥰", "😎", "🤩", "😊", "🙂", "😆", "🥳", "😁", "😄", "😇", "😘", "😋", "🤗", "🙌", "👍", "🎉", "🔥", "💯", "🌟", "✨", "🌈", "🍀", "🍉", "🍕", "🎂", "🎸", "⚽️", "🚀"]
-*/
+    editor.insertToolbarItem({ groupIndex: 0, itemIndex: 10 }, {
+        name: 'Emoji',
+        tooltip: 'Emoji',
+        text: 'Em',
+        className: 'fa fa-smile editor',
+        style: { backgroundImage: 'none' },
+    });
 
     document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
 
@@ -673,7 +684,32 @@
             document.getElementsByClassName("toastui-editor-popup")[i].style.display = "none";
         }
     }
+    /* -------------- FA Emojis -------------- */
+    const emojiButton = document.getElementsByClassName("fa fa-smile editor")[0];
+    emojiButton.addEventListener('click', function() {
+        document.getElementById("selectEmojiModal").style.display = "block";
+    });
 
+    window.addEventListener("load", (event) => {
+        const emojis = ["😀", "😂", "😍", "🥰", "😎", "🤩", "😊", "🙂", "😆", "🥳", "😁", "😄", "😇", "😘", "😋", "🤗", "🙌", "👍", "🎉", "🔥", "💯", "🌟", "✨", "🌈", "🍀", "🍉", "🍕", "🎂", "🎸", "⚽️", "🚀"]
+        let emojiList = document.getElementById("emojiList");
+        emojiList.style.display = "grid";
+        emojiList.style.gridTemplateColumns = "repeat(4, 1fr)";
+        emojiList.style.gridGap = "0.5rem";
+
+        emojis.map(emoji => {
+            const emojiButton = document.createElement("button");
+            emojiButton.classList.add("btn", "btn-tertiary", "btn-xs");
+            emojiButton.innerText = emoji;
+            emojiButton.addEventListener('click', function() {
+                navigator.clipboard.writeText(emoji);
+                closeToastUiModal();
+            });
+            console.log(emojiButton);
+            emojiList.appendChild(emojiButton);
+        });
+
+    });
     /* -------------- Text Alignment -------------- */
     const textAlignmentButton = document.getElementsByClassName("fa fa-align-left editor")[0];
     textAlignmentButton.addEventListener('click', function() {
@@ -1283,7 +1319,6 @@
                     buttonCopy.className = "image-editor-display btn btn-light btn-sm";
                     buttonCopy.innerText = "copy Standard";
                     buttonCopy.addEventListener("click", function () {
-                        let editor = window.editor;
                         let mdTextToInsert = "!["+ image.name +"](" + imageUrl + ")";
                         navigator.clipboard.writeText(mdTextToInsert);
                     });
@@ -1293,7 +1328,6 @@
                     buttonCustomCopy.className = "image-editor-display btn btn-light btn-sm";
                     buttonCustomCopy.innerText = "Insert Custom";
                     buttonCustomCopy.addEventListener("click", function () {
-                        let editor = window.editor;
                         let htmlimageToInsert = "<span style='display: flex; align-items: center;'><p>My text is on my left and the image on my right</p><figure><img src='" + imageUrl + "' alt='" + image.name + "' title='" + image.name + "' class='' width='200' height='' align=''></figure><figcaption>" + image.name + "</figcaption></span>";
                         navigator.clipboard.writeText("\n" + "$$span\n" + htmlimageToInsert + "\n$$\n");
                     });
