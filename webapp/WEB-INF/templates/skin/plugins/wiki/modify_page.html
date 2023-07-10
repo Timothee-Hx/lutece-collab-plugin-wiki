@@ -384,6 +384,11 @@
     </div>
 </div>
 
+<div id="help" class="pull-right" style="display:none">
+    <br/>
+    <!--<img src="images/local/skin/creole_cheat_sheet.png" title="Manual Wiki" alt="Manuel"/> -->
+    <#include "syntax_help.html" />
+</div>
 
 
 <!-- wiki content that goes in the editor-->
@@ -401,11 +406,6 @@
 
 </div>
 
-<div id="help" class="col-sm-4 pull-right" style="display:none">
-    <br/>
-    <!--<img src="images/local/skin/creole_cheat_sheet.png" title="Manual Wiki" alt="Manuel"/> -->
-    <#include "syntax_help.html" />
-</div>
 </div>
 
 <div class="row">
@@ -832,8 +832,10 @@
     /* -------------- VIDEO  -------------- */
     let addVideoButton = document.getElementsByClassName("fa fa-video editor")[0];
     addVideoButton.addEventListener('click', function() {
-        alert("You can insert a video or an iframe, for example on youtube, click on share and then embed, copy the embed code and paste it in the editor");
+        alert("You can insert a video or an iframe, for example on youtube, copy the embed code and paste it in the editor such as : " +
+            "<iframe width=\"1280\" height=\"720\" src=\"https://www.youtube.com/embed/ODSe4CqVxNU\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>");
     });
+
 
     /* -------------- ICONS -------------- */
     let addIconButton = document.getElementsByClassName("fa fa-search")[0];
