@@ -236,17 +236,16 @@
 </div>
 
 <!-- wiki page preview -->
-<div id="previewModal" class="toastui-editor-popup" style="display: none;" >
+<div id="previewModal" class="toastui-editor-popup" style="width:1300px; display: none;" >
     <button class="btn btn-default" type="button" style="position: absolute; right: 0;" onclick="closeToastUiModal()">
-        <span class="fa fa-times"></span>
+        Close <span class="fa fa-times"></span>
     </button>
-</div>
-<div class="toastui-editor-popup-header">
-    <div class="toastui-editor-popup-header-title">Preview</div>
-    <div class="toastui-editor-popup-content-body" style="margin: 25px;">
-        <div id="previewContentInModal"></div>
+    <div class="toastui-editor-popup-header">
+        <div class="toastui-editor-popup-header-title">Preview</div>
+        <div class="toastui-editor-popup-content-body" style="margin: 25px;">
+            <div id="previewContentInModal"></div>
+        </div>
     </div>
-</div>
 </div>
 
 
@@ -1165,7 +1164,7 @@
                 let htmlDoc = parser.parseFromString(data.htmlContent, 'text/html');
                 let preview = htmlDoc.body;
                 document.getElementById("previewContentInModal").innerHTML = preview.outerHTML;
-                document.getElementById("previewModal").ariaHidden = "false";
+                document.getElementById("previewModal").style.display = "block";
 
             })
     }
