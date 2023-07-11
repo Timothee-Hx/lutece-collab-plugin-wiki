@@ -9,8 +9,9 @@
                 <input type="hidden" name="page_name" value="${topic.pageName}" />
                 <input type="hidden" name="action" value="deletePage" />
             </form>
+            <#if has_admin_role >
             <button id="btn-page-delete" class="btn btn-danger" style="position: absolute; right: 400px;" onclick="confirmDeleteTopic()" >#i18n{portal.util.labelDelete}</button>
-
+            </#if>
             <form method="get" action="jsp/site/Portal.jsp">
                 <input type="hidden" name="page" value="wiki" />
                 <input type="hidden" name="page_name" value="${topic.pageName}" />
@@ -80,4 +81,4 @@
     </div>
 </div>
 </div>
-<script type="text/javascript"  src="js/wiki/wiki_pages/history_page.js" defer></script>
+<script type="text/javascript"  src="js/plugins/wiki/wiki_pages/history_page.js"></script>

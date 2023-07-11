@@ -33,7 +33,6 @@
         <css-stylesheet>wiki/spinner.css</css-stylesheet>
         <css-stylesheet>wiki/toggle_switch.css</css-stylesheet>
         <css-stylesheet>wiki/prism/prism.css</css-stylesheet>
-        <css-stylesheet>wiki/main.css</css-stylesheet>
     </css-stylesheets>
     
     <!-- Specific plugin CSS stylesheet  -->
@@ -41,9 +40,6 @@
         <javascript-files-scope>xpage</javascript-files-scope>  
         <javascript-file>wiki/prettify/run_prettify.js?skin=desert</javascript-file>
         <javascript-file>wiki/prism/prism.js</javascript-file>
-       <javascript-file>wiki/wiki_pages/modify_page.js</javascript-file>
-         <javascript-file>wiki/wiki_pages/history_page.js</javascript-file>
-        <javascript-file>wiki/wiki_pages/view_page.js</javascript-file>
     </javascript-files>
 
     <!-- XPages parameters -->

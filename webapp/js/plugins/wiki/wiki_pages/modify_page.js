@@ -4,6 +4,8 @@ function confirmDeleteTopic() {
     }
 }
 
+let localeJs = document.getElementById("locale").value;
+
 /* -------------- EDITOR -------------- */
 
 const { Editor } = toastui;
@@ -11,8 +13,9 @@ const { Editor } = toastui;
 const { codeSyntaxHighlight, colorSyntax, tableMergedCell } = Editor.plugin;
 
 let wikiContent = document.getElementById('wiki_content').value;
-
-
+if(wikiContent === "no_content"){
+    wikiContent = defaultEditorContent[localeJs]
+}
 
 const editor = new Editor({
     el: document.querySelector('#editor'),
@@ -146,7 +149,6 @@ editor.insertToolbarItem({ groupIndex: 0, itemIndex: 10 }, {
 document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
 
 
-
 /* -------------- CLOSE MODALES -------------- */
 function closeToastUiModal() {
     const popupNumber = document.getElementsByClassName("toastui-editor-popup").length
@@ -154,7 +156,7 @@ function closeToastUiModal() {
         document.getElementsByClassName("toastui-editor-popup")[i].style.display = "none";
     }
 }
-/* -------------- FA Emojis -------------- */
+/* -------------- Emojis -------------- */
 const emojiButton = document.getElementsByClassName("fa fa-smile editor")[0];
 emojiButton.addEventListener('click', function() {
     document.getElementById("selectEmojiModal").style.display = "block";
@@ -307,24 +309,12 @@ addVideoButton.addEventListener('click', function() {
 
 
 /* -------------- ICONS -------------- */
-let addIconButton = document.getElementsByClassName("fa fa-search")[0];
+let addIconButton = document.getElementsByClassName("fa fa-search editor")[0];
 addIconButton.addEventListener('click', function() {
-    document.getElementsByClassName("toastui-editor-popup")[0].style.display = "block";
-    document.getElementsByClassName("ss-option").forEach(function(option) {
-        if (option.innerText.indexOf("[brands]") > -1) {
-            option.style.display = "none";
-        }
-    });
-
-    document.getElementsByClassName("ss-search")[0].children[0].addEventListener("keyup", function() {
-        document.getElementsByClassName("ss-option").forEach(function(option) {
-            if (option.innerText.indexOf("[brands]") > -1) {
-                option.style.display = "none";
-            }
-        });
-    });
-
+    document.getElementById("selectIconModal").style.display = "block";
 });
+
+
 function changeIconSize() {
     const icon = document.getElementById("selectIcon").value;
     const iconSize = document.getElementById("iconSize").value;
@@ -448,20 +438,20 @@ function toggleDarkMode() {
     let darkMode = localStorage.getItem('darkMode');
     let darkModeId = document.getElementById('darkModeId');
     let darkModeLabel = document.getElementById('darkModeLabel');
-    if (darkMode === 'true') {
-        darkModeId.checked = false;
-        darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
-        document.body.classList.remove('darkmode');
-        document.getElementById('editor').classList.remove('toastui-editor-dark');
+        if (darkMode === 'true') {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+            document.getElementById('editor').classList.remove('toastui-editor-dark');
 
-        localStorage.setItem('darkMode', 'false');
-    } else {
-        darkModeId.checked = true;
-        darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
-        document.body.classList.add('darkmode');
-        document.getElementById('editor').classList.add('toastui-editor-dark');
-        localStorage.setItem('darkMode', 'true');
-    }
+            localStorage.setItem('darkMode', 'false');
+        } else {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+            document.getElementById('editor').classList.add('toastui-editor-dark');
+            localStorage.setItem('darkMode', 'true');
+        }
 }
 
 window.addEventListener("load", (event) => {
@@ -471,18 +461,18 @@ window.addEventListener("load", (event) => {
     let darkMode = localStorage.getItem('darkMode');
     let darkModeId = document.getElementById('darkModeId');
     let darkModeLabel = document.getElementById('darkModeLabel');
-    if (darkMode === 'true') {
-        darkModeId.checked = true;
-        darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
-        document.body.classList.add('darkmode');
-        document.getElementById('editor').classList.add('toastui-editor-dark');
+        if (darkMode === 'true') {
+            darkModeId.checked = true;
+            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
+            document.body.classList.add('darkmode');
+            document.getElementById('editor').classList.add('toastui-editor-dark');
 
-    } else {
-        darkModeId.checked = false;
-        darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
-        document.body.classList.remove('darkmode');
-        document.getElementById('editor').classList.remove('toastui-editor-dark');
-    }
+        } else {
+            darkModeId.checked = false;
+            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
+            document.body.classList.remove('darkmode');
+            document.getElementById('editor').classList.remove('toastui-editor-dark');
+        }
 });
 
 
@@ -547,7 +537,7 @@ function displayAutoSave(autoSaveResult){
         document.getElementById('autoSaveFailed').style.display = 'none';
     }, 3000);
 }
-// if auto save mode is activated and auto is done
+// if auto save mode is activated and done
 let hasToWait = false;
 function autoSave() {
     if(document.getElementById('autoSaveMode').checked) {
@@ -677,11 +667,8 @@ function callInputs(saveType) {
     let wikiHtmlContent = document.getElementsByClassName("toastui-editor-md-preview")[0].innerHTML;
     wikiHtmlContent = escapeSpecialCharsFromContent(wikiHtmlContent);
     let wikiPageUrl = window.location.href;
-    // replace locale parameter in url with empty string
     wikiPageUrl = wikiPageUrl.replace(/&locale=[a-z]*/g, "");
-    // replace version parameter in url with empty string
     wikiPageUrl = wikiPageUrl.replace(/&version=[0-9]*/g, "");
-    // replace view parameter in url by page
     wikiPageUrl = wikiPageUrl.replace(/&view=[a-zA-Z]*/g, "&view=page");
     const editComment = document.getElementById("modification_comment").value;
     const viewRole = document.getElementById("view_role").value;
@@ -737,7 +724,6 @@ function removeUnderLineHeadings (underLineWithEqual){
     for(let i = 0; i < underLineWithEqual.length; i++){
         let previousElement = underLineWithEqual[i].parentElement.previousElementSibling.firstElementChild;
         let textpreviousElement = previousElement.innerText;
-        // grab the last character of the class of the previous element
         let headerLevelMk = ''
         let lastCharacter = previousElement.className.slice(-1);
 
@@ -833,6 +819,9 @@ function updateImages() {
             });
         });
 }
+document.addEventListener("DOMContentLoaded", function(event) {
+    updateImages();
+});
 
 function insertImageUrl() {
     const desc = document.getElementById("ImageUrlDesc").value;
@@ -865,41 +854,41 @@ function insertCustomImageUrl() {
     editor.insertText(mdImage);
     closeToastUiModal();
 }
+/* automaticaly add a new line when pressing enter */
+
+/*
 
 const defaultContent = {
-    fr:"$$span\n" +
+    "en":
+        "$$span\n" +
         "<div class='h-100 p-5 rounded-3 h-100 p-5 text-bg-dark rounded-3 bg-dark'>\n" +
-        "          <h2 class='text-white'>Bienvenue dans le Wiki powered by Lutece</h2>\n" +
-        "          <p class='text-light'>Cet outil se veut être un outil collaboratif très simple pour votre site Lutece</p>\n" +
+        "<h2 class='text-white'> Welcome to the Wiki powered by Lutece 🔥🔥🔥</h2>\n" +
+        "<p class='text-light'>This Wiki aims to be a very simple collaborative tool fully integrated to your Lutece site</p>\n" +
         "<a href='https://lutece.paris.fr/fr/' class='btn btn-outline-light text-white' style='text-decoration: none'>Learn more</a>\n" +
-        "        </div>\n" +
-        "$$\n" +
+        "</div>\n" +
+        "$$ \n" +
         "\n" +
+        "# Key features\n" +
         "\n" +
-        "# Fonctionnalités principales \n" +
-        "\n" +
-        "\n" +
-        "* Utilisation de la syntaxe standard **Markdown** 🚀\n" +
-        "\n" +
-        " Possibilité de personnaliser directement en html pour obtenir des rendus spécifiques. Les éléments html autorisés sont : les classes, des paragraphes, les Headings, les ancres, les images et les div, figure, figcaption. Toujours à l'intérieur des balises custom : \n" +
+        "- [x] Provide a very simple and efficient Wiki editor with removable Help panel\n" +
+        "- [x] Fully integrated to Lutece platform :\n" +
+        "    - [x] Use standard **Markdown** 🚀\n" +
+        "- [x] Can be easily customized with the possiblity to add some html. Allowed html elements are : classes from Lutece, bootstrap or your own, paragraphs, Headings, ancres, images, div, figure, figcaption. Alway inside a custom input :\n" +
         "\n" +
         "$$span\n" +
         "<span style='display: flex;justify-content: space-between; '><p>My text is on my left and the image on my right</p><figure><img src='image?resource_type=wiki_image&id=1' alt='LUTECE logo' title='LUTECE logo' class='' width='200' height='' align=''><figcaption>LUTECE logo</figcaption></figure></span>\n" +
-        "$$\n" +
+        "$$ \n" +
         "\n" +
-        "- [x] Entièrement intégré à la plate-forme Lutece :\n" +
-        " - [x] Authentification MyLutece et gestion des rôles \n" +
-        "- [x]  Support des avatars et des pseudos Lutece\n" +
+        "- [x] Fully integrated in Lutece\n" +
+        "- [x] Authentication MyLutece et role RBAC\n" +
+        "- [x]  Support Lutece's avatar and pseudo features\n" +
         "\n" +
-        "## Quelques exemples de rendu graphique\n" +
+        "## Quick rendering samples\n" +
         "\n" +
-        "*Vous pouvez cliquer sur le bouton Edition pour voir le code source Wiki de tous ces exemples. Toute la syntaxe est disponible via le bouton d'aide situé en haut à droite.*\n" +
-        "\n" +
-        "\n" +
+        "Just click on Edit button to see the code of all this samples. All the syntax is available clicking on the Help button located at the top right corner.\n" +
         "$$span\n" +
-        "<p>De nombreux types de label peuvent être créés, ex : <span class='badge badge-badge bg-info'>Note</span> <span class='badge badge-badge bg-warning'>Caution</span> <span class='badge badge-badge bg-success'>Awesome</span> ... et aussi des badges : <span class='badge'>256</span></p>\n" +
-        "$$\n" +
-        "\n" +
+        "<p>Various labels can be created, ex : <span class='badge badge-badge bg-info'>Note</span> <span class='badge badge-badge bg-warning'>Caution</span> <span class='badge badge-badge bg-success'>Awesome</span> .\n" +
+        "$$ \n" +
         "\n" +
         "## Color Syntax Plugin\n" +
         "\n" +
@@ -910,7 +899,6 @@ const defaultContent = {
         "| @cols=2:merged |\n" +
         "| --- | --- |\n" +
         "| table | table2 |\n" +
-        "\n" +
         "\n" +
         "\n" +
         "## Code Syntax Highlighting Plugin\n" +
@@ -924,30 +912,24 @@ const defaultContent = {
         "\n" +
         "$$span\n" +
         "<div class='alert alert-info'> <span class='fa fa-info-circle'></span> This is an info alert </div>\n" +
-        "$$\n" +
-        "\n" +
+        "$$ \n" +
         "\n" +
         "$$span\n" +
         "<div class='alert alert-danger'> <span class='fa fa-exclamation-triangle'></span> This is an warning alert </div>\n" +
-        "$$\n" +
+        "$$ \n" +
         "\n" +
-        "Une table des matières :\n" +
-        "\n" +
-        "* [Fonctionnalités principales](http://localhost:8080/lutece/jsp/site/Portal.jsp#H1_Fonctionnalitys_principales)\n" +
-        "  * [Premiers pas](http://localhost:8080/lutece/jsp/site/Portal.jsp#H2_Premiers_pas)\n" +
-        "\n" +
-        "## Une table des matières :\n" +
+        "## A table of contents :\n" +
+        "If you have the 'Table of Content' input (TOC) in the content of your text, you will a menu after publishing you topic version, based on the headings H1, H2 and H3.\n" +
         "\n" +
         "$$span\n" +
         "<span class='toc'></span>\n" +
-        "$$\n" +
+        "$$ \n" +
         "\n" +
-        "## Un Dark mode\n" +
-        "\n" +
-        "\n" +
+        "## A Dark mode\n" +
+        "There an input witch allow you the activate a dark mode feature.\n" +
         "$$span\n" +
         "<span class='darkModeClassOn'></span>\n" +
-        "$$\n" +
+        "$$ \n" +
         "\n" +
         "## Intégration d'Iframe\n" +
         "<iframe width='1200' height='720' src='https://www.youtube.com/embed/fWrI1NYG6Eo' title='Lutece Platform' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>\n" +
@@ -962,7 +944,101 @@ const defaultContent = {
         "f(x) = \\int_{-\\infty}^\\infty \\hat f(\\xi),e^{2 \\pi i \\xi x} , d\\xi\n" +
         "$\n" +
         "\\end{document}\n" +
-        "$$\n" +
+        "$$ \n" +
         "\n" +
-        "\n"
+        "\n",
+    "fr":
+        "$$span\n" +
+        "<div class='h-100 p-5 rounded-3 h-100 p-5 text-bg-dark rounded-3 bg-dark'>\n" +
+        "<h2 class='text-white'> Bienvenue dans le powered by Lutece 🔥🔥🔥</h2>\n" +
+"<p class='text-light'>Cet outil se veut être un outil collaboratif très simple pour votre site Lutece</p>\n" +
+"<a href='https://lutece.paris.fr/fr/' class='btn btn-outline-light text-white' style='text-decoration: none'>Learn more</a>\n" +
+"</div>\n" +
+"$$\n" +
+"\n" +
+"# Fonctionnalités principales\n" +
+"\n" +
+"\n" +
+"* Utilisation de la syntaxe standard **Markdown** 🚀\n" +
+"\n" +
+" Possibilité de personnaliser directement en html pour obtenir des rendus spécifiques. Les éléments html autorisés sont : les classes de Lutece ou de bootstrap, des paragraphes, les Headings, les ancres, les images et les div, figure, figcaption. Toujours à l'intérieur des balises custom : \n" +
+"\n" +
+"$$span\n" +
+"<span style='display: flex;justify-content: space-between; '><p>My text is on my left and the image on my right</p><figure><img src='image?resource_type=wiki_image&id=1' alt='LUTECE logo' title='LUTECE logo' class='' width='200' height='' align=''><figcaption>LUTECE logo</figcaption></figure></span>\n" +
+"$$\n" +
+"\n" +
+"- [x] Entièrement intégré à la plate-forme Lutece :\n" +
+"- [x] Authentification MyLutece et gestion des rôles\n" +
+"- [x]  Support des avatars et des pseudos Lutece\n" +
+"\n" +
+"## Quelques exemples de rendu graphique\n" +
+"\n" +
+"*Vous pouvez cliquer sur le bouton Edition pour voir le code source Wiki de tous ces exemples. Toute la syntaxe est disponible via le bouton d'aide situé en haut à droite.*\n" +
+"\n" +
+"\n" +
+"$$span\n" +
+"<p>De nombreux types de label peuvent être créés, ex : <span class='badge badge-badge bg-info'>Note</span> <span class='badge badge-badge bg-warning'>Caution</span> <span class='badge badge-badge bg-success'>Awesome</span> ... et aussi des badges : <span class='badge'>256</span></p>\n" +
+"$$\n" +
+"\n" +
+"\n" +
+"## Color Syntax Plugin\n" +
+"\n" +
+"<span style='color:#86c1b9'>Click the color picker button on the toolbar!</span>\n" +
+"\n" +
+"## Table Merged Cell Plugin\n" +
+"\n" +
+"| @cols=2:merged |\n" +
+"| --- | --- |\n" +
+"| table | table2 |\n" +
+"\n" +
+"\n" +
+"\n" +
+"## Code Syntax Highlighting Plugin\n" +
+"\n" +
+"```javascript\n" +
+"console.log('foo')\n" +
+"```\n" +
+"```html\n" +
+"<div id='editor'><span>baz</span></div>\n" +
+"```\n" +
+"\n" +
+"$$span\n" +
+"<div class='alert alert-info'> <span class='fa fa-info-circle'></span> This is an info alert </div>\n" +
+"$$\n" +
+"\n" +
+"\n" +
+"$$span\n" +
+
+"<div class='alert alert-danger'> <span class='fa fa-exclamation-triangle'></span> This is an warning alert </div>\n" +
+"$$\n" +
+"\n" +
+"## Une table des matières :\n" +
+"Si l'input Table des matière (TOC) est présent dans le texte, une table des matières est crée automatiquement lors de la publication à partir des éléments H1, H2 et H3. \n" +
+"\n" +
+"$$span\n" +
+"<span class='toc'></span>\n" +
+"$$\n" +
+"\n" +
+"## Un Dark mode\n" +
+"Si l'input 'Dark mode' est présent dans le texte, un bouton permettant d'activité le dark mode apparaît en haut à droite.\n" +
+"$$span\n" +
+"<span class='darkModeClassOn'></span>\n" +
+"$$\n" +
+"\n" +
+"## Intégration d'Iframe\n" +
+"<iframe width='1200' height='720' src='https://www.youtube.com/embed/fWrI1NYG6Eo' title='Lutece Platform' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>\n" +
+"\n" +
+"\n" +
+"## Intégration de Latex.js\n" +
+"$$latex\n" +
+"\\documentclass{article}\n" +
+"\\begin{document}\n" +
+"\n" +
+"$\n" +
+"f(x) = \\int_{-\\infty}^\\infty \\hat f(\\xi),e^{2 \\pi i \\xi x} , d\\xi\n" +
+"$\n" +
+"\\end{document}\n" +
+"$$\n" +
+"\n"
 }
+*/

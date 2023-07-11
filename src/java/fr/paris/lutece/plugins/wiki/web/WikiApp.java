@@ -545,7 +545,6 @@ public class WikiApp extends MVCApplication
                 mapParameters.put( Constants.PARAMETER_PAGE_NAME, strPageName );
                 return redirect(request, VIEW_MODIFY_PUBLISHED, mapParameters);
             }
-            // set content without xml
             WikiContent content = topicVersion.getWikiContent(strLocale);
 
             if(content!=null){

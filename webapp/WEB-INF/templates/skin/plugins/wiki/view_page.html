@@ -1,30 +1,14 @@
 <head lang="en">
 
     <meta charset="UTF-8" />
-    <title>12. Editor with All Plugins</title>
-    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/data/tuidoc-example-style.css" />
-    <!-- Editor -->
-    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/toastui-editor.css" />
-    <!-- Chart -->
-    <link rel="stylesheet" href="js/plugins/wiki/tui_chart/toastui-chart.css" />
-
-    <!-- Color syntax -->
-    <link
-            rel="stylesheet"
-            href="js/plugins/wiki/tui_color_picker/tui-color-picker.css"
-    />
-    <link
-            rel="stylesheet"
-            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-color-syntax/cdn/toastui-editor-plugin-color-syntax.min.css"
-    />
-    <!-- Merged Table -->
-    <link rel="stylesheet" href="js/plugins/wiki/tui_editor/plugins/editor-plugin-table-merged-cell/cdn/toastui-editor-plugin-table-merged-cell.min.css" />
-
-    <link
-            rel="stylesheet"
-            href="js/plugins/wiki/tui_editor/plugins/editor-plugin-code-syntax-highlight/cdn/toastui-editor-plugin-code-syntax-highlight.min.css" />
+    <!--- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link rel="stylesheet" href="css/plugins/wiki/darkmode.css" />
+
+    <link rel="stylesheet" href="css/plugins/wiki/toastui/data/tuidoc-example-style.css" />
+    <!-- DARK MODE -->
+    <link rel="stylesheet" href="css/plugins/wiki/darkmode.css" />
+    <!-- Editor css -->
+    <link rel="stylesheet" href="css/plugins/wiki/toastui/toastui-editor.css" />
 </head>
 <div class="row">
     <div class="col-sm-12">
@@ -111,20 +95,5 @@
             ${result}
             </div>
 
-<script type="text/javascript">
-    jQuery(document).ready(function() {
-        $("#btn-new-page").click(function() {
-            $("#div-search").hide();
-            $("#div-new-page").show("slow");
-            $("#input-new-page").focus();
-        });
-        $("#btn-search").click(function() {
-            $("#div-new-page").hide();
-            $("#div-search").show("slow");
-            $("#input-search").focus();
-        });
-    });
-</script>
-
-<script type="module" src="js/wiki/wiki_pages/view_page.js" ></script>
+<script type="text/javascript" src="js/plugins/wiki/wiki_pages/view_page.js"></script>
 
