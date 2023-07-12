@@ -18,10 +18,10 @@
                 <input type="hidden" name="view" value="diff" />
                 <div class="btn-group btn-group-xs pull-right">
                     <button class="btn btn-default" type="submit" title="#i18n{wiki.menu.diff}">
-                        <span class="glyphicon glyphicon-eye-open"></span> #i18n{wiki.menu.diff}
+                        <span class="fa fa-eye"></span> #i18n{wiki.menu.diff}
                     </button>
                     <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
-                        <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
+                        <span class="fa fa-chevron-left fa-1x"></span> #i18n{wiki.button.backToPage}
                     </a>
                     <#list languages_list as language>
                     <#if language = current_language >
@@ -44,9 +44,9 @@
                 <tr>
                     <th>#i18n{wiki.history_page.tableHeader.mostRecent}</th>
                     <th>#i18n{wiki.history_page.tableHeader.lessRecent}</th>
-                    <th><span class="glyphicon glyphicon-calendar"></span> #i18n{wiki.history_page.tableHeader.date}</th>
-                    <th><span class="glyphicon glyphicon-user"></span> #i18n{wiki.history_page.tableHeader.author}</th>
-                    <th><span class="glyphicon glyphicon-comment"></span> #i18n{wiki.history_page.tableHeader.comment}</th>
+                    <th><span class="fa fa-calendar fa-1x"></span> #i18n{wiki.history_page.tableHeader.date}</th>
+                    <th><span class="fa fa-user fa-1x"></span> #i18n{wiki.history_page.tableHeader.author}</th>
+                    <th><span class="fa fa-comment-dots fa-1x"></span> #i18n{wiki.history_page.tableHeader.comment}</th>
                     <#if has_edit_role >
                     <th>#i18n{portal.util.labelActions}</th>
                 </#if>
@@ -65,11 +65,11 @@
                     <td>
                         <#if version.isPublished!=true>
                         <a href="jsp/site/Portal.jsp?page=wiki&action=confirmRemoveVersion&id_topic_version=${version.idTopicVersion}&page_name=${topic.pageName}" class="btn btn-danger btn-sm" title="#i18n{portal.util.labelDelete}">
-                            <span class="glyphicon glyphicon-trash"></span>
+                            <span class="fa fa-trash fa-1x"></span>
                         </a>
                     </#if>
                     <a href="jsp/site/Portal.jsp?page=wiki&view=modifyPage&page_name=${topic.pageName}&id_topic_version=${version.idTopicVersion}"  class="btn btn-default btn-sm"  title="#i18n{wiki.menu.edit}">
-                        <span class="glyphicon glyphicon-edit"></span> #i18n{wiki.menu.edit}
+                        <span class="fa fa-edit"></span> #i18n{wiki.menu.edit}
                     </a>
                     </td>
                 </#if>

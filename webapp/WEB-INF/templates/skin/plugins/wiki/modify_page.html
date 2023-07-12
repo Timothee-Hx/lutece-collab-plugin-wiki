@@ -49,18 +49,18 @@
     <div class="col-sm-12">
         <div class="btn-group btn-group-xs pull-right">
             <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=page&page_name=${topic.pageName}" title="#i18n{wiki.button.backToPage}">
-                <span class="glyphicon glyphicon-chevron-left"></span> #i18n{wiki.button.backToPage}
+                <span class="fa fa-chevron-left fa-1x"></span> #i18n{wiki.button.backToPage}
             </a>
             <button name="view_preview" class="btn btn-default" title="#i18n{wiki.menu.preview}" onclick="preview()">
-                <span class="glyphicon glyphicon-eye-open"></span> #i18n{wiki.menu.preview}
+                <span class="fa fa-eye"></span> #i18n{wiki.menu.preview}
             </button>
             <#if has_admin_role >
             <a data-toggle="modal" data-target="#confirm-delete-page"  class="btn btn-danger" class="btn btn-danger" title="#i18n{portal.util.labelDelete}">
-                <span class="glyphicon glyphicon-trash"></span> #i18n{portal.util.labelDelete}
+                <span class="fa fa-trash fa-1x"></span> #i18n{portal.util.labelDelete}
             </a>
         </#if>
         <button id="btn-help" class="btn btn-default" type="button" title="#i18n{wiki.menu.help}">
-            <span class="glyphicon glyphicon-question-sign"></span> #i18n{wiki.menu.help}
+            <span class="fa fa-question fa-1x"></span> #i18n{wiki.menu.help}
         </button>
     </div>
 </div>
@@ -183,19 +183,19 @@
 <div class="row">
     <div class="col-sm-6">
         <div class="form-group">
-            <label for="modification_comment"><span class="glyphicon glyphicon-comment"></span> &nbsp; #i18n{wiki.modify_page.labelComment} :</label>
+            <label for="modification_comment"><span class="fa fa-comment-dots fa-1x"></span> &nbsp; #i18n{wiki.modify_page.labelComment} :</label>
             <input class="form-control" type="text" id="modification_comment" name="modification_comment" maxlength="50"/>
         </div>
         <button name="action_modifyPage" class="btn btn-primary"  title="#i18n{wiki.modify_page.buttonModify}" onclick="createVersion()">
-            <span class="glyphicon glyphicon-save"></span> &nbsp;#i18n{wiki.modify_page.buttonModify}
+            <span class="fa fa-save fa-1x"></span> &nbsp;#i18n{wiki.modify_page.buttonModify}
         </button>
         <button name="action_modifyPage" class="btn btn-primary"  title="#i18n{wiki.modify_page.buttonModify}" onclick="publishVersion()">
-            <span class="glyphicon glyphicon-save"></span> &nbsp;#i18n{wiki.modify_page.SaveAndPublish}
+            <span class="fa fa-save fa-1x"></span> &nbsp;#i18n{wiki.modify_page.SaveAndPublish}
         </button>
     </div>
     <div class="col-sm-6">
         <div class="well">
-            <legend><span class="glyphicon glyphicon-user"></span> &nbsp; #i18n{wiki.modify_page.titleRole}</legend>
+            <legend><span class="fa fa-user fa-1x"></span> &nbsp; #i18n{wiki.modify_page.titleRole}</legend>
             <div class="form-group row">
                 <label class="col-sm-5 col-form-label" for="view_role">#i18n{wiki.modify_page.labelViewRole} :</label>
                 <div class="col-sm-7">
@@ -218,7 +218,7 @@
 </div>
 <div class="row col-sm-12" >
     <div class="container panel panel-default">
-        <h3><span class="glyphicon glyphicon-picture"></span> &nbsp; #i18n{wiki.modify_page.titleImages}</h3>
+        <h3><span class="fa fa-file-image fa-1x"></span> &nbsp; #i18n{wiki.modify_page.titleImages}</h3>
         <div class="row " >
             <div class="col-sm-6">
                 <div  id="table-images" class="image-grid "></div>
@@ -230,7 +230,7 @@
                     <input type="hidden" name="action" value="uploadImage" />
                     <input type="hidden" name="topic_id" value="${topic.idTopic}" />
                     <div class="well">
-                        <legend><span class="glyphicon glyphicon-plus"></span> &nbsp; #i18n{wiki.modify_page.titleAddImage}</legend>
+                        <legend><span class="fa fa-plus fa-1x"></span> &nbsp; #i18n{wiki.modify_page.titleAddImage}</legend>
                         <!-- loader.gif -->
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label" for="image_file">#i18n{wiki.modify_page.labelFile}&nbsp;: </label>
@@ -247,7 +247,7 @@
                         <div class="form-group row">
                             <div class="col-sm-8">
                                 <button id="btn-image-upload" class="btn btn-primary" name="name" type="submit" >
-                                    <span class="glyphicon glyphicon-upload"></span> &nbsp; #i18n{wiki.modify_page.buttonUpload}
+                                    <span class="fa fa-file-upload fa-1x"></span> &nbsp; #i18n{wiki.modify_page.buttonUpload}
                                 </button>
                             </div>
                         </div>

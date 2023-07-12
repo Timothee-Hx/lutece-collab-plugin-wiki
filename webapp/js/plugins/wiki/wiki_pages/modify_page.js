@@ -325,7 +325,7 @@ function changeIconSize() {
 function insertIcon() {
     const icon =  document.getElementById("selectedIcon").children[0].outerHTML;
     editor.insertText("$$span\n"+icon+ "\n$$");
-    document.getElementsByClassName("toastui-editor-popup")[0].style.display = "none";
+    closeToastUiModal();
 }
 
 document.getElementById("selectIcon").addEventListener("change", function() {
