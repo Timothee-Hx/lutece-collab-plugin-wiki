@@ -47,7 +47,6 @@ import fr.paris.lutece.portal.service.util.AppPathService;
 import static ys.wikiparser.Utils.*;
 import fr.paris.lutece.plugins.wiki.web.Constants;
 
-
 import ys.wikiparser.WikiParser;
 
 import java.io.UnsupportedEncodingException;
@@ -91,6 +90,7 @@ public class LuteceWikiParser extends WikiParser
         setTocClass( _options.getTocClass( ) );
         parse( SpecialChar.renderWiki( strWikiText ) );
     }
+
     /**
      * Render specific HTML entities
      * 
@@ -109,9 +109,6 @@ public class LuteceWikiParser extends WikiParser
 
         return strRender;
     }
-
-
-
 
     /**
      * {@inheritDoc }

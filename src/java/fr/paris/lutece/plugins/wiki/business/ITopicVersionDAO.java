@@ -75,9 +75,9 @@ public interface ITopicVersionDAO
      */
     TopicVersion load( int nKey, Plugin plugin );
 
-    void deleteByTopicVersion(int nTopicId, Plugin plugin);
+    void deleteByTopicVersion( int nTopicId, Plugin plugin );
 
-    void updateIsPublished(int nIdTopicVersion, String comment, boolean bIsPublished, Plugin plugin);
+    void updateIsPublished( int nIdTopicVersion, String comment, boolean bIsPublished, Plugin plugin );
 
     /**
      * Load the data of all the topicVersion objects and returns them as a collection
@@ -98,7 +98,7 @@ public interface ITopicVersionDAO
      */
     void addTopicVersion( TopicVersion topicVersion, Plugin plugin );
 
-    void updateTopicVersion(TopicVersion topicVersion, Plugin plugin);
+    void updateTopicVersion( TopicVersion topicVersion, Plugin plugin );
 
     /**
      * Load last version
@@ -111,9 +111,9 @@ public interface ITopicVersionDAO
      */
     TopicVersion loadLastVersion( int idTopic, Plugin plugin );
 
-    TopicVersion getPublishedVersion(int nTopicId, Plugin plugin);
+    TopicVersion getPublishedVersion( int nTopicId, Plugin plugin );
 
-    TopicVersion getPreviousPluginVersionLastPublished(int nTopicId, Plugin plugin);
+    TopicVersion getPreviousPluginVersionLastPublished( int nTopicId, Plugin plugin );
 
     /**
      * Load all versions
@@ -135,6 +135,5 @@ public interface ITopicVersionDAO
      *            the Plugin
      */
     void deleteByTopic( int nTopicId, Plugin plugin );
-
 
 }

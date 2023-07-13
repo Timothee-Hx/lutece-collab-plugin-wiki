@@ -46,11 +46,11 @@
     <div class="toastui-editor-popup-body">
         <div class="toastui-editor-popup-content-body">
             <select id="selectInnerLinkPage" name="parent_page_name" class="form-control" onchange="loadInnerLinksHeadings(this.value)">
-                <option disabled selected>  select an option  </option>
+                <option disabled selected>select a published page</option>
                 <option value="${topic.pageName}" >${topic.pageName}</option>
-                <#list reflist_topic as topic>
-                <#if topic.name != "">
-                <option value="${topic.name}" >${topic.name}</option>
+                <#list topicNameList as topicName>
+                <#if topicName != "">
+                <option value="${topicName}" >${topicName}</option>
             </#if>
         </#list>
         </select>
@@ -214,3 +214,4 @@
 </div>
 
 <!------------------- END OF CUSTOM INPUTS -------------------------->
+

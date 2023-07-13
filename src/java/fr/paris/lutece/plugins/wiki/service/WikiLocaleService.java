@@ -102,6 +102,7 @@ public final class WikiLocaleService
         }
         return (String) _listLanguages.get( 0 );
     }
+
     /**
      * returns locales in a map
      *
@@ -109,11 +110,12 @@ public final class WikiLocaleService
      */
     public static HashMap<String, String> getLanguagesMap( )
     {
-        HashMap<String, String> map = new HashMap<String, String>();
-        List<String> list = getLanguages();
-        for (int i = 0; i < list.size(); i++) {
-            String strKey = String.valueOf(i);
-            map.put(strKey, list.get(i));
+        HashMap<String, String> map = new HashMap<String, String>( );
+        List<String> list = getLanguages( );
+        for ( int i = 0; i < list.size( ); i++ )
+        {
+            String strKey = String.valueOf( i );
+            map.put( strKey, list.get( i ) );
         }
         return map;
     }

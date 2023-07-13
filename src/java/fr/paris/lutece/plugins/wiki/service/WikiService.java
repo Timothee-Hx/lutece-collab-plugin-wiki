@@ -105,15 +105,17 @@ public final class WikiService extends AbstractCacheableService
             if ( strPageContent == null )
             {
                 // html from here is also used in viewDiff
-                try   {
-                    strPageContent = SpecialChar.renderWiki(version.getWikiContent(strLanguage).getHtmlWikiContent());
+                try
+                {
+                    strPageContent = SpecialChar.renderWiki( version.getWikiContent( strLanguage ).getHtmlWikiContent( ) );
                     // strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
-                    putInCache(sbKey.toString(), strPageContent);
+                    putInCache( sbKey.toString( ), strPageContent );
                 }
-                catch(NullPointerException e)   {
-                    String strContent = SpecialChar.renderWiki(version.getWikiContent(strLanguage).getWikiContent());
+                catch( NullPointerException e )
+                {
+                    String strContent = SpecialChar.renderWiki( version.getWikiContent( strLanguage ).getWikiContent( ) );
                     strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
-                    putInCache(sbKey.toString(), strPageContent);
+                    putInCache( sbKey.toString( ), strPageContent );
                 }
 
             }
@@ -160,8 +162,6 @@ public final class WikiService extends AbstractCacheableService
         return getWikiPage( strPageName, version, null, strLanguage );
     }
 
-
-
     /**
      * Render the wiki source content
      * 
@@ -173,6 +173,5 @@ public final class WikiService extends AbstractCacheableService
     {
         return SpecialChar.renderWiki( strContent );
     }
-
 
 }

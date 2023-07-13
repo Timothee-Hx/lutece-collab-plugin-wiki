@@ -1,24 +1,35 @@
 /*
- * Copyright 2007-2009 Yaroslav Stavnichiy, yarosla@gmail.com
+ * Copyright (c) 2002-2023, City of Paris
+ * All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  1. Redistributions of source code must retain the above copyright notice
+ *     and the following disclaimer.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  2. Redistributions in binary form must reproduce the above copyright notice
+ *     and the following disclaimer in the documentation and/or other materials
+ *     provided with the distribution.
  *
- * Latest version of this software can be obtained from:
+ *  3. Neither the name of 'Mairie de Paris' nor 'Lutece' nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
  *
- *     http://t4-wiki-parser.googlecode.com
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  *
- * If you make use of this code, I'd appreciate hearing about it.
- * Comments, suggestions, and bug reports welcome: yarosla@gmail.com
+ * License 1.0
  */
 package ys.wikiparser;
 
@@ -95,12 +106,10 @@ public class WikiParser
         _strTableClass = strClass;
     }
 
-
     protected void setParentTableClass( String strParentClass )
     {
         _strParentTableClass = strParentClass;
     }
-
 
     protected void setTocClass( String strClass )
     {
@@ -219,7 +228,8 @@ public class WikiParser
             if ( !inTable )
             {
                 closeListsAndTables( ); // close lists if any
-                sb.append( "<div class=\"").append( _strParentTableClass ).append( "\" >" ).append("<table class=\"" ).append( _strTableClass ).append( "\" >" );
+                sb.append( "<div class=\"" ).append( _strParentTableClass ).append( "\" >" ).append( "<table class=\"" ).append( _strTableClass )
+                        .append( "\" >" );
                 inTable = true;
             }
 
@@ -381,7 +391,8 @@ public class WikiParser
 
                         if ( ( pp == wikiLength ) || ( wikiChars [pp] == '\n' ) )
                         { // yes, it's start of a table
-                            sb.append( "<div class=\"").append( _strParentTableClass ).append( "\" >" ).append("<table class=\"" ).append( _strTableClass ).append( "\"><tr><td>" );
+                            sb.append( "<div class=\"" ).append( _strParentTableClass ).append( "\" >" ).append( "<table class=\"" ).append( _strTableClass )
+                                    .append( "\"><tr><td>" );
                             mediawikiTableLevel++;
                             pos = pp + 1;
 
@@ -598,7 +609,7 @@ public class WikiParser
 
             sb.append( th ? "</th>" : "</td>" );
         }
-        while ( !endOfRow /* && start<wikiLength && wikiChars[start]!='\n' */);
+        while ( !endOfRow /* && start<wikiLength && wikiChars[start]!='\n' */ );
 
         sb.append( "</tr>\n" );
 
@@ -1261,6 +1272,10 @@ public class WikiParser
 
     private static enum ContextType
     {
-        PARAGRAPH, LIST_ITEM, TABLE_CELL, HEADER, NOWIKI_BLOCK;
+        PARAGRAPH,
+        LIST_ITEM,
+        TABLE_CELL,
+        HEADER,
+        NOWIKI_BLOCK;
     }
 }
