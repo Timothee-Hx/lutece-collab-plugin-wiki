@@ -258,12 +258,13 @@ function loadInnerLinksHeadings(pageValue){
 function insertInnerLink (linkValue){
     let linkValueJson = JSON.parse(linkValue);
     let pageDestinationUrl = window.location.href;
-    pageDestinationUrl = "jsp/" + pageDestinationUrl.split("jsp/")[1];
+    // replace all char after &view= parameter from url
     pageDestinationUrl = pageDestinationUrl.replace("view=modifyPage", "view=page");
-    pageDestinationUrl = pageDestinationUrl.replace(/&id_topic_version=[0-9]*/g, "");
-    pageDestinationUrl = pageDestinationUrl.replace(/&locale=[0-9]*/g, "");
     pageDestinationUrl = pageDestinationUrl.replace(/&version=[0-9]*/g, "");
-    pageDestinationUrl = pageDestinationUrl.replace(/&page_name=[0-9]*/g, pageValueInnerLink);
+    pageDestinationUrl = pageDestinationUrl.replace(/&page_name=[a-z]*/g, "");
+    pageDestinationUrl += "&";
+    pageDestinationUrl += "page_name="
+    pageDestinationUrl += pageValueInnerLink;
     pageDestinationUrl += "#" + linkValueJson.header_id;
     editor.insertText("[" + linkValueJson.header_text + "](" + pageDestinationUrl + ")");
     document.getElementById("pageIsSelected").style.display = "none";
@@ -553,7 +554,7 @@ function autoSave() {
 }
 
 async function autoSaveContent(version, parentPage, topic_id, topicTitle, topicContent, wikiHtmlContent, wikiPageUrl) {
-    let autoSaveResponse = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=saveWiki', {
+    let autoSaveResponse = await fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=autoSaveWiki', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -568,7 +569,6 @@ async function autoSaveContent(version, parentPage, topic_id, topicTitle, topicC
 
 /*___________________________ ON LANGUAGE CHANGE  ___________________________*/
 function changeLanguage(locale) {
-    const saveType = "autoSave";
     let url = window.location.href;
     if(url.includes("locale=")){
         url = url.replace(/locale=[a-z]*/g, "locale=" + locale);
