@@ -325,7 +325,7 @@ function changeIconSize() {
 function insertIcon() {
     const icon =  document.getElementById("selectedIcon").children[0].outerHTML;
     editor.insertText("$$span\n"+icon+ "\n$$");
-        closeToastUiModal();
+    closeToastUiModal();
 }
 
 document.getElementById("selectIcon").addEventListener("change", function() {
@@ -783,7 +783,7 @@ function updateImages() {
                 let buttonCustomCopy = document.createElement("button");
                 buttonCustomCopy.type = "button";
                 buttonCustomCopy.className = "image-editor-display btn btn-light btn-sm";
-                buttonCustomCopy.innerText = "Insert Custom";
+                buttonCustomCopy.innerText = "Copy Custom";
                 buttonCustomCopy.addEventListener("click", function () {
                     let htmlimageToInsert = "<span style='display: flex; justify-content: space-between;'><p>My text is on my left and the image on my right</p><><img src='" + imageUrl + "' alt='" + image.name + "' title='" + image.name + "' class='' width='600' height='' align=''><figcaption>" + image.name + "</figcaption></figure></span>";
                     navigator.clipboard.writeText("\n" + "$$span\n" + htmlimageToInsert + "\n$$\n");
