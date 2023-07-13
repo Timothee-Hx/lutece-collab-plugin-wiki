@@ -325,7 +325,7 @@ function changeIconSize() {
 function insertIcon() {
     const icon =  document.getElementById("selectedIcon").children[0].outerHTML;
     editor.insertText("$$span\n"+icon+ "\n$$");
-    closeToastUiModal();
+    document.getElementById("selectIconModal").style.display = "none";
 }
 
 document.getElementById("selectIcon").addEventListener("change", function() {
