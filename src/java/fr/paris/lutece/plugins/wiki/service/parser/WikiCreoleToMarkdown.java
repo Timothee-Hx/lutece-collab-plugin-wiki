@@ -44,6 +44,9 @@ import java.util.List;
 
 public class WikiCreoleToMarkdown
 {
+    private static final String DOLLAR_SPAN = "$$span";
+    private static final String DOLLAR_DOLLAR = "$$";
+    private static final String CLASS = "class";
 
     public static String renderCustomContent( String str )
     {
@@ -82,39 +85,37 @@ public class WikiCreoleToMarkdown
             Element element = elements.get( i );
             if ( element.className( ).equals( "well" ) )
             {
-                String toc = "$$span" + " " + "<span class='toc'></span>" + " " + "$$";
+                String toc = DOLLAR_SPAN + " " + "<span class='toc'></span>" + " " + DOLLAR_DOLLAR;
                 toc = SpecialChar.reverseRender( toc );
                 docBody.prepend( toc );
 
             }
-            else
-                if ( element.className( ).equals( "jumbotron" ) )
+            else if ( element.className( ).equals( "jumbotron" ) )
                 {
                     Element jumbotron = element;
                     String jumbotronTitle = jumbotron.select( "h1" ).text( );
                     String jumbotronText = jumbotron.select( "p" ).text( );
                     Element container = new Element( "span" );
-                    container.attr( "class", "h-100 p-5 text-bg-light rounded-3" );
+                    container.attr( CLASS, "h-100 p-5 text-bg-light rounded-3" );
                     container.attr( "style", "display: block;" );
-                    if ( jumbotron.select( "img" ).size( ) > 0 )
+                    if ( !jumbotron.select( "img" ).isEmpty() )
                     {
                         Element img = jumbotron.select( "img" ).first( );
                         Element figure = new Element( "figure" );
-                        figure.attr( "class", "figure" );
+                        figure.attr( CLASS, "figure" );
                         figure.appendChild( img );
                         container.appendChild( figure );
                     }
-                    container.appendChild( new Element( "h1" ).attr( "class", "text-dark" ).text( jumbotronTitle ) );
-                    container.appendChild( new Element( "p" ).attr( "class", "text-muted" ).text( jumbotronText ) );
-                    String bootStrap5Jumbotron = "$$span\n" + container.toString( ) + "\n$$";
+                    container.appendChild( new Element( "h1" ).attr( CLASS, "text-dark" ).text( jumbotronTitle ) );
+                    container.appendChild( new Element( "p" ).attr( CLASS, "text-muted" ).text( jumbotronText ) );
+                    String bootStrap5Jumbotron = "$$span\n" + container + "\n$$";
                     bootStrap5Jumbotron = SpecialChar.reverseRender( bootStrap5Jumbotron );
                     Element p = new Element( "p" );
                     p.text( bootStrap5Jumbotron );
                     jumbotron.replaceWith( p );
 
                 }
-                else
-                    if ( !element.className( ).isEmpty( ) )
+                else if ( !element.className( ).isEmpty( ) )
                     {
                         String [ ] classNamesToSkip = {
                                 "null", "table", "tbody", "thead", "tr", "td", "th"
@@ -129,8 +130,8 @@ public class WikiCreoleToMarkdown
                             {
                                 int subDivClassToSkip = element.parent( ).children( ).size( );
                                 String parent = element.parent( ).outerHtml( );
-                                String customElement = SpecialChar.reverseRender( parent.toString( ) );
-                                customElement = "$$span" + customElement + "$$";
+                                String customElement = SpecialChar.reverseRender(parent);
+                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR;
                                 Element p = new Element( "p" );
                                 p.text( customElement );
                                 element.parent( ).replaceWith( p );
@@ -138,8 +139,8 @@ public class WikiCreoleToMarkdown
                             }
                             else
                             {
-                                String customElement = SpecialChar.reverseRender( element.outerHtml( ).toString( ) );
-                                customElement = "$$span" + customElement + "$$";
+                                String customElement = SpecialChar.reverseRender(element.outerHtml( ));
+                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR;
                                 Element p = new Element( "p" );
                                 p.text( customElement );
                                 element.replaceWith( p );
@@ -147,33 +148,28 @@ public class WikiCreoleToMarkdown
 
                         }
                     }
-                    else
-                        if ( element.tagName( ).equals( "img" ) )
-                        {
-                            Boolean imgContainsAttributes = element.hasAttr( "class" ) && !element.className( ).isEmpty( )
-                                    || element.hasAttr( "width" ) && element.getElementsByAttribute( "width" ).size( ) > 0
-                                    || element.hasAttr( "height" ) && element.getElementsByAttribute( "height" ).size( ) > 0
-                                    || element.hasAttr( "align" ) && element.getElementsByAttribute( "align" ).size( ) > 0;
-                            if ( element.parent( ).tagName( ).equals( "p" ) )
-                            {
-                                String parent = element.parent( ).outerHtml( );
-                                String customElement = SpecialChar.reverseRender( parent.toString( ) );
-                                customElement = "$$span" + customElement + "$$";
-                                Element p = new Element( "p" );
-                                p.text( customElement );
-                                element.parent( ).replaceWith( p );
+                    else if (element.tagName().equals("img")) {
+                            if (element.parent().tagName().equals("p")) {
+                                String parent = element.parent().outerHtml();
+                                String customElement = SpecialChar.reverseRender(parent);
+                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR;
+                                Element p = new Element("p");
+                                p.text(customElement);
+                                element.parent().replaceWith(p);
                             }
-                            else
-                                if ( imgContainsAttributes )
-                                {
-                                    String customElement = SpecialChar.reverseRender( element.outerHtml( ).toString( ) );
-                                    customElement = "$$span" + customElement + "$$";
-                                    Element p = new Element( "p" );
-                                    p.text( customElement );
-                                    element.replaceWith( p );
-                                }
+                             if ((element.hasAttr(CLASS) && !element.className().isEmpty())
+                                     || (element.hasAttr("width") && (!element.getElementsByAttribute("width").isEmpty()))
+                                     || (element.hasAttr("height") && (!element.getElementsByAttribute("height").isEmpty()))
+                                     || (element.hasAttr("align") && (!element.getElementsByAttribute("align").isEmpty()))) {
+                                String customElement = SpecialChar.reverseRender(element.outerHtml());
+                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR;
+                                Element p = new Element("p");
+                                p.text(customElement);
+                                element.replaceWith(p);
+                            }
                         }
-        }
+                    }
+
 
         MutableDataSet options = new MutableDataSet( );
 
@@ -183,24 +179,25 @@ public class WikiCreoleToMarkdown
         options.set( FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false );
         String markdown = FlexmarkHtmlConverter.builder( options ).build( ).convert( docBody.toString( ) );
         markdown = renderCustomContent( markdown );
-        String newMarkdown = "";
+        StringBuilder newMarkdown = new StringBuilder();
+
 
         for ( String line : markdown.split( System.lineSeparator( ) ) )
         {
-            if ( line.contains( "$$span" ) )
+            if ( line.contains( DOLLAR_SPAN ) )
             {
-                line = line.replace( "$$span", "" );
-                line = line.replace( "$$", "" );
-                String reFormatedLine = System.lineSeparator( ) + "$$span" + System.lineSeparator( ) + line + System.lineSeparator( ) + "$$"
+                line = line.replace( DOLLAR_SPAN, "" );
+                line = line.replace( DOLLAR_DOLLAR, "" );
+                String reFormatedLine = System.lineSeparator( ) + DOLLAR_SPAN + System.lineSeparator( ) + line + System.lineSeparator( ) + DOLLAR_DOLLAR
                         + System.lineSeparator( );
-                newMarkdown += reFormatedLine;
+                newMarkdown.append( reFormatedLine );
             }
             else
             {
-                newMarkdown += line + System.lineSeparator( );
+                newMarkdown.append( line + System.lineSeparator( ) );
             }
         }
-        return newMarkdown;
+        return newMarkdown.toString();
     }
 
 }

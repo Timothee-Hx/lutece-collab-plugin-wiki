@@ -37,7 +37,6 @@ import fr.paris.lutece.plugins.wiki.business.TopicVersion;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
 import fr.paris.lutece.plugins.wiki.service.parser.SpecialChar;
 import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -108,7 +107,6 @@ public final class WikiService extends AbstractCacheableService
                 try
                 {
                     strPageContent = SpecialChar.renderWiki( version.getWikiContent( strLanguage ).getHtmlWikiContent( ) );
-                    // strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
                     putInCache( sbKey.toString( ), strPageContent );
                 }
                 catch( NullPointerException e )
@@ -125,16 +123,14 @@ public final class WikiService extends AbstractCacheableService
 
     /**
      * Get the Wiki page in text format
-     * 
-     * @param strPageName
-     *            The page name
+     *
      * @param version
      *            The content version
      * @param strLanguage
      *            The language
      * @return The HTML code
      */
-    public String getPageSource( String strPageName, TopicVersion version, String strLanguage )
+    public String getPageSource(TopicVersion version, String strLanguage )
     {
         String strContent = version.getWikiContent( strLanguage ).getWikiContent( );
         strContent = renderSource( strContent );

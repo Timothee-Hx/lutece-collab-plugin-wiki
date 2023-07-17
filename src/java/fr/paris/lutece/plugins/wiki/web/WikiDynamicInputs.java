@@ -195,7 +195,7 @@ public class WikiDynamicInputs
             AppLogService.error( "Error saving last user opening modify topic page", e );
 
         }
-        String res = gsonHeadings.toJson( headings ).toString( );
+        String res = gsonHeadings.toJson( headings );
         response.getWriter( ).write( res );
         return response;
     }
@@ -294,7 +294,7 @@ public class WikiDynamicInputs
         {
             result.put( "action", "publish" );
             result.put( "url", SpecialChar.renderWiki( wikiPageUrl ) );
-            String res = resToJson.toJson( result ).toString( );
+            String res = resToJson.toJson( result );
             response.getWriter( ).write( res );
         }
         else
@@ -302,7 +302,7 @@ public class WikiDynamicInputs
             {
                 result.put( "action", "savedInNewVersion" );
                 result.put( "url", SpecialChar.renderWiki( wikiPageUrl ) );
-                String res = resToJson.toJson( result ).toString( );
+                String res = resToJson.toJson( result );
                 response.getWriter( ).write( res );
             }
         return response;

@@ -280,7 +280,7 @@ addAlertButton.addEventListener('click', function() {
 });
 
 function selectAlertBoxType(alertValue) {
-    let alertIcon = "fa-solid fa-info"
+    let alertIcon = "";
     switch (alertValue) {
         case "danger":
             alertIcon = "fa-solid fa-triangle-exclamation"

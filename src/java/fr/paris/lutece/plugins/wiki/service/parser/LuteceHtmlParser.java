@@ -100,12 +100,6 @@ public class LuteceHtmlParser
         tableOfContent.addClass( "nav" );
         tableOfContent.addClass( "flex-column" );
         tableOfContent.addClass( "wiki-topic-nav" );
-        Element titleElement = new Element( "a" );
-        titleElement.addClass( "nav-link" );
-        titleElement.attr( "href", wikiPageUrl );
-        titleElement.attr( STYLE, "font-weight: bold; font-size: 1.5rem;" );
-        titleElement.text( pageTitle );
-        tableOfContent.appendChild( titleElement );
         List<Element> headers = doc.select( "h1, h2, h3" );
         for ( int i = 0; i < headers.size( ); i++ )
         {
@@ -161,6 +155,12 @@ public class LuteceHtmlParser
                 }
             }
         }
+        Element titleElement = new Element( "a" );
+        titleElement.addClass( "nav-link" );
+        titleElement.attr( "href", wikiPageUrl );
+        titleElement.attr( STYLE, "font-weight: bold; font-size: 2rem;" );
+        titleElement.text( pageTitle );
+        tableOfContent.prependChild( titleElement );
         return tableOfContent;
     }
 
