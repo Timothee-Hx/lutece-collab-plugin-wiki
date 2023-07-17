@@ -72,6 +72,7 @@ let defaultEditorContent =  {
         "\n" +
         "## Un Dark mode\n" +
         "Si l'input 'Dark mode' est présent dans le texte, un bouton permettant d'activité le dark mode apparaît en haut à droite.\n" +
+        "\n" +
         "$$span\n" +
         "<span class='darkModeClassOn'></span>\n" +
         "$$"+
@@ -81,6 +82,7 @@ let defaultEditorContent =  {
         "\n" +
         "\n" +
         "## Intégration de Latex.js\n" +
+        "\n" +
         "$$latex\n" +
         "\\documentclass{article}\n" +
         "\\begin{document}\n" +
@@ -159,6 +161,7 @@ let defaultEditorContent =  {
         "\n" +
         "## A Dark mode\n" +
         "There an input witch allow you the activate a dark mode feature.\n" +
+        "\n" +
         "$$span\n" +
         "<span class='darkModeClassOn'></span>\n" +
         "$$"+
@@ -168,6 +171,7 @@ let defaultEditorContent =  {
         "\n" +
         "\n" +
         "## Intégration de Latex.js\n" +
+        "\n" +
         "$$latex\n" +
         "\\documentclass{article}\n" +
         "\\begin{document}\n" +
