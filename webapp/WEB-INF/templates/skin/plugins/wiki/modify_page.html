@@ -54,9 +54,14 @@
                     <span class="fa fa-eye"></span> #i18n{wiki.menu.preview}
                 </button>
                 <#if has_admin_role >
-                <a data-toggle="modal" data-target="#confirm-delete-page"  class="btn btn-danger" class="btn btn-danger" title="#i18n{portal.util.labelDelete}">
+                <form id="form-page-delete" action="jsp/site/Portal.jsp" method="post" >
+                    <input type="hidden" name="page" value="wiki" />
+                    <input type="hidden" name="page_name" value="${topic.pageName}" />
+                    <input type="hidden" name="action" value="deletePage" />
+                </form>
+                <button  class="btn btn-danger" class="btn btn-danger" title="#i18n{portal.util.labelDelete}"  onclick="confirmDeleteTopic()">
                     <span class="fa fa-trash fa-1x"></span> #i18n{portal.util.labelDelete}
-                </a>
+                </button>
             </#if>
             <button id="btn-help" class="btn btn-default" type="button" title="#i18n{wiki.menu.help}">
                 <span class="fa fa-question fa-1x"></span> #i18n{wiki.menu.help}
@@ -259,14 +264,6 @@
     </div>
 </div>
 
-<div class="modal-footer">
-    <form id="form-page-delete" action="jsp/site/Portal.jsp" method="post" >
-        <input type="hidden" name="page" value="wiki" />
-        <input type="hidden" name="page_name" value="${topic.pageName}" />
-        <input type="hidden" name="action" value="deletePage" />
-    </form>
-    <button id="btn-page-delete" class="btn btn-danger" onclick="confirmDeleteTopic()" >#i18n{portal.util.labelDelete}</button>
-</div>
 
 
 
