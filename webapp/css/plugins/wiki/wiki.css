@@ -94,6 +94,9 @@ span.diff-html-conflict {
     flex-basis: auto;
     overflow: auto;
 }
+.subLinkContainer{
+   margin-left: 10px;
+}
 
 
 .image-editor-display {

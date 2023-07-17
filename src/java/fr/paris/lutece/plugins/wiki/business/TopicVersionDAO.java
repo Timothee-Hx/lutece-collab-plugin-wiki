@@ -43,7 +43,8 @@ import java.util.List;
 /**
  * This class provides Data Access methods for TopicVersion objects
  */
-public final class TopicVersionDAO implements ITopicVersionDAO {
+public final class TopicVersionDAO implements ITopicVersionDAO
+{
     // Constants
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_topic_version ) FROM wiki_topic_version";
     private static final String SQL_QUERY_SELECT = "SELECT id_topic_version, edit_comment, id_topic, lutece_user_id, date_edition, id_topic_version_previous, is_published FROM wiki_topic_version WHERE id_topic_version = ?";
@@ -58,25 +59,29 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
     private static final String SQL_QUERY_INSERT_CONTENT = "INSERT INTO wiki_topic_version_content ( id_topic_version, locale, page_title, wiki_content, html_wiki_content ) VALUES ( ?, ?, ?, ?, ?) ";
     private static final String SQL_QUERY_DELETE_CONTENT = "DELETE FROM wiki_topic_version_content WHERE id_topic_version = ? ";
     private static final String SQL_QUERY_DELETE_CONTENT_BY_TOPIC_ID = "DELETE a.* FROM wiki_topic_version_content a, wiki_topic_version b WHERE a.id_topic_version = b.id_topic_version AND b.id_topic = ? ";
-    private static final String SQL_QUERY_SELECT_PUBLISHED_BY_TOPIC_ID= "SELECT id_topic_version, edit_comment, id_topic, lutece_user_id, date_edition, id_topic_version_previous, is_published FROM wiki_topic_version WHERE id_topic = ? AND is_published = 1 ORDER BY  date_edition DESC ";
+    private static final String SQL_QUERY_SELECT_PUBLISHED_BY_TOPIC_ID = "SELECT id_topic_version, edit_comment, id_topic, lutece_user_id, date_edition, id_topic_version_previous, is_published FROM wiki_topic_version WHERE id_topic = ? AND is_published = 1 ORDER BY  date_edition DESC ";
     private static final String SQL_QUERY_ALL_SELECT_PUBLISHED_BY_TOPIC_ID = "SELECT id_topic_version, edit_comment, id_topic, lutece_user_id, date_edition, id_topic_version_previous, is_published FROM wiki_topic_version WHERE id_topic = ? AND is_published = 2 ORDER BY  date_edition DESC ";
     private static final String SQL_QUERY_UPDATE_IS_PUBLISHED = "UPDATE wiki_topic_version SET is_published=?,edit_comment=?  WHERE id_topic_version = ? ";
-    private static final  String SQL_QUERY_DELETE_CONTENT_BY_TOPIC_VERSION_ID = "DELETE FROM wiki_topic_version_content WHERE id_topic_version = ? ";
+    private static final String SQL_QUERY_DELETE_CONTENT_BY_TOPIC_VERSION_ID = "DELETE FROM wiki_topic_version_content WHERE id_topic_version = ? ";
     private static final String SQL_QUERY_DELETE_BY_TOPIC_VERSION_ID = "DELETE FROM wiki_topic_version WHERE id_topic_version = ? ";
 
-    /* Generates a new primary key
+    /*
+     * Generates a new primary key
      *
      * @param plugin The Plugin
+     * 
      * @return The new primary key
      */
-    public int newPrimaryKey(Plugin plugin) {
+    public int newPrimaryKey( Plugin plugin )
+    {
         int nKey;
 
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_NEW_PK, plugin)) {
-            daoUtil.executeQuery();
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin ) )
+        {
+            daoUtil.executeQuery( );
 
-            daoUtil.next();
-            nKey = daoUtil.getInt(1) + 1;
+            daoUtil.next( );
+            nKey = daoUtil.getInt( 1 ) + 1;
         }
 
         return nKey;
@@ -86,31 +91,35 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
      * {@inheritDoc }
      */
     @Override
-    public void insert(TopicVersion topicVersion, Plugin plugin) {
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_INSERT, plugin)) {
+    public void insert( TopicVersion topicVersion, Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin ) )
+        {
 
-            topicVersion.setIdTopicVersion(newPrimaryKey(plugin));
+            topicVersion.setIdTopicVersion( newPrimaryKey( plugin ) );
 
-            daoUtil.setInt(1, topicVersion.getIdTopicVersion());
-            daoUtil.setString(2, topicVersion.getEditComment());
-            daoUtil.setInt(3, topicVersion.getIdTopic());
-            daoUtil.setString(4, topicVersion.getLuteceUserId());
-            daoUtil.setTimestamp(5, topicVersion.getDateEdition());
-            daoUtil.setInt(6, topicVersion.getIdTopicVersionPrevious());
-            daoUtil.setBoolean(7, topicVersion.getIsPublished());
+            daoUtil.setInt( 1, topicVersion.getIdTopicVersion( ) );
+            daoUtil.setString( 2, topicVersion.getEditComment( ) );
+            daoUtil.setInt( 3, topicVersion.getIdTopic( ) );
+            daoUtil.setString( 4, topicVersion.getLuteceUserId( ) );
+            daoUtil.setTimestamp( 5, topicVersion.getDateEdition( ) );
+            daoUtil.setInt( 6, topicVersion.getIdTopicVersionPrevious( ) );
+            daoUtil.setBoolean( 7, topicVersion.getIsPublished( ) );
 
-            daoUtil.executeUpdate();
+            daoUtil.executeUpdate( );
         }
 
-        for (String strLocale : topicVersion.getWikiContents().keySet()) {
-            WikiContent content = topicVersion.getWikiContent(strLocale);
-            try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_INSERT_CONTENT, plugin)) {
-                daoUtil.setInt(1, topicVersion.getIdTopicVersion());
-                daoUtil.setString(2, strLocale);
-                daoUtil.setString(3, content.getPageTitle());
-                daoUtil.setString(4, content.getWikiContent());
-                daoUtil.setString(5, content.getHtmlWikiContent());
-                daoUtil.executeUpdate();
+        for ( String strLocale : topicVersion.getWikiContents( ).keySet( ) )
+        {
+            WikiContent content = topicVersion.getWikiContent( strLocale );
+            try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_CONTENT, plugin ) )
+            {
+                daoUtil.setInt( 1, topicVersion.getIdTopicVersion( ) );
+                daoUtil.setString( 2, strLocale );
+                daoUtil.setString( 3, content.getPageTitle( ) );
+                daoUtil.setString( 4, content.getWikiContent( ) );
+                daoUtil.setString( 5, content.getHtmlWikiContent( ) );
+                daoUtil.executeUpdate( );
             }
         }
     }
@@ -119,30 +128,33 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
      * {@inheritDoc }
      */
     @Override
-    public TopicVersion load(int nId, Plugin plugin) {
+    public TopicVersion load( int nId, Plugin plugin )
+    {
         TopicVersion topicVersion = null;
 
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT, plugin)) {
-            daoUtil.setInt(1, nId);
-            daoUtil.executeQuery();
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
+        {
+            daoUtil.setInt( 1, nId );
+            daoUtil.executeQuery( );
 
-            if (daoUtil.next()) {
-                topicVersion = new TopicVersion();
+            if ( daoUtil.next( ) )
+            {
+                topicVersion = new TopicVersion( );
 
-                topicVersion.setIdTopicVersion(daoUtil.getInt(1));
-                topicVersion.setEditComment(daoUtil.getString(2));
-                topicVersion.setIdTopic(daoUtil.getInt(3));
-                topicVersion.setLuteceUserId(daoUtil.getString(4));
-                topicVersion.setDateEdition(daoUtil.getTimestamp(5));
-                topicVersion.setIdTopicVersionPrevious(daoUtil.getInt(6));
-                topicVersion.setIsPublished(daoUtil.getBoolean(7));
+                topicVersion.setIdTopicVersion( daoUtil.getInt( 1 ) );
+                topicVersion.setEditComment( daoUtil.getString( 2 ) );
+                topicVersion.setIdTopic( daoUtil.getInt( 3 ) );
+                topicVersion.setLuteceUserId( daoUtil.getString( 4 ) );
+                topicVersion.setDateEdition( daoUtil.getTimestamp( 5 ) );
+                topicVersion.setIdTopicVersionPrevious( daoUtil.getInt( 6 ) );
+                topicVersion.setIsPublished( daoUtil.getBoolean( 7 ) );
             }
         }
 
-        if (topicVersion != null) {
-            fillContent(topicVersion);
+        if ( topicVersion != null )
+        {
+            fillContent( topicVersion );
         }
-
 
         return topicVersion;
     }
@@ -150,20 +162,24 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
     /**
      * Fill content
      *
-     * @param topicVersion the version
+     * @param topicVersion
+     *            the version
      */
-    private void fillContent(TopicVersion topicVersion) {
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_CONTENT)) {
-            daoUtil.setInt(1, topicVersion.getIdTopicVersion());
-            daoUtil.executeQuery();
-            while (daoUtil.next()) {
-                WikiContent content = new WikiContent();
+    private void fillContent( TopicVersion topicVersion )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_CONTENT ) )
+        {
+            daoUtil.setInt( 1, topicVersion.getIdTopicVersion( ) );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                WikiContent content = new WikiContent( );
 
-                String strLanguage = daoUtil.getString(1);
-                content.setPageTitle(daoUtil.getString(2));
-                content.setWikiContent(daoUtil.getString(3));
-                content.setHtmlWikiContent(daoUtil.getString(4));
-                topicVersion.addLocalizedWikiContent(strLanguage, content);
+                String strLanguage = daoUtil.getString( 1 );
+                content.setPageTitle( daoUtil.getString( 2 ) );
+                content.setWikiContent( daoUtil.getString( 3 ) );
+                content.setHtmlWikiContent( daoUtil.getString( 4 ) );
+                topicVersion.addLocalizedWikiContent( strLanguage, content );
             }
         }
     }
@@ -172,46 +188,18 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
      * {@inheritDoc }
      */
     @Override
-    public void delete(int nTopicVersionId, Plugin plugin) {
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_DELETE, plugin)) {
-            daoUtil.setInt(1, nTopicVersionId);
-            daoUtil.executeUpdate();
+    public void delete( int nTopicVersionId, Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        {
+            daoUtil.setInt( 1, nTopicVersionId );
+            daoUtil.executeUpdate( );
         }
 
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_DELETE_CONTENT, plugin)) {
-            daoUtil.setInt(1, nTopicVersionId);
-            daoUtil.executeUpdate();
-        }
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void deleteByTopic(int nTopicId, Plugin plugin) {
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_DELETE_CONTENT_BY_TOPIC_ID, plugin)) {
-            daoUtil.setInt(1, nTopicId);
-            daoUtil.executeUpdate();
-        }
-
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_DELETE_BY_TOPIC_ID, plugin)) {
-            daoUtil.setInt(1, nTopicId);
-            daoUtil.executeUpdate();
-        }
-    }
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void deleteByTopicVersion(int nTopicVersionId, Plugin plugin) {
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_DELETE_CONTENT_BY_TOPIC_VERSION_ID, plugin)) {
-            daoUtil.setInt(1, nTopicVersionId);
-            daoUtil.executeUpdate();
-        }
-
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_DELETE_BY_TOPIC_VERSION_ID, plugin)) {
-            daoUtil.setInt(1, nTopicVersionId);
-            daoUtil.executeUpdate();
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_CONTENT, plugin ) )
+        {
+            daoUtil.setInt( 1, nTopicVersionId );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -219,39 +207,81 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
      * {@inheritDoc }
      */
     @Override
-    public void updateIsPublished(int nIdTopicVersion, String comment, boolean bIsPublished, Plugin plugin) {
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_UPDATE_IS_PUBLISHED, plugin)) {
-            daoUtil.setBoolean(1, bIsPublished);
-            daoUtil.setString(2, comment);
-            daoUtil.setInt(3, nIdTopicVersion);
-            daoUtil.executeUpdate();
+    public void deleteByTopic( int nTopicId, Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_CONTENT_BY_TOPIC_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nTopicId );
+            daoUtil.executeUpdate( );
         }
 
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_TOPIC_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nTopicId );
+            daoUtil.executeUpdate( );
+        }
     }
-
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public Collection<TopicVersion> selectTopicVersionsList(Plugin plugin) {
-        Collection<TopicVersion> topicVersionList = new ArrayList<>();
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECTALL, plugin)) {
-            daoUtil.executeQuery();
+    public void deleteByTopicVersion( int nTopicVersionId, Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_CONTENT_BY_TOPIC_VERSION_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nTopicVersionId );
+            daoUtil.executeUpdate( );
+        }
 
-            while (daoUtil.next()) {
-                TopicVersion topicVersion = new TopicVersion();
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_TOPIC_VERSION_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nTopicVersionId );
+            daoUtil.executeUpdate( );
+        }
+    }
 
-                topicVersion.setIdTopicVersion(daoUtil.getInt(1));
-                topicVersion.setEditComment(daoUtil.getString(2));
-                topicVersion.setIdTopic(daoUtil.getInt(3));
-                topicVersion.setLuteceUserId(daoUtil.getString(4));
-                topicVersion.setDateEdition(daoUtil.getTimestamp(5));
-                topicVersion.setIdTopicVersionPrevious(daoUtil.getInt(6));
-                topicVersion.setIsPublished(daoUtil.getBoolean(7));
-                fillContent(topicVersion);
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void updateIsPublished( int nIdTopicVersion, String comment, boolean bIsPublished, Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_IS_PUBLISHED, plugin ) )
+        {
+            daoUtil.setBoolean( 1, bIsPublished );
+            daoUtil.setString( 2, comment );
+            daoUtil.setInt( 3, nIdTopicVersion );
+            daoUtil.executeUpdate( );
+        }
 
-                topicVersionList.add(topicVersion);
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Collection<TopicVersion> selectTopicVersionsList( Plugin plugin )
+    {
+        Collection<TopicVersion> topicVersionList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        {
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                TopicVersion topicVersion = new TopicVersion( );
+
+                topicVersion.setIdTopicVersion( daoUtil.getInt( 1 ) );
+                topicVersion.setEditComment( daoUtil.getString( 2 ) );
+                topicVersion.setIdTopic( daoUtil.getInt( 3 ) );
+                topicVersion.setLuteceUserId( daoUtil.getString( 4 ) );
+                topicVersion.setDateEdition( daoUtil.getTimestamp( 5 ) );
+                topicVersion.setIdTopicVersionPrevious( daoUtil.getInt( 6 ) );
+                topicVersion.setIsPublished( daoUtil.getBoolean( 7 ) );
+                fillContent( topicVersion );
+
+                topicVersionList.add( topicVersion );
             }
         }
 
@@ -262,59 +292,68 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
      * {@inheritDoc }
      */
     @Override
-    public void addTopicVersion(TopicVersion topicVersion, Plugin plugin) {
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_INSERT_MODIFICATION, plugin)) {
-            topicVersion.setIdTopicVersion(newPrimaryKey(plugin));
-            daoUtil.setInt(1, topicVersion.getIdTopicVersion());
-            daoUtil.setString(2, topicVersion.getEditComment());
-            daoUtil.setInt(3, topicVersion.getIdTopic());
-            daoUtil.setString(4, topicVersion.getUserName());
-            daoUtil.setTimestamp(5, new java.sql.Timestamp(new java.util.Date().getTime()));
-            daoUtil.setInt(6, topicVersion.getIdTopicVersionPrevious());
-            daoUtil.setBoolean(7, topicVersion.getIsPublished());
+    public void addTopicVersion( TopicVersion topicVersion, Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_MODIFICATION, plugin ) )
+        {
+            topicVersion.setIdTopicVersion( newPrimaryKey( plugin ) );
+            daoUtil.setInt( 1, topicVersion.getIdTopicVersion( ) );
+            daoUtil.setString( 2, topicVersion.getEditComment( ) );
+            daoUtil.setInt( 3, topicVersion.getIdTopic( ) );
+            daoUtil.setString( 4, topicVersion.getUserName( ) );
+            daoUtil.setTimestamp( 5, new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
+            daoUtil.setInt( 6, topicVersion.getIdTopicVersionPrevious( ) );
+            daoUtil.setBoolean( 7, topicVersion.getIsPublished( ) );
 
-            daoUtil.executeUpdate();
+            daoUtil.executeUpdate( );
         }
 
-        storeContent(topicVersion);
+        storeContent( topicVersion );
     }
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public void updateTopicVersion(TopicVersion topicVersion, Plugin plugin) {
-        deleteByTopicVersion(topicVersion.getIdTopicVersion(), plugin);
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_INSERT_MODIFICATION, plugin)) {
-            topicVersion.setIdTopicVersion(newPrimaryKey(plugin));
-            daoUtil.setInt(1, topicVersion.getIdTopicVersion());
-            daoUtil.setString(2, topicVersion.getEditComment());
-            daoUtil.setInt(3, topicVersion.getIdTopic());
-            daoUtil.setString(4, topicVersion.getUserName());
-            daoUtil.setTimestamp(5, new java.sql.Timestamp(new java.util.Date().getTime()));
-            daoUtil.setInt(6, topicVersion.getIdTopicVersionPrevious());
-            daoUtil.setBoolean(7, topicVersion.getIsPublished());
+    public void updateTopicVersion( TopicVersion topicVersion, Plugin plugin )
+    {
+        deleteByTopicVersion( topicVersion.getIdTopicVersion( ), plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_MODIFICATION, plugin ) )
+        {
+            topicVersion.setIdTopicVersion( newPrimaryKey( plugin ) );
+            daoUtil.setInt( 1, topicVersion.getIdTopicVersion( ) );
+            daoUtil.setString( 2, topicVersion.getEditComment( ) );
+            daoUtil.setInt( 3, topicVersion.getIdTopic( ) );
+            daoUtil.setString( 4, topicVersion.getUserName( ) );
+            daoUtil.setTimestamp( 5, new java.sql.Timestamp( new java.util.Date( ).getTime( ) ) );
+            daoUtil.setInt( 6, topicVersion.getIdTopicVersionPrevious( ) );
+            daoUtil.setBoolean( 7, topicVersion.getIsPublished( ) );
 
-            daoUtil.executeUpdate();
+            daoUtil.executeUpdate( );
         }
 
-        storeContent(topicVersion);
+        storeContent( topicVersion );
     }
 
     /**
      * Store the content of a Topic Version
      *
-     * @param topicVersion The topic Version
+     * @param topicVersion
+     *            The topic Version
      */
-    private void storeContent(TopicVersion topicVersion) {
-        for (String strLanguage : topicVersion.getWikiContents().keySet()) {
-            WikiContent content = topicVersion.getWikiContents().get(strLanguage);
-            try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_INSERT_CONTENT)) {
-                daoUtil.setInt(1, topicVersion.getIdTopicVersion());
-                daoUtil.setString(2, strLanguage);
-                daoUtil.setString(3, content.getPageTitle());
-                daoUtil.setString(4, content.getWikiContent());
-                daoUtil.setString(5, content.getHtmlWikiContent());
-                daoUtil.executeUpdate();
+    private void storeContent( TopicVersion topicVersion )
+    {
+        for ( String strLanguage : topicVersion.getWikiContents( ).keySet( ) )
+        {
+            WikiContent content = topicVersion.getWikiContents( ).get( strLanguage );
+            try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_CONTENT ) )
+            {
+                daoUtil.setInt( 1, topicVersion.getIdTopicVersion( ) );
+                daoUtil.setString( 2, strLanguage );
+                daoUtil.setString( 3, content.getPageTitle( ) );
+                daoUtil.setString( 4, content.getWikiContent( ) );
+                daoUtil.setString( 5, content.getHtmlWikiContent( ) );
+                daoUtil.executeUpdate( );
             }
         }
     }
@@ -323,28 +362,32 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
      * {@inheritDoc }
      */
     @Override
-    public TopicVersion loadLastVersion(int nIdTopic, Plugin plugin) {
+    public TopicVersion loadLastVersion( int nIdTopic, Plugin plugin )
+    {
         TopicVersion topicVersion = null;
 
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_LAST_BY_TOPIC_ID, plugin)) {
-            daoUtil.setInt(1, nIdTopic);
-            daoUtil.executeQuery();
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_LAST_BY_TOPIC_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdTopic );
+            daoUtil.executeQuery( );
 
-            if (daoUtil.next()) {
-                topicVersion = new TopicVersion();
+            if ( daoUtil.next( ) )
+            {
+                topicVersion = new TopicVersion( );
 
-                topicVersion.setIdTopicVersion(daoUtil.getInt(1));
-                topicVersion.setEditComment(daoUtil.getString(2));
-                topicVersion.setIdTopic(daoUtil.getInt(3));
-                topicVersion.setLuteceUserId(daoUtil.getString(4));
-                topicVersion.setDateEdition(daoUtil.getTimestamp(5));
-                topicVersion.setIdTopicVersionPrevious(daoUtil.getInt(6));
-                topicVersion.setIsPublished(daoUtil.getBoolean(7));
+                topicVersion.setIdTopicVersion( daoUtil.getInt( 1 ) );
+                topicVersion.setEditComment( daoUtil.getString( 2 ) );
+                topicVersion.setIdTopic( daoUtil.getInt( 3 ) );
+                topicVersion.setLuteceUserId( daoUtil.getString( 4 ) );
+                topicVersion.setDateEdition( daoUtil.getTimestamp( 5 ) );
+                topicVersion.setIdTopicVersionPrevious( daoUtil.getInt( 6 ) );
+                topicVersion.setIsPublished( daoUtil.getBoolean( 7 ) );
             }
         }
 
-        if (topicVersion != null) {
-            fillContent(topicVersion);
+        if ( topicVersion != null )
+        {
+            fillContent( topicVersion );
         }
 
         return topicVersion;
@@ -354,102 +397,117 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
      * {@inheritDoc }
      */
     @Override
-    public TopicVersion getPublishedVersion(int nTopicId, Plugin plugin) {
+    public TopicVersion getPublishedVersion( int nTopicId, Plugin plugin )
+    {
         TopicVersion topicVersion = null;
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_PUBLISHED_BY_TOPIC_ID, plugin)) {
-            daoUtil.setInt(1, nTopicId);
-            daoUtil.executeQuery();
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PUBLISHED_BY_TOPIC_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nTopicId );
+            daoUtil.executeQuery( );
 
-            if (daoUtil.next()) {
-                topicVersion = new TopicVersion();
+            if ( daoUtil.next( ) )
+            {
+                topicVersion = new TopicVersion( );
 
-                topicVersion.setIdTopicVersion(daoUtil.getInt(1));
-                topicVersion.setEditComment(daoUtil.getString(2));
-                topicVersion.setIdTopic(daoUtil.getInt(3));
-                topicVersion.setLuteceUserId(daoUtil.getString(4));
-                topicVersion.setDateEdition(daoUtil.getTimestamp(5));
-                topicVersion.setIdTopicVersionPrevious(daoUtil.getInt(6));
-                topicVersion.setIsPublished(daoUtil.getBoolean(7));
+                topicVersion.setIdTopicVersion( daoUtil.getInt( 1 ) );
+                topicVersion.setEditComment( daoUtil.getString( 2 ) );
+                topicVersion.setIdTopic( daoUtil.getInt( 3 ) );
+                topicVersion.setLuteceUserId( daoUtil.getString( 4 ) );
+                topicVersion.setDateEdition( daoUtil.getTimestamp( 5 ) );
+                topicVersion.setIdTopicVersionPrevious( daoUtil.getInt( 6 ) );
+                topicVersion.setIsPublished( daoUtil.getBoolean( 7 ) );
             }
         }
-        if (topicVersion != null) {
-            fillContent(topicVersion);
+        if ( topicVersion != null )
+        {
+            fillContent( topicVersion );
         }
         return topicVersion;
     }
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public TopicVersion getPreviousPluginVersionLastPublished(int nTopicId, Plugin plugin) {
-       List<TopicVersion> topicVersions = null;
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_ALL_SELECT_PUBLISHED_BY_TOPIC_ID, plugin)) {
-            daoUtil.setInt(1, nTopicId);
-            daoUtil.executeQuery();
+    public TopicVersion getPreviousPluginVersionLastPublished( int nTopicId, Plugin plugin )
+    {
+        List<TopicVersion> topicVersions = null;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_ALL_SELECT_PUBLISHED_BY_TOPIC_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nTopicId );
+            daoUtil.executeQuery( );
 
-            if (daoUtil.next()) {
-                topicVersions = new ArrayList<>();
-                TopicVersion topicVersion = new TopicVersion();
-                topicVersion.setIdTopicVersion(daoUtil.getInt(1));
-                topicVersion.setEditComment(daoUtil.getString(2));
-                topicVersion.setIdTopic(daoUtil.getInt(3));
-                topicVersion.setLuteceUserId(daoUtil.getString(4));
-                topicVersion.setDateEdition(daoUtil.getTimestamp(5));
-                topicVersion.setIdTopicVersionPrevious(daoUtil.getInt(6));
-                topicVersion.setIsPublished(daoUtil.getBoolean(7));
-                topicVersions.add(topicVersion);
+            if ( daoUtil.next( ) )
+            {
+                topicVersions = new ArrayList<>( );
+                TopicVersion topicVersion = new TopicVersion( );
+                topicVersion.setIdTopicVersion( daoUtil.getInt( 1 ) );
+                topicVersion.setEditComment( daoUtil.getString( 2 ) );
+                topicVersion.setIdTopic( daoUtil.getInt( 3 ) );
+                topicVersion.setLuteceUserId( daoUtil.getString( 4 ) );
+                topicVersion.setDateEdition( daoUtil.getTimestamp( 5 ) );
+                topicVersion.setIdTopicVersionPrevious( daoUtil.getInt( 6 ) );
+                topicVersion.setIsPublished( daoUtil.getBoolean( 7 ) );
+                topicVersions.add( topicVersion );
             }
         }
-        if (topicVersions != null) {
-           // find the last one
-            TopicVersion lastTopicVersion = topicVersions.get(0);
-            for (TopicVersion topicVersion : topicVersions) {
-                if (topicVersion.getDateEdition().after(lastTopicVersion.getDateEdition())) {
+        if ( topicVersions != null )
+        {
+            // find the last one
+            TopicVersion lastTopicVersion = topicVersions.get( 0 );
+            for ( TopicVersion topicVersion : topicVersions )
+            {
+                if ( topicVersion.getDateEdition( ).after( lastTopicVersion.getDateEdition( ) ) )
+                {
                     lastTopicVersion = topicVersion;
                 }
             }
-            fillContent(lastTopicVersion);
-            updateIsPublished(lastTopicVersion.getIdTopicVersion(), lastTopicVersion.getEditComment(), true, plugin);
-            for (TopicVersion topicVersion : topicVersions) {
-                if (topicVersion.getIdTopicVersion() != lastTopicVersion.getIdTopicVersion()) {
-                    updateIsPublished(topicVersion.getIdTopicVersion(), topicVersion.getEditComment(), false, plugin);
+            fillContent( lastTopicVersion );
+            updateIsPublished( lastTopicVersion.getIdTopicVersion( ), lastTopicVersion.getEditComment( ), true, plugin );
+            for ( TopicVersion topicVersion : topicVersions )
+            {
+                if ( topicVersion.getIdTopicVersion( ) != lastTopicVersion.getIdTopicVersion( ) )
+                {
+                    updateIsPublished( topicVersion.getIdTopicVersion( ), topicVersion.getEditComment( ), false, plugin );
                 }
             }
 
             return lastTopicVersion;
         }
 
-        return topicVersions != null ? topicVersions.get(0) : null;
+        return topicVersions != null ? topicVersions.get( 0 ) : null;
     }
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public Collection<TopicVersion> loadAllVersions(int nIdTopic, Plugin plugin) {
-        Collection<TopicVersion> topicVersionList = new ArrayList<>();
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_BY_TOPIC_ID, plugin)) {
-            daoUtil.setInt(1, nIdTopic);
-            daoUtil.executeQuery();
+    public Collection<TopicVersion> loadAllVersions( int nIdTopic, Plugin plugin )
+    {
+        Collection<TopicVersion> topicVersionList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_TOPIC_ID, plugin ) )
+        {
+            daoUtil.setInt( 1, nIdTopic );
+            daoUtil.executeQuery( );
 
-            while (daoUtil.next()) {
-                TopicVersion topicVersion = new TopicVersion();
+            while ( daoUtil.next( ) )
+            {
+                TopicVersion topicVersion = new TopicVersion( );
 
-                topicVersion.setIdTopicVersion(daoUtil.getInt(1));
-                topicVersion.setEditComment(daoUtil.getString(2));
-                topicVersion.setIdTopic(daoUtil.getInt(3));
-                topicVersion.setLuteceUserId(daoUtil.getString(4));
-                topicVersion.setDateEdition(daoUtil.getTimestamp(5));
-                topicVersion.setIdTopicVersionPrevious(daoUtil.getInt(6));
-                topicVersion.setIsPublished(daoUtil.getBoolean(7));
-                fillContent(topicVersion);
+                topicVersion.setIdTopicVersion( daoUtil.getInt( 1 ) );
+                topicVersion.setEditComment( daoUtil.getString( 2 ) );
+                topicVersion.setIdTopic( daoUtil.getInt( 3 ) );
+                topicVersion.setLuteceUserId( daoUtil.getString( 4 ) );
+                topicVersion.setDateEdition( daoUtil.getTimestamp( 5 ) );
+                topicVersion.setIdTopicVersionPrevious( daoUtil.getInt( 6 ) );
+                topicVersion.setIsPublished( daoUtil.getBoolean( 7 ) );
+                fillContent( topicVersion );
 
-                topicVersionList.add(topicVersion);
+                topicVersionList.add( topicVersion );
             }
         }
 
         return topicVersionList;
     }
-
 
 }

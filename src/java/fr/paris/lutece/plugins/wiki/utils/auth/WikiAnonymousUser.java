@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class WikiAnonymousUser extends LuteceUser
 {
+    private static final long serialVersionUID = 1L;
     /**
      * Constructor
      */
@@ -61,7 +62,7 @@ public class WikiAnonymousUser extends LuteceUser
      * @throws UserNotSignedException
      *             if user not connected
      */
-    public static LuteceUser checkUser(HttpServletRequest request) throws UserNotSignedException
+    public static LuteceUser checkUser( HttpServletRequest request ) throws UserNotSignedException
     {
         LuteceUser user;
 
