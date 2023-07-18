@@ -81,6 +81,22 @@ public class WikiCreoleToMarkdown
         options.set(FlexmarkHtmlConverter.OUTPUT_ATTRIBUTES_ID, false);
         options.set(FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false);
         options.set(FlexmarkHtmlConverter.OUTPUT_UNKNOWN_TAGS, true);
+        System.out.println("_____________________________________");
+        // get os
+        String os = System.getProperty("os.name").toLowerCase();
+        String lineSeperator = System.getProperty("line.separator");
+        if (os.contains("win"))
+        {
+            lineSeperator = "\r\n";
+        }
+        else if (os.contains("nix") || os.contains("nux") || os.contains("aix"))
+        {
+            lineSeperator = "\n";
+        }
+        else if (os.contains("mac"))
+        {
+            lineSeperator = "\r";
+        }
 
         String htmlContent = new LuteceWikiParser( strWikiText, strPageName, strPageUrl, strLanguage ).toString( );
         Document htmlDocument = Jsoup.parse( htmlContent );
@@ -180,7 +196,6 @@ public class WikiCreoleToMarkdown
                     }
 
         String markdown = FlexmarkHtmlConverter.builder( options).build( ).convert( docBody.toString( ) );
-        System.out.println("__________________markdown___________" + markdown  );
         markdown = renderCustomContent( markdown );
         StringBuilder newMarkdown = new StringBuilder();
 
@@ -192,18 +207,18 @@ public class WikiCreoleToMarkdown
                 line = line.replace( DOLLAR_SPAN, "" );
                 line = line.replace( DOLLAR_DOLLAR, "" );
                 String reFormatedLine =  line;
-                newMarkdown.append("\n");
+                newMarkdown.append(lineSeperator);
                 newMarkdown.append(DOLLAR_SPAN);
-                newMarkdown.append("\n");
+                newMarkdown.append(lineSeperator);
                 newMarkdown.append( reFormatedLine );
-                newMarkdown.append("\n");
+                newMarkdown.append(lineSeperator);
                 newMarkdown.append(DOLLAR_DOLLAR);
-                newMarkdown.append("\n");
+                newMarkdown.append(lineSeperator);
             }
             else
             {
                 newMarkdown.append(line);
-                newMarkdown.append("\n");
+                newMarkdown.append(lineSeperator);
             }
         }
         return newMarkdown.toString();
