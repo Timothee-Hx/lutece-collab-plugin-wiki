@@ -80,6 +80,7 @@ public class LuteceHtmlParser
             flexDiv.addClass( "wiki-nav-content-wrapper" );
             flexDiv.appendChild( tableOfContent );
             Element contentDiv = new Element( "div" );
+            contentDiv.addClass( "wiki-content" );
             contentDiv.append( parser.body( ).outerHtml( ) );
             flexDiv.appendChild( contentDiv );
             doc = flexDiv;
