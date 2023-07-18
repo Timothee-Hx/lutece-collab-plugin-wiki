@@ -74,29 +74,7 @@ public class WikiCreoleToMarkdown
 
     public static String wikiCreoleToMd( String strWikiText, String strPageName, String strPageUrl, String strLanguage )
     {
-        MutableDataSet options = new MutableDataSet();
 
-        options.set(HtmlRenderer.HARD_BREAK, "<br />\n");
-        options.set(FlexmarkHtmlConverter.BR_AS_PARA_BREAKS, false);
-        options.set(FlexmarkHtmlConverter.OUTPUT_ATTRIBUTES_ID, false);
-        options.set(FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false);
-        options.set(FlexmarkHtmlConverter.OUTPUT_UNKNOWN_TAGS, true);
-        System.out.println("_____________________________________");
-        // get os
-        String os = System.getProperty("os.name").toLowerCase();
-        String lineSeperator = System.getProperty("line.separator");
-        if (os.contains("win"))
-        {
-            lineSeperator = "\r\n";
-        }
-        else if (os.contains("nix") || os.contains("nux") || os.contains("aix"))
-        {
-            lineSeperator = "\n";
-        }
-        else if (os.contains("mac"))
-        {
-            lineSeperator = "\r";
-        }
 
         String htmlContent = new LuteceWikiParser( strWikiText, strPageName, strPageUrl, strLanguage ).toString( );
         Document htmlDocument = Jsoup.parse( htmlContent );
@@ -187,14 +165,20 @@ public class WikiCreoleToMarkdown
                                      || (element.hasAttr("height") && (!element.getElementsByAttribute("height").isEmpty()))
                                      || (element.hasAttr("align") && (!element.getElementsByAttribute("align").isEmpty()))) {
                                 String customElement = SpecialChar.reverseRender(element.outerHtml());
-                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR +System.lineSeparator() ;
+                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR ;
                                  Element p = new Element("p");
                                 p.text(customElement);
                                 element.replaceWith(p);
                             }
                         }
                     }
+        MutableDataSet options = new MutableDataSet();
 
+        options.set(HtmlRenderer.HARD_BREAK, "<br />\n");
+        options.set(FlexmarkHtmlConverter.BR_AS_PARA_BREAKS, false);
+        options.set(FlexmarkHtmlConverter.OUTPUT_ATTRIBUTES_ID, false);
+        options.set(FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false);
+        options.set(FlexmarkHtmlConverter.OUTPUT_UNKNOWN_TAGS, true);
         String markdown = FlexmarkHtmlConverter.builder( options).build( ).convert( docBody.toString( ) );
         markdown = renderCustomContent( markdown );
         StringBuilder newMarkdown = new StringBuilder();
@@ -207,18 +191,23 @@ public class WikiCreoleToMarkdown
                 line = line.replace( DOLLAR_SPAN, "" );
                 line = line.replace( DOLLAR_DOLLAR, "" );
                 String reFormatedLine =  line;
-                newMarkdown.append(lineSeperator);
+                newMarkdown.append(System.getProperty("line.separator"));
+
                 newMarkdown.append(DOLLAR_SPAN);
-                newMarkdown.append(lineSeperator);
+                newMarkdown.append(System.getProperty("line.separator"));
+
                 newMarkdown.append( reFormatedLine );
-                newMarkdown.append(lineSeperator);
+                newMarkdown.append(System.getProperty("line.separator"));
+
                 newMarkdown.append(DOLLAR_DOLLAR);
-                newMarkdown.append(lineSeperator);
+                newMarkdown.append(System.getProperty("line.separator"));
+
             }
             else
             {
                 newMarkdown.append(line);
-                newMarkdown.append(lineSeperator);
+                newMarkdown.append(System.getProperty("line.separator"));
+
             }
         }
         return newMarkdown.toString();
