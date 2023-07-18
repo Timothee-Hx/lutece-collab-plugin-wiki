@@ -90,7 +90,6 @@ public class WikiCreoleToMarkdown
                 Element p = new Element("p");
                 p.text(toc);
                 docBody.prependChild(p);
-                element.replaceWith(p);
 
             }
             else if ( element.className( ).equals( "jumbotron" ) )
