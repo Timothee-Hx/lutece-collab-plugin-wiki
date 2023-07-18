@@ -30,13 +30,15 @@
                 <button class="btn btn-default" id="btn-search" type="button" title="#i18n{wiki.menu.search}" >
                     <span class="fa fa-search"></span> #i18n{wiki.menu.search}
                 </button>
+                <#if has_edit_role >
                 <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=modifyPage&page_name=${topic.pageName}" title="#i18n{wiki.menu.edit}">
                     <span class="fa fa-edit"></span> #i18n{wiki.menu.edit}
                 </a>
                 <button class="btn btn-default" id="btn-new-page" type="button" title="#i18n{wiki.menu.create}">
                    <span class="fa fa-plus-circle"></span> #i18n{wiki.menu.create}
                 </button>
-                <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=history&page_name=${topic.pageName}" title="#i18n{wiki.menu.history}">
+            </#if>
+    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=history&page_name=${topic.pageName}" title="#i18n{wiki.menu.history}">
                     <span class="fa fa-history fa-1x"></span> #i18n{wiki.menu.history}
                 </a>
                 <#list languages_list as language>
