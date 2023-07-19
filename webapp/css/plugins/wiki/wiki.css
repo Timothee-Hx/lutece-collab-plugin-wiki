@@ -83,7 +83,7 @@ span.diff-html-conflict {
     font-size: large;
     color: #2d2d2d;
 }
-@media (max-width: 1700px) {
+@media (max-width: 1500px) {
     .wiki-topic-nav {
         display: none;
     }
@@ -98,8 +98,15 @@ span.diff-html-conflict {
 }
 .wiki-content {
 margin-left: 20%;
-    margin-right: 20%;
-    width: 60%;
+    margin-right: 10%;
+    width: 70%;
+}
+@media (max-width: 1500px) {
+    .wiki-content {
+        margin-left: 10%;
+        margin-right: 10%;
+        width: 80%;
+    }
 }
 .subLinkContainer{
    margin-left: 10px;
