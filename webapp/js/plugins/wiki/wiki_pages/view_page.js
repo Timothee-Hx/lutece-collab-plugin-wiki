@@ -11,23 +11,7 @@ jQuery(document).ready(function() {
         $("#input-search").focus();
     });
 });
-window.addEventListener("load", (event) => {
-    if(document.getElementsByClassName('darkModeClassOn').length > 0){
-        document.getElementById('darkModeSwitch').style.display = 'block';
-    }
-    let darkMode = localStorage.getItem('darkMode');
-    let darkModeId = document.getElementById('darkModeId');
-    let darkModeLabel = document.getElementById('darkModeLabel');
-        if (darkMode === 'true') {
-            darkModeId.checked = true;
-            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
-            document.body.classList.add('darkmode');
-        } else {
-            darkModeId.checked = false;
-            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
-            document.body.classList.remove('darkmode');
-        }
-});
+
 window.addEventListener("load", (event) => {
   // if there is a wiki-nav then we need to remove the class assigned by default to let more space for the content
     let wikiNavContentWrapper = document.getElementsByClassName('wiki-nav-content-wrapper').length;
@@ -41,22 +25,7 @@ window.addEventListener("load", (event) => {
         document.getElementsByClassName('text-right')[0].parentElement.classList.add('p-5');
     }
 });
-function toggleDarkMode() {
-    let darkMode = localStorage.getItem('darkMode');
-    let darkModeId = document.getElementById('darkModeId');
-    let darkModeLabel = document.getElementById('darkModeLabel');
-        if (darkMode === 'true') {
-            darkModeId.checked = false;
-            darkModeLabel.innerHTML = '<span class="fa fa-sun fa-2x"></span>';
-            document.body.classList.remove('darkmode');
-            localStorage.setItem('darkMode', 'false');
-        } else {
-            darkModeId.checked = true;
-            darkModeLabel.innerHTML = '<span class="fa fa-moon fa-2x"></span>';
-            document.body.classList.add('darkmode');
-            localStorage.setItem('darkMode', 'true');
-        }
-}
+
 
 window.addEventListener("load", (event) => {
         let pre = document.getElementsByTagName('pre');
