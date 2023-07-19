@@ -94,7 +94,7 @@
         <connection>scm:git:https://github.com/lutece-platform/lutece-collab-plugin-wiki.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-collab-plugin-wiki.git</developerConnection>
         <url>https://github.com/lutece-platform/lutece-collab-plugin-wiki.git</url>
-        <tag>lutece-collab-plugin-wiki-2.1.2</tag>
+        <tag>lutece-collab-plugin-wiki-3.0.2</tag>
     </scm>
 
 </project>
