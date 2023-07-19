@@ -117,13 +117,7 @@ editor.insertToolbarItem({ groupIndex: 0, itemIndex: 6 }, {
     className: 'fa fa-video editor',
     style: { backgroundImage: 'none' },
 });
-editor.insertToolbarItem({ groupIndex: 0, itemIndex: 7 }, {
-    name: 'textAlignment',
-    tooltip: 'Text Alignment',
-    text: 'TA',
-    className: 'fa fa-align-left editor',
-    style: { backgroundImage: 'none' },
-});
+
 editor.insertToolbarItem({ groupIndex: 0, itemIndex: 8 }, {
     name: 'InternalLink',
     tooltip: 'Internal Link',
@@ -131,20 +125,7 @@ editor.insertToolbarItem({ groupIndex: 0, itemIndex: 8 }, {
     className: 'fa fa-link editor',
     style: { backgroundImage: 'none' },
 });
-editor.insertToolbarItem({ groupIndex: 0, itemIndex: 9 }, {
-    name: 'Image',
-    tooltip: 'Image',
-    text: 'Im',
-    className: 'fa fa-image editor',
-    style: { backgroundImage: 'none' },
-});
-editor.insertToolbarItem({ groupIndex: 0, itemIndex: 10 }, {
-    name: 'Emoji',
-    tooltip: 'Emoji',
-    text: 'Em',
-    className: 'fa fa-smile editor',
-    style: { backgroundImage: 'none' },
-});
+
 
 document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
 
@@ -156,57 +137,6 @@ function closeToastUiModal() {
         document.getElementsByClassName("toastui-editor-popup")[i].style.display = "none";
     }
 }
-/* -------------- Emojis -------------- */
-const emojiButton = document.getElementsByClassName("fa fa-smile editor")[0];
-emojiButton.addEventListener('click', function() {
-    document.getElementById("selectEmojiModal").style.display = "block";
-});
-
-window.addEventListener("load", (event) => {
-    const emojis = ["😀", "😂", "😍", "🥰", "😎", "🤩", "😊", "🙂", "😆", "🥳", "😁", "😄", "😇", "😘", "😋", "🤗", "🙌", "👍", "🎉", "🔥", "💯", "🌟", "✨", "🌈", "🍀", "🍉", "🍕", "🎂", "🎸", "⚽️", "🚀"]
-    let emojiList = document.getElementById("emojiList");
-    emojiList.style.display = "grid";
-    emojiList.style.gridTemplateColumns = "repeat(4, 1fr)";
-    emojiList.style.gridGap = "0.5rem";
-
-    emojis.map(emoji => {
-        const emojiButton = document.createElement("button");
-        emojiButton.classList.add("btn", "btn-tertiary", "btn-xs");
-        emojiButton.innerText = emoji;
-        emojiButton.addEventListener('click', function() {
-            navigator.clipboard.writeText(emoji);
-            closeToastUiModal();
-        });
-        emojiList.appendChild(emojiButton);
-    });
-
-});
-/* -------------- Text Alignment -------------- */
-const textAlignmentButton = document.getElementsByClassName("fa fa-align-left editor")[0];
-textAlignmentButton.addEventListener('click', function() {
-    document.getElementById("selectTextAlignmentModal").style.display = "block";
-});
-function selectTextAlignment(alignmentValue) {
-    let el = document.getElementsByClassName("toastui-editor-md-container")[0];
-    for(let i = 0; i < el.classList.length; i++){
-        if(el.classList[i].indexOf("wiki-align-content-val-") > -1){
-            el.classList.remove(el.classList[i]);
-        }
-    }
-    document.getElementsByClassName("toastui-editor-md-container")[0].classList.add(alignmentValue);
-
-    const contentToInsert = '<span class="' + alignmentValue + '"></span>';
-    editor.insertText("$$span\n"+contentToInsert+ "\n$$");
-    closeToastUiModal();
-}
-
-
-window.addEventListener("load", (event) => {
-    if(document.getElementsByClassName('ProseMirror')[0].innerText.indexOf("wiki-align-content-val-") > -1){
-        const alignmentValue = document.getElementsByClassName('ProseMirror')[0].innerText.split("wiki-align-content-val-")[1].substring(0,1);
-        document.getElementsByClassName("toastui-editor-md-container")[0].classList.add("wiki-align-content-val-"+alignmentValue);
-    }
-});
 
 /* -------------- INTERNAL LINK  -------------- */
 const addInternalLinkButton = document.getElementsByClassName("fa fa-link editor")[0];
@@ -748,114 +678,3 @@ window.addEventListener("load", (event) => {
     removeUnderLineHeadings(underLineWithEqual);
 });
 
-/* -------------- Images -------------- */
-const imageInsertButton = document.getElementsByClassName("fa fa-image editor")[0];
-imageInsertButton.addEventListener('click', function() {
-    document.getElementById("imageModal").style.display = "block";
-});
-
-function updateImages() {
-    const topicId = document.getElementById("topic_id").value;
-    fetch( 'jsp/site/Portal.jsp?page=wiki&view=listImages&topic_id='+ topicId, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: "same-origin"
-    }).then(response => response.json())
-        .then(data => {
-            let imagesContainer = document.getElementById("table-images");
-            imagesContainer.innerHTML = "";
-            data.forEach(image => {
-                const imageElement = document.createElement("div");
-                imageElement.className = 'image-editor-display';
-                const imageUrl = 'image?resource_type=wiki_image&id=' + image.id;
-                let img = document.createElement("img");
-                img.className = "image-editor-display";
-                img.src = imageUrl;
-                img.alt = image.name;
-                let buttonContainer = document.createElement("div");
-                buttonContainer.className = "image-editor-display button-container";
-                let buttonCopy = document.createElement("button");
-                buttonCopy.type = "button";
-                buttonCopy.className = "image-editor-display btn btn-light btn-sm";
-                buttonCopy.innerText = "copy Standard";
-                buttonCopy.addEventListener("click", function () {
-                    let mdTextToInsert = "!["+ image.name +"](" + imageUrl + ")";
-                    navigator.clipboard.writeText(mdTextToInsert);
-                });
-
-                let buttonCustomCopy = document.createElement("button");
-                buttonCustomCopy.type = "button";
-                buttonCustomCopy.className = "image-editor-display btn btn-light btn-sm";
-                buttonCustomCopy.innerText = "Copy Custom";
-                buttonCustomCopy.addEventListener("click", function () {
-                    let htmlimageToInsert = "<span style='display: flex; justify-content: space-between;'><p>My text is on my left and the image on my right</p><><img src='" + imageUrl + "' alt='" + image.name + "' title='" + image.name + "' class='' width='600' height='' align=''><figcaption>" + image.name + "</figcaption></figure></span>";
-                    navigator.clipboard.writeText("\n" + "$$span\n" + htmlimageToInsert + "\n$$\n");
-                });
-
-                let buttonDelete = document.createElement("button");
-                buttonDelete.type = "button";
-                buttonDelete.className = "image-editor-display btn btn-danger btn-sm";
-                buttonDelete.innerText = "Delete";
-                buttonDelete.addEventListener("click", function () {
-                    if(!confirm("Are you sure you want to delete this image?")) {
-                        return;
-                    } else {
-                        fetch('jsp/site/Portal.jsp?page=wiki&action=removeImage&id_image='+ image.id + '&topic_id=' + topicId, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            credentials: "same-origin"
-                        })
-                            .then(response => response)
-                            .then(data => {
-                                updateImages();
-                            });
-                    }
-                });
-                buttonContainer.appendChild(buttonCopy);
-                buttonContainer.appendChild(buttonCustomCopy);
-                buttonContainer.appendChild(buttonDelete);
-                imageElement.appendChild(img);
-                imageElement.appendChild(buttonContainer);
-                imagesContainer.appendChild(imageElement);
-            });
-        });
-}
-document.addEventListener("DOMContentLoaded", function(event) {
-    updateImages();
-});
-
-function insertImageUrl() {
-    const desc = document.getElementById("ImageUrlDesc").value;
-    document.getElementById("ImageUrlDesc").value = "";
-    const url = document.getElementById("ImageUrlInput").value;
-    if(!url.length) {
-        alert("Please enter a valid url");
-        return;
-    }
-    document.getElementById("ImageUrlInput").value = "";
-    const mdImage = "![" + desc + "](" + url + ")";
-    editor.insertText(mdImage);
-    closeToastUiModal();
-}
-
-function insertCustomImageUrl() {
-    let desc = document.getElementById("ImageUrlDesc").value;
-    if(!desc.length) {
-        desc = "My text below the image";
-    }
-    document.getElementById("ImageUrlDesc").value = "";
-    const url = document.getElementById("ImageUrlInput").value;
-    document.getElementById("ImageUrlInput").value = "";
-    if(!url.length) {
-        alert("Please enter a valid url");
-        return;
-    }
-    const htmlImage = "<span style='display: flex; justify-content: space-between;'><p>My text is on my left and the image on my right</p><figure><img src='" + url + "' alt='' title='' className='' width='600' height='' align=''><figcaption>"+ desc +"</figcaption></figure></span>";
-    const mdImage = "\n" + "$$span\n" + htmlImage + "\n$$\n";
-    editor.insertText(mdImage);
-    closeToastUiModal();
-}
