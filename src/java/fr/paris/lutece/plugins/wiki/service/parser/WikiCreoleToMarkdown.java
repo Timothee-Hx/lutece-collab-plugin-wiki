@@ -75,8 +75,8 @@ public class WikiCreoleToMarkdown
     public static String wikiCreoleToMd( String strWikiText, String strPageName, String strPageUrl, String strLanguage )
     {
 
-        String htmlContent = new LuteceWikiParser( strWikiText, strPageName, strPageUrl, strLanguage ).toString( );
 
+        String htmlContent = new LuteceWikiParser( strWikiText, strPageName, strPageUrl, strLanguage ).toString( );
         Document htmlDocument = Jsoup.parse( htmlContent );
         Element docBody = htmlDocument.body( );
         List<Element> elements = docBody.getAllElements( );
@@ -85,9 +85,11 @@ public class WikiCreoleToMarkdown
             Element element = elements.get( i );
             if ( element.className( ).equals( "well" ) )
             {
-                String toc = DOLLAR_SPAN + " " + "<span class='toc'></span>" + " " + DOLLAR_DOLLAR;
+                String toc =  DOLLAR_SPAN +  "<span class='toc'></span>" +  DOLLAR_DOLLAR ;
                 toc = SpecialChar.reverseRender( toc );
-                docBody.prepend( toc );
+                Element p = new Element("p");
+                p.text(toc);
+                docBody.prependChild(p);
 
             }
             else if ( element.className( ).equals( "jumbotron" ) )
@@ -108,10 +110,10 @@ public class WikiCreoleToMarkdown
                     }
                     container.appendChild( new Element( "h1" ).attr( CLASS, "text-dark" ).text( jumbotronTitle ) );
                     container.appendChild( new Element( "p" ).attr( CLASS, "text-muted" ).text( jumbotronText ) );
-                    String bootStrap5Jumbotron = "$$span\n" + container + "\n$$";
+                    String bootStrap5Jumbotron =  DOLLAR_SPAN +  container +  DOLLAR_DOLLAR ;
                     bootStrap5Jumbotron = SpecialChar.reverseRender( bootStrap5Jumbotron );
-                    Element p = new Element( "p" );
-                    p.text( bootStrap5Jumbotron );
+                    Element p = new Element("p");
+                    p.text(bootStrap5Jumbotron);
                     jumbotron.replaceWith( p );
 
                 }
@@ -131,18 +133,18 @@ public class WikiCreoleToMarkdown
                                 int subDivClassToSkip = element.parent( ).children( ).size( );
                                 String parent = element.parent( ).outerHtml( );
                                 String customElement = SpecialChar.reverseRender(parent);
-                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR;
-                                Element p = new Element( "p" );
-                                p.text( customElement );
+                                customElement =  DOLLAR_SPAN +   customElement +  DOLLAR_DOLLAR  ;
+                                Element p = new Element("p");
+                                p.text(customElement);
                                 element.parent( ).replaceWith( p );
                                 i = i + subDivClassToSkip - 1;
                             }
                             else
                             {
                                 String customElement = SpecialChar.reverseRender(element.outerHtml( ));
-                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR;
-                                Element p = new Element( "p" );
-                                p.text( customElement );
+                                customElement =  DOLLAR_SPAN +   customElement +  DOLLAR_DOLLAR  ;
+                                Element p = new Element("div");
+                                p.append(customElement);
                                 element.replaceWith( p );
                             }
 
@@ -152,7 +154,7 @@ public class WikiCreoleToMarkdown
                             if (element.parent().tagName().equals("p")) {
                                 String parent = element.parent().outerHtml();
                                 String customElement = SpecialChar.reverseRender(parent);
-                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR;
+                                customElement =  DOLLAR_SPAN + customElement + DOLLAR_DOLLAR  ;
                                 Element p = new Element("p");
                                 p.text(customElement);
                                 element.parent().replaceWith(p);
@@ -162,39 +164,49 @@ public class WikiCreoleToMarkdown
                                      || (element.hasAttr("height") && (!element.getElementsByAttribute("height").isEmpty()))
                                      || (element.hasAttr("align") && (!element.getElementsByAttribute("align").isEmpty()))) {
                                 String customElement = SpecialChar.reverseRender(element.outerHtml());
-                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR;
-                                Element p = new Element("p");
+                                customElement = DOLLAR_SPAN + customElement + DOLLAR_DOLLAR ;
+                                 Element p = new Element("p");
                                 p.text(customElement);
                                 element.replaceWith(p);
                             }
                         }
                     }
+        MutableDataSet options = new MutableDataSet();
 
-
-        MutableDataSet options = new MutableDataSet( );
-
-        options.set( HtmlRenderer.HARD_BREAK, "<br />\n" );
-        options.set( FlexmarkHtmlConverter.BR_AS_PARA_BREAKS, false );
-        options.set( FlexmarkHtmlConverter.OUTPUT_ATTRIBUTES_ID, false );
-        options.set( FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false );
-        String markdown = FlexmarkHtmlConverter.builder( options ).build( ).convert( docBody.toString( ) );
+        options.set(HtmlRenderer.HARD_BREAK, "<br />\n");
+        options.set(FlexmarkHtmlConverter.BR_AS_PARA_BREAKS, false);
+        options.set(FlexmarkHtmlConverter.OUTPUT_ATTRIBUTES_ID, false);
+        options.set(FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false);
+        options.set(FlexmarkHtmlConverter.OUTPUT_UNKNOWN_TAGS, true);
+        String markdown = FlexmarkHtmlConverter.builder( options).build( ).convert( docBody.toString( ) );
         markdown = renderCustomContent( markdown );
         StringBuilder newMarkdown = new StringBuilder();
 
 
         for ( String line : markdown.split( System.lineSeparator( ) ) )
         {
-            if ( line.contains( DOLLAR_SPAN ) )
+          if ( line.contains( DOLLAR_SPAN ) )
             {
                 line = line.replace( DOLLAR_SPAN, "" );
                 line = line.replace( DOLLAR_DOLLAR, "" );
-                String reFormatedLine = System.lineSeparator( ) + DOLLAR_SPAN + System.lineSeparator( ) + line + System.lineSeparator( ) + DOLLAR_DOLLAR
-                        + System.lineSeparator( );
+                String reFormatedLine =  line;
+                newMarkdown.append(System.getProperty("line.separator"));
+
+                newMarkdown.append(DOLLAR_SPAN);
+                newMarkdown.append(System.getProperty("line.separator"));
+
                 newMarkdown.append( reFormatedLine );
+                newMarkdown.append(System.getProperty("line.separator"));
+
+                newMarkdown.append(DOLLAR_DOLLAR);
+                newMarkdown.append(System.getProperty("line.separator"));
+
             }
             else
             {
-                newMarkdown.append( line + System.lineSeparator( ) );
+                newMarkdown.append(line);
+                newMarkdown.append(System.getProperty("line.separator"));
+
             }
         }
         return newMarkdown.toString();

@@ -90,7 +90,6 @@ public class LuteceWikiParser extends WikiParser
         setTocClass( _options.getTocClass( ) );
         parse( SpecialChar.renderWiki( strWikiText ) );
     }
-
     /**
      * Render specific HTML entities
      * 

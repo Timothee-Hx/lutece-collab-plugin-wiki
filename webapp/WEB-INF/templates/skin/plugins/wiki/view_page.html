@@ -10,9 +10,8 @@
     <!-- Editor css -->
     <link rel="stylesheet" href="css/plugins/wiki/toastui/toastui-editor.css" />
 </head>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="container panel panel-default">
+<div>
+    <div class="container panel panel-default">
             <div class="text-right">
                 <#if lastVersion?? >
                 <small>${lastVersion.dateEdition} ${lastVersion.userName!''} ${lastVersion.userPseudo!''}
@@ -31,13 +30,15 @@
                 <button class="btn btn-default" id="btn-search" type="button" title="#i18n{wiki.menu.search}" >
                     <span class="fa fa-search"></span> #i18n{wiki.menu.search}
                 </button>
+                <#if has_edit_role >
                 <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=modifyPage&page_name=${topic.pageName}" title="#i18n{wiki.menu.edit}">
                     <span class="fa fa-edit"></span> #i18n{wiki.menu.edit}
                 </a>
                 <button class="btn btn-default" id="btn-new-page" type="button" title="#i18n{wiki.menu.create}">
                    <span class="fa fa-plus-circle"></span> #i18n{wiki.menu.create}
                 </button>
-                <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=history&page_name=${topic.pageName}" title="#i18n{wiki.menu.history}">
+            </#if>
+    <a class="btn btn-default" href="jsp/site/Portal.jsp?page=wiki&view=history&page_name=${topic.pageName}" title="#i18n{wiki.menu.history}">
                     <span class="fa fa-history fa-1x"></span> #i18n{wiki.menu.history}
                 </a>
                 <#list languages_list as language>
@@ -89,11 +90,12 @@
                     </div>
                 </form>
             </div>
+
             <h1 id="wiki-heading">${topic_title}</h1>
+</div>
             <hr>
-            <div >
             ${result}
-            </div>
+   </div>
 
 <script type="text/javascript" src="js/plugins/wiki/wiki_pages/view_page.js"></script>
 
