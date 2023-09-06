@@ -57,6 +57,8 @@ public class WikiExtendableResourceService implements IExtendableResourceService
     private static final String RESOURCE_TYPE_DESCRIPTION = "wiki.extend.resourceType";
     private static final String PARAMETER_PAGE = "page";
     private static final String PARAMETER_ACTION = "action";
+    private static Plugin _plugin = PluginService.getPlugin( Constants.PLUGIN_NAME );
+
     /**
      * {@inheritDoc }
      */

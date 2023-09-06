@@ -33,6 +33,7 @@
     <div class="container panel panel-default">
         <div class="row">
             <!--  Context variables -->
+            <#assign locale=strLocale />
             <input type="hidden" id="locale" name="language" value="${locale}" />
             <input type="hidden" id="page" name="page" value="wiki" />
             <input type="hidden" id="page_name" name="page_name" value="${topic.pageName}" />
@@ -126,11 +127,11 @@
         <!-------- change language -------->
         <label for="select_language_list">Select a language with a select :</label>
         <select id="select_language_list" class="form-control" onchange="changeLanguage(this.value)" >
-            <#list languages_list as thisLocale>
-            <#if locale == thisLocale>
-            <option value="${locale}" selected>${locale}</option>
+            <#list languages_list?keys as locale>
+            <#if locale == keyLocale>
+            <option value="${languages_list[locale]}" selected>${languages_list[locale]}</option>
             <#else>
-            <option value="${thisLocale}">${thisLocale}</option>
+            <option value="${languages_list[locale]}">${languages_list[locale]}</option>
         </#if>
     </#list>
     </select>

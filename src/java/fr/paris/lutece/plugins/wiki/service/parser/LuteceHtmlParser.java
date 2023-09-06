@@ -41,9 +41,7 @@ import java.util.List;
 
 public class LuteceHtmlParser
 {
-    private final static String STYLE = "style";
-    private final static String WIKI_ALIGN_CONTENT_VAL = "wiki-align-content-val-";
-    private final static String SUB_LINK_CONTAINER = "subLinkContainer";
+
     public static String parseHtml( String htmlFromEditor, String wikiPageUrl, String pageTitle )
     {
         htmlFromEditor = SpecialChar.renderWiki( htmlFromEditor );
@@ -62,13 +60,13 @@ public class LuteceHtmlParser
         List<Element> preElements = doc.select( "pre" );
         for ( Element preElement : preElements )
         {
-            preElement.attr( STYLE, "background-color: #2f3241" );
+            preElement.attr( "style", "background-color: #2f3241" );
         }
         doc.select( ".toastui-editor-md-preview-highlight" ).forEach( element -> element.removeClass( "toastui-editor-md-preview-highlight" ) );
-        if ( doc.select( ".ProseMirror" ).text( ).contains( WIKI_ALIGN_CONTENT_VAL ) )
+        if ( doc.select( ".ProseMirror" ).text( ).contains( "wiki-align-content-val-" ) )
         {
-            String alignmentValue = doc.select( ".ProseMirror" ).text( ).split( WIKI_ALIGN_CONTENT_VAL ) [1].substring( 0, 1 );
-            doc.select( ".toastui-editor-contents" ).addClass( WIKI_ALIGN_CONTENT_VAL + alignmentValue );
+            String alignmentValue = doc.select( ".ProseMirror" ).text( ).split( "wiki-align-content-val-" ) [1].substring( 0, 1 );
+            doc.select( ".toastui-editor-contents" ).addClass( "wiki-align-content-val-" + alignmentValue );
         }
         Element toc = doc.select( ".toc" ).first( );
         if ( toc != null )
@@ -80,7 +78,6 @@ public class LuteceHtmlParser
             flexDiv.addClass( "wiki-nav-content-wrapper" );
             flexDiv.appendChild( tableOfContent );
             Element contentDiv = new Element( "div" );
-            contentDiv.addClass( "wiki-content" );
             contentDiv.append( parser.body( ).outerHtml( ) );
             flexDiv.appendChild( contentDiv );
             doc = flexDiv;
@@ -104,7 +101,7 @@ public class LuteceHtmlParser
         Element titleElement = new Element( "a" );
         titleElement.addClass( "nav-link" );
         titleElement.attr( "href", wikiPageUrl );
-        titleElement.attr( STYLE, "font-weight: bold; font-size: 2rem;" );
+        titleElement.attr( "style", "font-weight: bold; font-size: 1.5rem;" );
         titleElement.text( pageTitle );
         tableOfContent.appendChild( titleElement );
         List<Element> headers = doc.select( "h1, h2, h3" );
@@ -131,12 +128,12 @@ public class LuteceHtmlParser
                         if ( headers.get( i + 1 ).tagName( ).equals( "h2" ) || headers.get( i + 1 ).tagName( ).equals( "h3" ) )
                         {
                             Element divContainer = new Element( "div" );
-                            divContainer.attr( STYLE, "display: flex; flex-direction: row; spacing: 5px;" );
+                            divContainer.attr( "style", "display: flex; flex-direction: row; spacing: 5px;" );
                             divContainer.appendChild( linkElement );
                             navItem.appendChild( divContainer );
                             tableOfContent.appendChild( navItem );
                             Element subLinkContainer = new Element( "ul" );
-                            subLinkContainer.addClass( SUB_LINK_CONTAINER );
+                            subLinkContainer.addClass( "subLinkContainer" );
                             tableOfContent.appendChild( subLinkContainer );
                         }
                         else
@@ -147,15 +144,8 @@ public class LuteceHtmlParser
             }
             if ( headerLevel.equals( "h2" ) || headerLevel.equals( "h3" ) )
             {
-                List<Element> subLinkContainers = tableOfContent.getElementsByClass( SUB_LINK_CONTAINER );
-                if ( subLinkContainers.isEmpty( ) )
-                {
-                    Element subLinkContainer = new Element( "ul" );
-                    subLinkContainer.addClass( SUB_LINK_CONTAINER );
-                    subLinkContainer.appendChild( linkElement );
-                    tableOfContent.appendChild( subLinkContainer );
-                }
-                else
+                List<Element> subLinkContainers = tableOfContent.getElementsByClass( "subLinkContainer" );
+                if ( subLinkContainers.size( ) != 0 )
                 {
                     Element subLinkContainer = subLinkContainers.get( subLinkContainers.size( ) - 1 );
                     subLinkContainer.appendChild( linkElement );

@@ -119,6 +119,7 @@ public class TopicVersion
         return _mapWikiContent;
     }
 
+
     /**
      * Sets the Wiki Content
      * 
@@ -295,8 +296,5 @@ public class TopicVersion
      * @param bIsPublished
      *            The IsPublished
      */
-    public void setIsPublished( Boolean bIsPublished )
-    {
-        _bIsPublished = bIsPublished;
-    }
+    public void setIsPublished( Boolean bIsPublished ) {_bIsPublished = bIsPublished;}
 }

@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.wiki.business.TopicVersion;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
 import fr.paris.lutece.plugins.wiki.service.parser.SpecialChar;
 import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -104,16 +105,15 @@ public final class WikiService extends AbstractCacheableService
             if ( strPageContent == null )
             {
                 // html from here is also used in viewDiff
-                try
-                {
-                    strPageContent = SpecialChar.renderWiki( version.getWikiContent( strLanguage ).getHtmlWikiContent( ) );
-                    putInCache( sbKey.toString( ), strPageContent );
+                try   {
+                    strPageContent = SpecialChar.renderWiki(version.getWikiContent(strLanguage).getHtmlWikiContent());
+                    // strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
+                    putInCache(sbKey.toString(), strPageContent);
                 }
-                catch( NullPointerException e )
-                {
-                    String strContent = SpecialChar.renderWiki( version.getWikiContent( strLanguage ).getWikiContent( ) );
+                catch(NullPointerException e)   {
+                    String strContent = SpecialChar.renderWiki(version.getWikiContent(strLanguage).getWikiContent());
                     strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
-                    putInCache( sbKey.toString( ), strPageContent );
+                    putInCache(sbKey.toString(), strPageContent);
                 }
 
             }
@@ -123,14 +123,16 @@ public final class WikiService extends AbstractCacheableService
 
     /**
      * Get the Wiki page in text format
-     *
+     * 
+     * @param strPageName
+     *            The page name
      * @param version
      *            The content version
      * @param strLanguage
      *            The language
      * @return The HTML code
      */
-    public String getPageSource(TopicVersion version, String strLanguage )
+    public String getPageSource( String strPageName, TopicVersion version, String strLanguage )
     {
         String strContent = version.getWikiContent( strLanguage ).getWikiContent( );
         strContent = renderSource( strContent );
@@ -158,6 +160,8 @@ public final class WikiService extends AbstractCacheableService
         return getWikiPage( strPageName, version, null, strLanguage );
     }
 
+
+
     /**
      * Render the wiki source content
      * 
@@ -169,5 +173,6 @@ public final class WikiService extends AbstractCacheableService
     {
         return SpecialChar.renderWiki( strContent );
     }
+
 
 }

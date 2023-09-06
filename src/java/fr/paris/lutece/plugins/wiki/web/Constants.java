@@ -7,7 +7,7 @@
  * are met:
  *
  *  1. Redistributions of source code must retain the above copyright notice
- *     and the following disclaimer.
+ *     and the following discœimer.
  *
  *  2. Redistributions in binary form must reproduce the above copyright notice
  *     and the following disclaimer in the documentation and/or other materials
@@ -77,6 +77,7 @@ public final class Constants
     public static final String MARKDOWN_TAG = "[@MarkdownLanguage;";
     public static final String PARAMETER_USER_NAME = "user_name";
     public static final String MESSAGE_CANCELED_BY = "wiki.message.cancelBy";
+
 
     /** Private constructor */
     private Constants( )
