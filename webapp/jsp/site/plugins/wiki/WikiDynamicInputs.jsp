@@ -5,7 +5,7 @@
     <%
     if("saveWiki".equals(request.getParameter("actionName")))
     {
-        WikiDynamicInputs.saveWiki( request );
+        WikiDynamicInputs.autoSaveWiki( request );
     }
      else if("getPageHeadings".equals(request.getParameter("actionName")))
     {
