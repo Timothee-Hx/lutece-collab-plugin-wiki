@@ -377,50 +377,6 @@ public final class TopicVersionDAO implements ITopicVersionDAO {
         }
         return topicVersion;
     }
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public TopicVersion getPreviousPluginVersionLastPublished(int nTopicId, Plugin plugin) {
-       List<TopicVersion> topicVersions = null;
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_ALL_SELECT_PUBLISHED_BY_TOPIC_ID, plugin)) {
-            daoUtil.setInt(1, nTopicId);
-            daoUtil.executeQuery();
-
-            if (daoUtil.next()) {
-                topicVersions = new ArrayList<>();
-                TopicVersion topicVersion = new TopicVersion();
-                topicVersion.setIdTopicVersion(daoUtil.getInt(1));
-                topicVersion.setEditComment(daoUtil.getString(2));
-                topicVersion.setIdTopic(daoUtil.getInt(3));
-                topicVersion.setLuteceUserId(daoUtil.getString(4));
-                topicVersion.setDateEdition(daoUtil.getTimestamp(5));
-                topicVersion.setIdTopicVersionPrevious(daoUtil.getInt(6));
-                topicVersion.setIsPublished(daoUtil.getBoolean(7));
-                topicVersions.add(topicVersion);
-            }
-        }
-        if (topicVersions != null) {
-           // find the last one
-            TopicVersion lastTopicVersion = topicVersions.get(0);
-            for (TopicVersion topicVersion : topicVersions) {
-                if (topicVersion.getDateEdition().after(lastTopicVersion.getDateEdition())) {
-                    lastTopicVersion = topicVersion;
-                }
-            }
-            fillContent(lastTopicVersion);
-            updateIsPublished(lastTopicVersion.getIdTopicVersion(), lastTopicVersion.getEditComment(), true, plugin);
-            for (TopicVersion topicVersion : topicVersions) {
-                if (topicVersion.getIdTopicVersion() != lastTopicVersion.getIdTopicVersion()) {
-                    updateIsPublished(topicVersion.getIdTopicVersion(), topicVersion.getEditComment(), false, plugin);
-                }
-            }
-
-            return lastTopicVersion;
-        }
-
-        return topicVersions != null ? topicVersions.get(0) : null;
-    }
 
     /**
      * {@inheritDoc }

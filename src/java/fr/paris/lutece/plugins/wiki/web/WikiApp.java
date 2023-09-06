@@ -365,18 +365,7 @@ public class WikiApp extends MVCApplication
         String topicTitle = getTopicTitle( request, topic );
         if ( version == null )
         {
-            // check if there is a version that has been published before the 3.0.2 update
-            TopicVersion olderVersion = TopicVersionHome.getPreviousPluginVersionLastPublished( topic.getIdTopic( ) );
-            if ( olderVersion != null )
-            {
-                version = olderVersion;
-                fillUserData( version );
-                strWikiPage = WikiService.instance( ).getWikiPage( strPageName, version, getPageUrl( request ), getLanguage( request ) );
-            }
-            else
-            {
-                strWikiPage = I18nService.getLocalizedString( MESSAGE_NO_PUBLISHED_VERSION, getLocale( request ) );
-            }
+            strWikiPage = I18nService.getLocalizedString( MESSAGE_NO_PUBLISHED_VERSION, getLocale( request ) );
         }
         else
         {

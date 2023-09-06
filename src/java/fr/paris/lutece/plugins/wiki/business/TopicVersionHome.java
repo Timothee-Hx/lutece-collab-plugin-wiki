@@ -192,8 +192,4 @@ public final class TopicVersionHome
         return _dao.getPublishedVersion(topicId, _plugin);
     }
 
-    public static TopicVersion getPreviousPluginVersionLastPublished(int topicId)
-    {
-        return _dao.getPreviousPluginVersionLastPublished(topicId, _plugin);
-    }
 }

@@ -37,6 +37,8 @@ import fr.paris.lutece.plugins.wiki.business.TopicVersion;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
 import fr.paris.lutece.plugins.wiki.service.parser.SpecialChar;
 import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
+import fr.paris.lutece.portal.service.util.AppLogService;
+
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -104,18 +106,19 @@ public final class WikiService extends AbstractCacheableService
         {
             if ( strPageContent == null )
             {
-                // html from here is also used in viewDiff
-                try
-                {
-                    strPageContent = SpecialChar.renderWiki( version.getWikiContent( strLanguage ).getHtmlWikiContent( ) );
-                    // strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
-                    putInCache( sbKey.toString( ), strPageContent );
+                try {
+                    if (version.getWikiContent(strLanguage).getHtmlWikiContent() != null) {
+                        strPageContent = SpecialChar.renderWiki(version.getWikiContent(strLanguage).getHtmlWikiContent());
+                        putInCache(sbKey.toString(), strPageContent);
+                    } else {
+                        String strContent = SpecialChar.renderWiki(version.getWikiContent(strLanguage).getWikiContent());
+                        strPageContent = new LuteceWikiParser(strContent, strPageName, strPageUrl, strLanguage).toString();
+                        putInCache(sbKey.toString(), strPageContent);
+                    }
                 }
                 catch( NullPointerException e )
                 {
-                    String strContent = SpecialChar.renderWiki( version.getWikiContent( strLanguage ).getWikiContent( ) );
-                    strPageContent = new LuteceWikiParser( strContent, strPageName, strPageUrl, strLanguage ).toString( );
-                    putInCache( sbKey.toString( ), strPageContent );
+                    AppLogService.error( "WikiService.getWikiPage : " + e.getMessage( ), e );
                 }
 
             }
