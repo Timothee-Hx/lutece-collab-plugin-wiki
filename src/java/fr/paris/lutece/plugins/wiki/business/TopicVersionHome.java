@@ -33,11 +33,13 @@
  */
 package fr.paris.lutece.plugins.wiki.business;
 
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.wiki.web.Constants;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 
 /**
@@ -159,7 +161,7 @@ public final class TopicVersionHome
      *            The topicVersion id
      * @return void
      */
-    public static void updateTopicVersion( TopicVersion topicVersion )
+    public static void updateTopicVersion(TopicVersion topicVersion)
     {
         _dao.updateTopicVersion( topicVersion, _plugin );
     }
@@ -171,15 +173,13 @@ public final class TopicVersionHome
      *            The topic id
      * @return void
      */
-    public static void cancelPublication( int topicId, String comment )
+    public static void cancelPublication(int topicId, String comment)
     {
-        TopicVersion topicVersionPublished = _dao.getPublishedVersion( topicId, _plugin );
-        if ( topicVersionPublished != null )
-        {
-            _dao.updateIsPublished( topicVersionPublished.getIdTopicVersion( ), comment, false, _plugin );
+        TopicVersion topicVersionPublished = _dao.getPublishedVersion(topicId, _plugin);
+        if(topicVersionPublished != null ) {
+            _dao.updateIsPublished( topicVersionPublished.getIdTopicVersion(), comment, false, _plugin );
         }
     }
-
     /**
      * Get the published version of a topic
      *
@@ -187,13 +187,13 @@ public final class TopicVersionHome
      *            The topic id
      * @return void
      */
-    public static TopicVersion getPublishedVersion( int topicId )
+    public static TopicVersion getPublishedVersion(int topicId)
     {
-        return _dao.getPublishedVersion( topicId, _plugin );
+        return _dao.getPublishedVersion(topicId, _plugin);
     }
 
-    public static TopicVersion getPreviousPluginVersionLastPublished( int topicId )
+    public static TopicVersion getPreviousPluginVersionLastPublished(int topicId)
     {
-        return _dao.getPreviousPluginVersionLastPublished( topicId, _plugin );
+        return _dao.getPreviousPluginVersionLastPublished(topicId, _plugin);
     }
 }

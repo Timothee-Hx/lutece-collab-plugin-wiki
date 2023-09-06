@@ -66,8 +66,6 @@ import javax.xml.transform.stream.StreamResult;
 public final class DiffService
 {
     private static final String XSL_OUTPUT = "fr/paris/lutece/plugins/wiki/service/output.xsl";
-    private static final String DIFF_REPORT = "diffreport";
-    private static String CDATA = "CDATA";
 
     /** Private constuctor */
     private DiffService( )
@@ -117,7 +115,7 @@ public final class DiffService
             TextNodeComparator rightComparator = new TextNodeComparator( newHandler, locale );
 
             postProcess.startDocument( );
-            postProcess.startElement( "", DIFF_REPORT, DIFF_REPORT, new AttributesImpl( ) );
+            postProcess.startElement( "", "diffreport", "diffreport", new AttributesImpl( ) );
             doCSS( css, postProcess );
             postProcess.startElement( "", "diff", "diff", new AttributesImpl( ) );
 
@@ -126,7 +124,7 @@ public final class DiffService
             HTMLDiffer differ = new HTMLDiffer( output );
             differ.diff( leftComparator, rightComparator );
             postProcess.endElement( "", "diff", "diff" );
-            postProcess.endElement( "", DIFF_REPORT, DIFF_REPORT );
+            postProcess.endElement( "", "diffreport", "diffreport" );
             postProcess.endDocument( );
         }
         catch( TransformerConfigurationException | IOException | SAXException ex )
@@ -159,9 +157,9 @@ public final class DiffService
         for ( String cssLink : css )
         {
             AttributesImpl attr = new AttributesImpl( );
-            attr.addAttribute( "", "href", "href", CDATA, cssLink );
-            attr.addAttribute( "", "type", "type", CDATA, "text/css" );
-            attr.addAttribute( "", "rel", "rel", CDATA, "stylesheet" );
+            attr.addAttribute( "", "href", "href", "CDATA", cssLink );
+            attr.addAttribute( "", "type", "type", "CDATA", "text/css" );
+            attr.addAttribute( "", "rel", "rel", "CDATA", "stylesheet" );
             handler.startElement( "", "link", "link", attr );
             handler.endElement( "", "link", "link" );
         }

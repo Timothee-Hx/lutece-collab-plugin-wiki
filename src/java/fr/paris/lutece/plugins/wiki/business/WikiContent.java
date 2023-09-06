@@ -73,7 +73,7 @@ public class WikiContent
      */
     public String getWikiContent( )
     {
-        return _strWikiContent;
+         return _strWikiContent;
     }
 
     /**
@@ -108,18 +108,18 @@ public class WikiContent
         _strHtmlWikiContent = strHtmlWikiContent;
     }
 
+
     /**
-     * Set the WikiContent with labelling MarkdownLanguage Labelling MarkdownLanguage is used to avoid to differentiate the content of with previous version of
-     * with wiki creole and the new one with markdown
-     * 
+     * Set the WikiContent with labelling MarkdownLanguage
+     * Labelling MarkdownLanguage is used to avoid to differentiate the content of with previous version of with wiki creole and the new one with markdown
      * @param strWikiContent
-     *            The WikiContent
+      *            The WikiContent
      */
-    public void setContentLabellingMarkdownLanguage( String strWikiContent )
-    {
+    public void setContentLabellingMarkdownLanguage(String strWikiContent ){
         {
-            _strWikiContent = Constants.MARKDOWN_TAG + strWikiContent;
+            _strWikiContent = Constants.MARKDOWN_TAG+strWikiContent;
         }
     }
+
 
 }

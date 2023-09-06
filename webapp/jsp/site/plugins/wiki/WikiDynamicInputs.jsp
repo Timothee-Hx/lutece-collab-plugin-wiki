@@ -3,9 +3,9 @@
 <jsp:useBean id="AutoSaveWiki" scope="request" class="fr.paris.lutece.plugins.wiki.web.WikiDynamicInputs" />
 
     <%
-    if("autoSaveWiki".equals(request.getParameter("actionName")))
+    if("saveWiki".equals(request.getParameter("actionName")))
     {
-        WikiDynamicInputs.autoSaveWiki( request );
+        WikiDynamicInputs.saveWiki( request );
     }
      else if("getPageHeadings".equals(request.getParameter("actionName")))
     {

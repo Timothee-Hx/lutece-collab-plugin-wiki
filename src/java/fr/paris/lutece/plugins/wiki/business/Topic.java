@@ -55,6 +55,7 @@ public class Topic implements IExtendableResource
     private String _strModifyPageOpenLastBy;
     private Timestamp _strModifyPageOpenAt;
 
+
     /**
      * Returns the IdTopic
      * 

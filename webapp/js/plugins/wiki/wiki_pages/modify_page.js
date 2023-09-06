@@ -258,7 +258,6 @@ function loadInnerLinksHeadings(pageValue){
 function insertInnerLink (linkValue){
     let linkValueJson = JSON.parse(linkValue);
     let pageDestinationUrl = window.location.href;
-
     // replace all char after &view= parameter from url
     pageDestinationUrl = pageDestinationUrl.replace("view=modifyPage", "view=page");
     pageDestinationUrl = pageDestinationUrl.replace(/&version=[0-9]*/g, "");
@@ -576,11 +575,7 @@ function changeLanguage(locale) {
     } else {
         url = url + "&locale=" + locale;
     }
-    if(confirm("Have you saved your work before changing the language ?")){
-
-            window.location.replace(url);
-    }
-
+    window.location.replace(url);
 }
 /*___________________________ ON POST  ___________________________*/
 function publishVersion()
