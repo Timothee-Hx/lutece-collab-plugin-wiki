@@ -118,4 +118,21 @@ public final class WikiLocaleService
         return map;
     }
 
+    /**
+     * returns locales in a map
+     *
+     * @return locales in a map
+     */
+    public static HashMap<String, String> getLanguagesMap( )
+    {
+        HashMap<String, String> map = new HashMap<String, String>( );
+        List<String> list = getLanguages( );
+        for ( int i = 0; i < list.size( ); i++ )
+        {
+            String strKey = String.valueOf( i );
+            map.put( strKey, list.get( i ) );
+        }
+        return map;
+    }
+
 }
