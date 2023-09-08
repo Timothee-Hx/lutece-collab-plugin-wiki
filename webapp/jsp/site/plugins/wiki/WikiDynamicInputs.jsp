@@ -3,11 +3,7 @@
     <jsp:useBean id="AutoSaveWiki" scope="request" class="fr.paris.lutece.plugins.wiki.web.WikiDynamicInputs" />
 
     <%
-    if("autoSaveWiki".equals(request.getParameter("actionName")))
-    {
-        WikiDynamicInputs.autoSaveWiki( request );
-    }
-    else if("modifyPage".equals(request.getParameter("actionName")))
+  if("modifyPage".equals(request.getParameter("actionName")))
     {
          WikiDynamicInputs.modifyPage( request, response );
     }

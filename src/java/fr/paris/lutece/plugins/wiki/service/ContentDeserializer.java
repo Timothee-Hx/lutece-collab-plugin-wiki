@@ -19,11 +19,6 @@ public class ContentDeserializer {
     public String wikiHtmlContent;
 
     public String wikiPageUrl;
-
-    public String createVersion;
-
-    public String publishVersion;
-
     public String editComment;
 
     public String viewRole;
@@ -68,13 +63,6 @@ public class ContentDeserializer {
     }
 
     public String getWikiPageUrl() {return wikiPageUrl;}
-
-    public Boolean getIsCreateVersion() {
-        return Boolean.parseBoolean(createVersion);
-    }
-    public Boolean getIsPublishVersion() {
-        return Boolean.parseBoolean(publishVersion);
-    }
     public String getEditComment() {
         return editComment;
     }
