@@ -48,12 +48,11 @@ public final class TopicDAO implements ITopicDAO
     // Constants
     private static final String SQL_QUERY_NEW_PK = "SELECT max( id_topic ) FROM wiki_topic";
     private static final String SQL_QUERY_SELECT = "SELECT id_topic, namespace, page_name, page_view_role, page_edit_role, parent_page_name FROM wiki_topic WHERE id_topic = ?";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO wiki_topic ( id_topic, namespace, page_name, page_view_role, page_edit_role, parent_page_name, modify_page_last_open_by, modify_page_last_open_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO wiki_topic ( id_topic, namespace, page_name, page_view_role, page_edit_role, parent_page_name ) VALUES (?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM wiki_topic WHERE id_topic = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE wiki_topic SET id_topic = ?, namespace = ?, page_name = ?, page_view_role = ?, page_edit_role = ?, parent_page_name = ? WHERE id_topic = ?";
-    private static final String SQL_QUERY_SELECTALL = "SELECT id_topic, namespace, page_name, page_view_role, page_edit_role, parent_page_name, modify_page_last_open_by, modify_page_last_open_at FROM wiki_topic";
-    private static final String SQL_QUERY_SELECT_BY_NAME = "SELECT id_topic, namespace, page_name, page_view_role, page_edit_role, parent_page_name, modify_page_last_open_by, modify_page_last_open_at FROM wiki_topic WHERE page_name  = ?";
-    private static final String SQL_QUERY_UPDATE_LAST_OPEN_MODIFY_PAGE = "UPDATE wiki_topic SET modify_page_last_open_by = ?, modify_page_last_open_at=? WHERE id_topic = ?";
+    private static final String SQL_QUERY_SELECTALL = "SELECT id_topic, namespace, page_name, page_view_role, page_edit_role, parent_page_name FROM wiki_topic";
+    private static final String SQL_QUERY_SELECT_BY_NAME = "SELECT id_topic, namespace, page_name, page_view_role, page_edit_role, parent_page_name FROM wiki_topic WHERE page_name  = ?";
     /**
      * Generates a new primary key
      *
@@ -92,8 +91,6 @@ public final class TopicDAO implements ITopicDAO
             daoUtil.setString( 4, topic.getViewRole( ) );
             daoUtil.setString( 5, topic.getEditRole( ) );
             daoUtil.setString( 6, topic.getParentPageName( ) );
-            daoUtil.setString( 7, topic.getModifyPageOpenLastBy( ) );
-            daoUtil.setTimestamp( 8, topic.getModifyPageOpenAt( ) );
 
             daoUtil.executeUpdate( );
         }
@@ -182,8 +179,6 @@ public final class TopicDAO implements ITopicDAO
                 topic.setViewRole( daoUtil.getString( 4 ) );
                 topic.setEditRole( daoUtil.getString( 5 ) );
                 topic.setParentPageName( daoUtil.getString( 6 ) );
-                topic.setModifyPageOpenLastBy( daoUtil.getString( 7 ) );
-                topic.setModifyPageOpenAt( daoUtil.getTimestamp( 8 ) );
 
                 topicList.add( topic );
             }
@@ -215,24 +210,9 @@ public final class TopicDAO implements ITopicDAO
                 topic.setViewRole( daoUtil.getString( 4 ) );
                 topic.setEditRole( daoUtil.getString( 5 ) );
                 topic.setParentPageName( daoUtil.getString( 6 ) );
-                topic.setModifyPageOpenLastBy( daoUtil.getString( 7 ) );
-                topic.setModifyPageOpenAt( daoUtil.getTimestamp( 8 ) );
             }
         }
 
         return topic;
-    }
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void updateLastOpenModifyPage(int nTopicId, String strUserLogin, Timestamp date, Plugin plugin ) {
-        try (DAOUtil daoUtil = new DAOUtil(SQL_QUERY_UPDATE_LAST_OPEN_MODIFY_PAGE, plugin)) {
-            daoUtil.setString(1, strUserLogin);
-            daoUtil.setTimestamp(2, date);
-            daoUtil.setInt(3, nTopicId);
-
-            daoUtil.executeUpdate();
-        }
     }
 }

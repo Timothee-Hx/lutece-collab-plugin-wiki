@@ -128,16 +128,14 @@ public final class WikiService extends AbstractCacheableService
 
     /**
      * Get the Wiki page in text format
-     * 
-     * @param strPageName
-     *            The page name
+     *
      * @param version
      *            The content version
      * @param strLanguage
      *            The language
      * @return The HTML code
      */
-    public String getPageSource( String strPageName, TopicVersion version, String strLanguage )
+    public String getPageSource(TopicVersion version, String strLanguage )
     {
         String strContent = version.getWikiContent( strLanguage ).getWikiContent( );
         strContent = renderSource( strContent );

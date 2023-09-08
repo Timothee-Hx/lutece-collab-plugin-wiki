@@ -117,20 +117,6 @@ editor.insertToolbarItem({ groupIndex: 0, itemIndex: 6 }, {
     className: 'fa fa-video editor',
     style: { backgroundImage: 'none' },
 });
-editor.insertToolbarItem({ groupIndex: 0, itemIndex: 7 }, {
-    name: 'textAlignment',
-    tooltip: 'Text Alignment',
-    text: 'TA',
-    className: 'fa fa-align-left editor',
-    style: { backgroundImage: 'none' },
-});
-editor.insertToolbarItem({ groupIndex: 0, itemIndex: 8 }, {
-    name: 'InternalLink',
-    tooltip: 'Internal Link',
-    text: 'IL',
-    className: 'fa fa-link editor',
-    style: { backgroundImage: 'none' },
-});
 editor.insertToolbarItem({ groupIndex: 0, itemIndex: 9 }, {
     name: 'Image',
     tooltip: 'Image',
@@ -138,13 +124,7 @@ editor.insertToolbarItem({ groupIndex: 0, itemIndex: 9 }, {
     className: 'fa fa-image editor',
     style: { backgroundImage: 'none' },
 });
-editor.insertToolbarItem({ groupIndex: 0, itemIndex: 10 }, {
-    name: 'Emoji',
-    tooltip: 'Emoji',
-    text: 'Em',
-    className: 'fa fa-smile editor',
-    style: { backgroundImage: 'none' },
-});
+
 
 document.getElementsByClassName("toastui-editor-mode-switch")[0].remove();
 
@@ -156,49 +136,7 @@ function closeToastUiModal() {
         document.getElementsByClassName("toastui-editor-popup")[i].style.display = "none";
     }
 }
-/* -------------- Emojis -------------- */
-const emojiButton = document.getElementsByClassName("fa fa-smile editor")[0];
-emojiButton.addEventListener('click', function() {
-    document.getElementById("selectEmojiModal").style.display = "block";
-});
 
-window.addEventListener("load", (event) => {
-    const emojis = ["😀", "😂", "😍", "🥰", "😎", "🤩", "😊", "🙂", "😆", "🥳", "😁", "😄", "😇", "😘", "😋", "🤗", "🙌", "👍", "🎉", "🔥", "💯", "🌟", "✨", "🌈", "🍀", "🍉", "🍕", "🎂", "🎸", "⚽️", "🚀"]
-    let emojiList = document.getElementById("emojiList");
-    emojiList.style.display = "grid";
-    emojiList.style.gridTemplateColumns = "repeat(4, 1fr)";
-    emojiList.style.gridGap = "0.5rem";
-
-    emojis.map(emoji => {
-        const emojiButton = document.createElement("button");
-        emojiButton.classList.add("btn", "btn-tertiary", "btn-xs");
-        emojiButton.innerText = emoji;
-        emojiButton.addEventListener('click', function() {
-            navigator.clipboard.writeText(emoji);
-            closeToastUiModal();
-        });
-        emojiList.appendChild(emojiButton);
-    });
-
-});
-/* -------------- Text Alignment -------------- */
-const textAlignmentButton = document.getElementsByClassName("fa fa-align-left editor")[0];
-textAlignmentButton.addEventListener('click', function() {
-    document.getElementById("selectTextAlignmentModal").style.display = "block";
-});
-function selectTextAlignment(alignmentValue) {
-    let el = document.getElementsByClassName("toastui-editor-md-container")[0];
-    for(let i = 0; i < el.classList.length; i++){
-        if(el.classList[i].indexOf("wiki-align-content-val-") > -1){
-            el.classList.remove(el.classList[i]);
-        }
-    }
-    document.getElementsByClassName("toastui-editor-md-container")[0].classList.add(alignmentValue);
-
-    const contentToInsert = '<span class="' + alignmentValue + '"></span>';
-    editor.insertText("$$span\n"+contentToInsert+ "\n$$");
-    closeToastUiModal();
-}
 
 
 window.addEventListener("load", (event) => {
@@ -207,69 +145,6 @@ window.addEventListener("load", (event) => {
         document.getElementsByClassName("toastui-editor-md-container")[0].classList.add("wiki-align-content-val-"+alignmentValue);
     }
 });
-
-/* -------------- INTERNAL LINK  -------------- */
-const addInternalLinkButton = document.getElementsByClassName("fa fa-link editor")[0];
-addInternalLinkButton.addEventListener('click', function() {
-    document.getElementById("selectInnerLinkModal").style.display = "block";
-});
-let pageValueInnerLink = "";
-function loadInnerLinksHeadings(pageValue){
-    pageValueInnerLink = pageValue;
-    const queryParam = "?actionName=getPageHeadings&pageName=" + pageValue + "&locale=" + localeJs;
-    const urlHeadings = 'jsp/site/plugins/wiki/WikiDynamicInputs.jsp' + queryParam;
-    fetch( urlHeadings, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            credentials: "same-origin",
-        }
-    })
-        .then(response => response.json())
-        .then(data => {
-            if(data.length === 0){
-                alert("No headings found in this page");
-                return;
-            } else {
-                let selectHeadingLink = document.getElementById("selectPageHeadingLink");
-                selectHeadingLink.innerHTML = "";
-                let opt1 = document.createElement('option');
-                opt1.value = "";
-                opt1.innerText = "Select a heading";
-                opt1.selected = true;
-                opt1.disabled = true;
-                selectHeadingLink.appendChild(opt1);
-                for (let i = 0; i < data.length; i++) {
-                    let opt = document.createElement('option');
-                    opt.value = JSON.stringify(data[i]);
-                    opt.innerText = data[i].header_text;
-                    document.getElementById("selectPageHeadingLink").appendChild(opt);
-                }
-                document.getElementById("pageIsSelected").style.display = "block";
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-
-}
-
-function insertInnerLink (linkValue){
-    let linkValueJson = JSON.parse(linkValue);
-    let pageDestinationUrl = window.location.href;
-    // replace all char after &view= parameter from url
-    pageDestinationUrl = pageDestinationUrl.replace("view=modifyPage", "view=page");
-    pageDestinationUrl = pageDestinationUrl.replace(/&version=[0-9]*/g, "");
-    pageDestinationUrl = pageDestinationUrl.replace(/&page_name=[a-z]*/g, "");
-    pageDestinationUrl += "&";
-    pageDestinationUrl += "page_name="
-    pageDestinationUrl += pageValueInnerLink;
-    pageDestinationUrl += "#" + linkValueJson.header_id;
-    editor.insertText("[" + linkValueJson.header_text + "](" + pageDestinationUrl + ")");
-    document.getElementById("pageIsSelected").style.display = "none";
-    closeToastUiModal();
-}
 
 
 /* -------------- ALERT  -------------- */
@@ -694,31 +569,6 @@ function callInputs(saveType) {
 }
 
 
-
-/*_________________________ REGISTER LAST USER ON THIS PAGE ___________________________*/
-function saveLastUserOnModifyPage(){
-    const topic_id = document.getElementById("topic_id").value;
-
-    fetch('jsp/site/plugins/wiki/WikiDynamicInputs.jsp?actionName=lastOpenModify', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            credentials: "same-origin"
-        },
-        body: JSON.stringify(topic_id)
-    });
-}
-// do when page is loaded
-document.onreadystatechange = function() {
-    if (document.readyState === 'complete') {
-        setInterval(function (){
-                saveLastUserOnModifyPage();}
-            , 10000);
-    }
-}
-
-
 /*_________________________ ON LOAD REMOVE UNDERLINE ADDED BY THE HTML TO MARKDOWN CONVERTION ___________________________*/
 function removeUnderLineHeadings (underLineWithEqual){
     for(let i = 0; i < underLineWithEqual.length; i++){
@@ -780,14 +630,6 @@ function updateImages() {
                     navigator.clipboard.writeText(mdTextToInsert);
                 });
 
-                let buttonCustomCopy = document.createElement("button");
-                buttonCustomCopy.type = "button";
-                buttonCustomCopy.className = "image-editor-display btn btn-light btn-sm";
-                buttonCustomCopy.innerText = "Copy Custom";
-                buttonCustomCopy.addEventListener("click", function () {
-                    let htmlimageToInsert = "<span style='display: flex; justify-content: space-between;'><p>My text is on my left and the image on my right</p><><img src='" + imageUrl + "' alt='" + image.name + "' title='" + image.name + "' class='' width='600' height='' align=''><figcaption>" + image.name + "</figcaption></figure></span>";
-                    navigator.clipboard.writeText("\n" + "$$span\n" + htmlimageToInsert + "\n$$\n");
-                });
 
                 let buttonDelete = document.createElement("button");
                 buttonDelete.type = "button";
@@ -811,7 +653,6 @@ function updateImages() {
                     }
                 });
                 buttonContainer.appendChild(buttonCopy);
-                buttonContainer.appendChild(buttonCustomCopy);
                 buttonContainer.appendChild(buttonDelete);
                 imageElement.appendChild(img);
                 imageElement.appendChild(buttonContainer);
@@ -837,20 +678,3 @@ function insertImageUrl() {
     closeToastUiModal();
 }
 
-function insertCustomImageUrl() {
-    let desc = document.getElementById("ImageUrlDesc").value;
-    if(!desc.length) {
-        desc = "My text below the image";
-    }
-    document.getElementById("ImageUrlDesc").value = "";
-    const url = document.getElementById("ImageUrlInput").value;
-    document.getElementById("ImageUrlInput").value = "";
-    if(!url.length) {
-        alert("Please enter a valid url");
-        return;
-    }
-    const htmlImage = "<span style='display: flex; justify-content: space-between;'><p>My text is on my left and the image on my right</p><figure><img src='" + url + "' alt='' title='' className='' width='600' height='' align=''><figcaption>"+ desc +"</figcaption></figure></span>";
-    const mdImage = "\n" + "$$span\n" + htmlImage + "\n$$\n";
-    editor.insertText(mdImage);
-    closeToastUiModal();
-}

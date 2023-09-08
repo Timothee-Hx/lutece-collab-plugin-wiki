@@ -78,6 +78,8 @@ public final class Constants
     public static final String PARAMETER_USER_NAME = "user_name";
     public static final String MESSAGE_CANCELED_BY = "wiki.message.cancelBy";
 
+    public static final String PARAMETER_VIEW_DIFF_HTML = "view_diff_html";
+
 
     /** Private constructor */
     private Constants( )

@@ -33,9 +33,8 @@
  */
 package fr.paris.lutece.plugins.wiki.web;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import fr.paris.lutece.api.user.User;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.paris.lutece.plugins.wiki.business.*;
 import fr.paris.lutece.plugins.wiki.service.ContentDeserializer;
 import fr.paris.lutece.plugins.wiki.service.RoleService;
@@ -46,17 +45,12 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceHtmlParser;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Upload application
@@ -121,83 +115,8 @@ public class WikiDynamicInputs
             AppLogService.error( "Error saving topic version automatically", e );
         }
         // return the response in json
-        GsonBuilder builder = new GsonBuilder( );
-        Gson gson = builder.create( );
-        return gson.toJson( saveSuccess );
-    }
-
-    public static void updateLastOpenModifyTopicPage( HttpServletRequest request ) throws IOException, UserNotSignedException
-    {
-        StringBuilder sb = new StringBuilder( );
-        BufferedReader reader = request.getReader( );
-        String line;
-        while ( ( line = reader.readLine( ) ) != null )
-        {
-            sb.append( line );
-        }
-        String requestBody = sb.toString( );
-        final Gson gson = new GsonBuilder( ).setPrettyPrinting( ).create( );
-        final int topicId = gson.fromJson( requestBody, int.class );
-        Topic topic = TopicHome.findByPrimaryKey( topicId );
-        try
-        {
-            if ( RoleService.hasEditRole( request, topic ) )
-            {
-                User user = WikiAnonymousUser.checkUser( request );
-                TopicHome.updateLastOpenModifyPage( topic.getIdTopic( ), user );
-            }
-            else
-            {
-                throw new UserNotSignedException( );
-            }
-        }
-        catch( Exception e )
-        {
-            AppLogService.error( "Error saving last user opening modify topic page", e );
-
-        }
-    }
-
-    public static HttpServletResponse getPageHeadings( HttpServletRequest resquest, HttpServletResponse response ) throws IOException, UserNotSignedException
-    {
-        String pageName = resquest.getParameter( "pageName" );
-        String locale = resquest.getParameter( "locale" );
-        Topic topic = TopicHome.findByPageName( pageName );
-        GsonBuilder builder = new GsonBuilder( );
-        Gson gsonHeadings = builder.create( );
-
-        List<HashMap<String, String>> headings = new ArrayList<HashMap<String, String>>( );
-        try
-        {
-            if ( RoleService.hasEditRole( resquest, topic ) )
-            {
-                // get published version
-                TopicVersion topicVersion = TopicVersionHome.getPublishedVersion( topic.getIdTopic( ) );
-                WikiContent wikiContent = topicVersion.getWikiContent( locale );
-                String htmlContent = SpecialChar.renderWiki( wikiContent.getHtmlWikiContent( ) );
-                Document htmlDocument = Jsoup.parse( htmlContent );
-                Element docBody = htmlDocument.body( );
-                for ( Element element : docBody.select( "h1, h2, h3, h4, h5, h6" ) )
-                {
-                    HashMap<String, String> heading = new HashMap<String, String>( );
-                    heading.put( "header_id", element.id( ) );
-                    heading.put( "header_text", element.text( ) );
-                    headings.add( heading );
-                }
-            }
-            else
-            {
-                throw new UserNotSignedException( );
-            }
-        }
-        catch( Exception e )
-        {
-            AppLogService.error( "Error saving last user opening modify topic page", e );
-
-        }
-        String res = gsonHeadings.toJson( headings ).toString( );
-        response.getWriter( ).write( res );
-        return response;
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(saveSuccess);
     }
 
     public static HttpServletResponse modifyPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, UserNotSignedException
@@ -237,6 +156,7 @@ public class WikiDynamicInputs
                 String strPageTitle = newContent.getTopicTitle( );
                 String strContent = newContent.getTopicContent( );
                 String htmlContent = newContent.getWikiHtmlContent( );
+                System.out.println( "strContent" + strContent );
                 TopicVersion topicVersion = new TopicVersion( );
 
                 if ( nVersionId != 0 )
@@ -287,14 +207,13 @@ public class WikiDynamicInputs
         {
             AppLogService.error( "Error saving topic version automatically", e );
         }
-        GsonBuilder builder = new GsonBuilder( );
-        Gson resToJson = builder.create( );
+        ObjectMapper mapper = new ObjectMapper();
         HashMap<String, String> result = new HashMap<String, String>( );
         if ( publish.equals( true ) )
         {
             result.put( "action", "publish" );
             result.put( "url", SpecialChar.renderWiki( wikiPageUrl ) );
-            String res = resToJson.toJson( result ).toString( );
+            String res = mapper.writeValueAsString( result );
             response.getWriter( ).write( res );
         }
         else
@@ -302,7 +221,7 @@ public class WikiDynamicInputs
             {
                 result.put( "action", "savedInNewVersion" );
                 result.put( "url", SpecialChar.renderWiki( wikiPageUrl ) );
-                String res = resToJson.toJson( result ).toString( );
+                String res = mapper.writeValueAsString( result );
                 response.getWriter( ).write( res );
             }
         return response;

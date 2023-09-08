@@ -227,45 +227,5 @@ public class Topic implements IExtendableResource
         _strParentPageName = strParentPageName;
     }
 
-    /**
-     * Returns the ModifyPageOpenLastBy
-     *
-     * @return The ModifyPageOpenLastBy
-     */
-    public String getModifyPageOpenLastBy( )
-    {
-        return _strModifyPageOpenLastBy;
-    }
 
-    /**
-     * Sets the ModifyPageOpenLastBy
-     *
-     * @param strModifyPageOpenLastBy
-     *            The ModifyPageOpenLastBy
-     */
-    public void setModifyPageOpenLastBy( String strModifyPageOpenLastBy )
-    {
-        _strModifyPageOpenLastBy = strModifyPageOpenLastBy;
-    }
-
-    /**
-     * Returns the ModifyPageOpenAt
-     *
-     * @return The ModifyPageOpenAt
-     */
-    public Timestamp getModifyPageOpenAt( )
-    {
-        return _strModifyPageOpenAt;
-    }
-
-    /**
-     * Sets the ModifyPageOpenAt
-     *
-     * @param strModifyPageOpenAt
-     *            The ModifyPageOpenAt
-     */
-    public void setModifyPageOpenAt( Timestamp strModifyPageOpenAt )
-    {
-        _strModifyPageOpenAt = strModifyPageOpenAt;
-    }
 }
