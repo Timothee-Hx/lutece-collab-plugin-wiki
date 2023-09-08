@@ -647,7 +647,6 @@ public class WikiApp extends MVCApplication
         try
         {
             ContentDeserializer newContent = ContentDeserializer.deserializeWikiContent( requestBody );
-            Topic topic = TopicHome.findByPrimaryKey( newContent.getTopicId( ) );
              WikiAnonymousUser.checkUser( request );
                 wikiPageUrl = newContent.getWikiPageUrl( );
                 pageTitle = newContent.getTopicTitle( );

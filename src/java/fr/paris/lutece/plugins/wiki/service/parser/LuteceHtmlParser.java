@@ -120,6 +120,7 @@ public class LuteceHtmlParser
             if ( headerLevel.equals( "h1" ) )
             {
                 navItem.addClass( "nav-item" );
+                linkElement.attr( STYLE, "font-weight: bold;" );
                 if ( i + 1 < headers.size( ) )
                 {
                     if ( headers.get( i + 1 ).tagName( ).equals( "h1" ) )

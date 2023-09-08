@@ -502,8 +502,7 @@ function postModification(version, parentPage, topic_id, topicTitle, topicConten
                 window.location.replace(data.url);
             } else if (data.action === "savedInNewVersion") {
                 let wikiPageUrl = data.url;
-                wikiPageUrl = wikiPageUrl.replace(/&version=[0-9]*/g, "");
-                wikiPageUrl = wikiPageUrl.replace(/&view=[a-zA-Z]*/g, "&view=modifyPage");
+                wikiPageUrl = wikiPageUrl.replace(/&view=[a-zA-Z]*/g, "&view=history");
                 window.location.replace(wikiPageUrl);
                 window.location.reload();
             }
