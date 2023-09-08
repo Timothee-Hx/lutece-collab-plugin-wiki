@@ -504,7 +504,6 @@ function postModification(version, parentPage, topic_id, topicTitle, topicConten
                 let wikiPageUrl = data.url;
                 wikiPageUrl = wikiPageUrl.replace(/&view=[a-zA-Z]*/g, "&view=history");
                 window.location.replace(wikiPageUrl);
-                window.location.reload();
             }
         })
 
