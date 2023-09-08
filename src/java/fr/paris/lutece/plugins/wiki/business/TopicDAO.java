@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.wiki.business;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -111,14 +110,7 @@ public final class TopicDAO implements ITopicDAO
 
             if ( daoUtil.next( ) )
             {
-                topic = new Topic( );
-
-                topic.setIdTopic( daoUtil.getInt( 1 ) );
-                topic.setNamespace( daoUtil.getInt( 2 ) );
-                topic.setPageName( daoUtil.getString( 3 ) );
-                topic.setViewRole( daoUtil.getString( 4 ) );
-                topic.setEditRole( daoUtil.getString( 5 ) );
-                topic.setParentPageName( daoUtil.getString( 6 ) );
+                topic = setTopicWithDaoUtil(daoUtil);
             }
         }
 
@@ -171,14 +163,7 @@ public final class TopicDAO implements ITopicDAO
 
             while ( daoUtil.next( ) )
             {
-                Topic topic = new Topic( );
-
-                topic.setIdTopic( daoUtil.getInt( 1 ) );
-                topic.setNamespace( daoUtil.getInt( 2 ) );
-                topic.setPageName( daoUtil.getString( 3 ) );
-                topic.setViewRole( daoUtil.getString( 4 ) );
-                topic.setEditRole( daoUtil.getString( 5 ) );
-                topic.setParentPageName( daoUtil.getString( 6 ) );
+                Topic topic = setTopicWithDaoUtil(daoUtil);
 
                 topicList.add( topic );
             }
@@ -202,17 +187,23 @@ public final class TopicDAO implements ITopicDAO
 
             if ( daoUtil.next( ) )
             {
-                topic = new Topic( );
-
-                topic.setIdTopic( daoUtil.getInt( 1 ) );
-                topic.setNamespace( daoUtil.getInt( 2 ) );
-                topic.setPageName( daoUtil.getString( 3 ) );
-                topic.setViewRole( daoUtil.getString( 4 ) );
-                topic.setEditRole( daoUtil.getString( 5 ) );
-                topic.setParentPageName( daoUtil.getString( 6 ) );
+                topic = setTopicWithDaoUtil(daoUtil);
             }
         }
 
+        return topic;
+    }
+    /**
+     * set the content of a topic version with doaUtil
+     */
+    public Topic setTopicWithDaoUtil(DAOUtil daoUtil) {
+       Topic topic = new Topic( );
+        topic.setIdTopic( daoUtil.getInt( 1 ) );
+        topic.setNamespace( daoUtil.getInt( 2 ) );
+        topic.setPageName( daoUtil.getString( 3 ) );
+        topic.setViewRole( daoUtil.getString( 4 ) );
+        topic.setEditRole( daoUtil.getString( 5 ) );
+        topic.setParentPageName( daoUtil.getString( 6 ) );
         return topic;
     }
 }

@@ -45,7 +45,6 @@ import fr.paris.lutece.plugins.wiki.business.TopicVersionHome;
 import fr.paris.lutece.plugins.wiki.business.WikiContent;
 import fr.paris.lutece.plugins.wiki.service.*;
 import fr.paris.lutece.plugins.wiki.service.parser.LuteceHtmlParser;
-import fr.paris.lutece.plugins.wiki.service.parser.LuteceWikiParser;
 import fr.paris.lutece.plugins.wiki.service.parser.SpecialChar;
 import fr.paris.lutece.plugins.wiki.service.parser.WikiCreoleToMarkdown;
 import fr.paris.lutece.plugins.wiki.utils.auth.WikiAnonymousUser;
@@ -53,7 +52,6 @@ import fr.paris.lutece.portal.business.page.Page;
 import fr.paris.lutece.portal.service.content.XPageAppService;
 import fr.paris.lutece.portal.service.datastore.DatastoreService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
-import fr.paris.lutece.portal.service.init.AppInfo;
 import fr.paris.lutece.portal.service.message.SiteMessage;
 import fr.paris.lutece.portal.service.message.SiteMessageException;
 import fr.paris.lutece.portal.service.message.SiteMessageService;
@@ -80,14 +78,14 @@ import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.Paginator;
+import fr.paris.lutece.util.json.JsonResponse;
 import fr.paris.lutece.util.url.UrlItem;
 
 import java.io.*;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
-
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.StringUtils;
@@ -154,7 +152,6 @@ public class WikiApp extends MVCApplication
     private static final String VIEW_SEARCH = "search";
     private static final String VIEW_DIFF = "diff";
     private static final String VIEW_LIST_IMAGES = "listImages";
-
     private static final String ACTION_NEW_PAGE = "newPage";
     private static final String ACTION_CANCEL_PUBLISH_PAGE = "cancelPublication";
     private static final String ACTION_DELETE_PAGE = "deletePage";
@@ -682,7 +679,6 @@ public class WikiApp extends MVCApplication
         Topic topic = getTopic( request, strPageName, MODE_VIEW );
         Map<String, Object> model = getModel( );
         Collection<TopicVersion> listTopicVersions = TopicVersionHome.findAllVersions( topic.getIdTopic( ) );
-        System.out.println( "RoleService.hasAdminRole( request ) : " + RoleService.hasAdminRole( request ) );
         fillUsersData( listTopicVersions );
         model.put( MARK_LIST_TOPIC_VERSION, listTopicVersions );
         model.put( MARK_TOPIC, topic );
@@ -715,7 +711,6 @@ public class WikiApp extends MVCApplication
         Boolean viewDiffHtml = true;
         if( request.getParameter( Constants.PARAMETER_VIEW_DIFF_HTML ) != null )
         {
-            System.out.println( "request.getParameter( Constants.PARAMETER_VIEW_DIFF_HTML ) : " + request.getParameter( Constants.PARAMETER_VIEW_DIFF_HTML ) );
             viewDiffHtml = Boolean.parseBoolean( request.getParameter( Constants.PARAMETER_VIEW_DIFF_HTML ) );
         }
         String strNewVersion = request.getParameter( Constants.PARAMETER_NEW_VERSION );
@@ -751,7 +746,6 @@ public class WikiApp extends MVCApplication
 
         return page;
     }
-
     /**
      * Deletes a wiki page
      *

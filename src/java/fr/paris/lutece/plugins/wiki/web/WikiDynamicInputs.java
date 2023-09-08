@@ -68,7 +68,6 @@ public class WikiDynamicInputs
             sb.append( line );
         }
         String requestBody = sb.toString( );
-
         try
         {
             ContentDeserializer newContent = ContentDeserializer.deserializeWikiContent( requestBody );
@@ -156,7 +155,6 @@ public class WikiDynamicInputs
                 String strPageTitle = newContent.getTopicTitle( );
                 String strContent = newContent.getTopicContent( );
                 String htmlContent = newContent.getWikiHtmlContent( );
-                System.out.println( "strContent" + strContent );
                 TopicVersion topicVersion = new TopicVersion( );
 
                 if ( nVersionId != 0 )

@@ -39,8 +39,6 @@ import fr.paris.lutece.plugins.wiki.service.parser.SpecialChar;
 import fr.paris.lutece.portal.service.cache.AbstractCacheableService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 /**
  * Wiki Service
@@ -126,26 +124,6 @@ public final class WikiService extends AbstractCacheableService
         return strPageContent;
     }
 
-    /**
-     * Get the Wiki page in text format
-     *
-     * @param version
-     *            The content version
-     * @param strLanguage
-     *            The language
-     * @return The HTML code
-     */
-    public String getPageSource(TopicVersion version, String strLanguage )
-    {
-        String strContent = version.getWikiContent( strLanguage ).getWikiContent( );
-        strContent = renderSource( strContent );
-        Pattern pattern = Pattern.compile( "^\\s*$", Pattern.MULTILINE );
-        strContent = pattern.matcher( strContent ).replaceAll( "<br>" );
-        pattern = Pattern.compile( "^\\s*(.*)\\s*$", Pattern.MULTILINE );
-        strContent = pattern.matcher( strContent ).replaceAll( "<div>$1</div>" );
-
-        return strContent;
-    }
 
     /**
      * Get the Wiki page in HTML format
@@ -161,18 +139,6 @@ public final class WikiService extends AbstractCacheableService
     public String getWikiPage( String strPageName, TopicVersion version, String strLanguage )
     {
         return getWikiPage( strPageName, version, null, strLanguage );
-    }
-
-    /**
-     * Render the wiki source content
-     * 
-     * @param strContent
-     *            The wiki page source
-     * @return The content
-     */
-    public static String renderSource( String strContent )
-    {
-        return SpecialChar.renderWiki( strContent );
     }
 
 }
